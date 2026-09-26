@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wearsy_mobile/core/mock/mock_data_service.dart';
+import '../../../core/services/smart_fit_ai_service.dart';
 import '../../../core/storage/token_storage.dart';
-import '../models/outfit_model.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
+import '../models/outfit_model.dart';
 
 class OutfitProvider with ChangeNotifier {
   List<OutfitModel> _outfits = [];
@@ -20,7 +21,11 @@ class OutfitProvider with ChangeNotifier {
 
   List<OutfitModel> get filteredOutfits {
     if (_selectedOccasion == null) return _outfits;
-    return _outfits.where((o) => o.occasion == _selectedOccasion).toList();
+    return _outfits.where((outfit) => outfit.occasion == _selectedOccasion).toList();
+  }
+
+  List<OutfitModel> get favoriteOutfits {
+    return _outfits.where((outfit) => outfit.isFavorite).toList();
   }
 
   String _getStorageKey(String email) {
@@ -75,39 +80,46 @@ class OutfitProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Simulates AI generating a new outfit suggestion
-  Future<void> generateNewOutfit() async {
+  /// Sinh gợi ý outfit mới tích hợp Smart Fit (Chiều cao & Cân nặng) + 2D Layering
+  Future<void> generateNewOutfit({
+    List<WardrobeItemModel>? availableItems,
+    double? heightCm,
+    double? weightKg,
+    String? gender,
+    String? occasionPrompt,
+  }) async {
     _isGenerating = true;
     notifyListeners();
 
-    // Simulate AI thinking time
-    await Future.delayed(const Duration(seconds: 2));
-
-    final newOutfit = OutfitModel(
-      id: 'o_gen_${DateTime.now().millisecondsSinceEpoch}',
-      name: _getRandomOutfitName(),
-      occasion: _selectedOccasion ?? OutfitOccasion.casual,
-      weatherSuitable: ['Mọi thời tiết'],
-      aiScore: 8.5 + (DateTime.now().millisecond % 15) / 10,
-      aiReason:
-          'Dựa trên lịch sử mặc đồ và xu hướng thời trang hiện tại, AI đề xuất kết hợp này phù hợp với phong cách cá nhân và dịp sử dụng của bạn.',
-      itemIds: ['w001', 'w006', 'w008'],
-      coverImageUrl:
-          'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=600&auto=format&fit=crop',
-    );
-
-    _outfits = [newOutfit, ..._outfits];
-    _isGenerating = false;
-    notifyListeners();
-
     try {
+      final itemsToUse = (availableItems != null && availableItems.isNotEmpty)
+          ? availableItems
+          : MockDataService.getMockWardrobeItems();
+
+      final occasionText = occasionPrompt ?? _selectedOccasion?.displayName ?? 'Công sở';
+
+      final newOutfit = await SmartFitAiService.generateSmartFitOutfit(
+        wardrobeItems: itemsToUse,
+        heightCm: heightCm ?? 172.0,
+        weightKg: weightKg ?? 65.0,
+        gender: gender ?? 'Nam',
+        occasion: occasionText,
+      );
+
+      _outfits = [newOutfit, ..._outfits];
+
       final prefs = await SharedPreferences.getInstance();
       final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = [jsonEncode(newOutfit.toJson()), ...customJson];
       await prefs.setStringList(storageKey, updatedJson);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[OutfitProvider] generateNewOutfit error: $e');
+    } finally {
+      _isGenerating = false;
+      notifyListeners();
+    }
   }
 
   void toggleFavorite(String outfitId) {
@@ -128,7 +140,8 @@ class OutfitProvider with ChangeNotifier {
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = customJson.map((str) {
         final decoded = jsonDecode(str) as Map<String, dynamic>;
-        final match = _outfits.firstWhere((o) => o.id == decoded['id'], orElse: () => OutfitModel.fromJson(decoded));
+        final match = _outfits.firstWhere((o) => o.id == decoded['id'],
+            orElse: () => OutfitModel.fromJson(decoded));
         decoded['is_favorite'] = match.isFavorite;
         return jsonEncode(decoded);
       }).toList();
@@ -136,21 +149,33 @@ class OutfitProvider with ChangeNotifier {
     } catch (_) {}
   }
 
-  /// Get wardrobe items for a given outfit
-  List<WardrobeItemModel> getItemsForOutfit(OutfitModel outfit) {
-    final allItems = MockDataService.getMockWardrobeItems();
-    return allItems.where((i) => outfit.itemIds.contains(i.id)).toList();
-  }
-
-  String _getRandomOutfitName() {
-    final names = [
-      'Minimalist Chill Look',
-      'Contemporary Street Style',
-      'Effortless Chic Combo',
-      'Power Dressing Set',
-      'Weekend Relaxed Vibe',
-      'After-Work Social Look',
+  /// Lấy danh sách các món đồ cho một outfit (Tìm cả trong tủ đồ mẫu lẫn tủ đồ cá nhân người dùng)
+  List<WardrobeItemModel> getItemsForOutfit(OutfitModel outfit,
+      [List<WardrobeItemModel>? userWardrobeItems]) {
+    final allBase = MockDataService.getMockWardrobeItems();
+    final combined = [
+      if (userWardrobeItems != null) ...userWardrobeItems,
+      ...allBase,
     ];
-    return names[DateTime.now().second % names.length];
+
+    final matched = <WardrobeItemModel>[];
+    for (final id in outfit.itemIds) {
+      final found = combined.firstWhere(
+        (i) => i.id == id,
+        orElse: () => WardrobeItemModel(
+          id: id,
+          name: 'Món đồ phối #$id',
+          category: WardrobeCategory.tops,
+          color: 'Đen',
+          brand: 'WEARSY',
+          imageUrl:
+              'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=600&auto=format&fit=crop',
+        ),
+      );
+      if (!matched.any((m) => m.id == found.id)) {
+        matched.add(found);
+      }
+    }
+    return matched;
   }
 }

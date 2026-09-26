@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/outfit_model.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/outfit_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import 'outfit_detail_screen.dart';
 
@@ -255,22 +256,30 @@ class _OutfitBody extends StatelessWidget {
                 );
                 return;
               }
-              provider.generateNewOutfit();
+
+              final auth = Provider.of<AuthProvider>(context, listen: false);
+              final bm = auth.user?.bodyMeasurements;
+              final h = (bm?['height'] as num?)?.toDouble() ?? 172.0;
+              final w = (bm?['weight'] as num?)?.toDouble() ?? 65.0;
+
+              provider.generateNewOutfit(
+                availableItems: wardrobe.allItems,
+                heightCm: h,
+                weightKg: w,
+                gender: auth.user?.fullName.toLowerCase().contains('nữ') == true ? 'Nữ' : 'Nam',
+              );
             },
-      backgroundColor:
-          provider.isGenerating ? AppTheme.darkSurface : null,
+      backgroundColor: provider.isGenerating ? AppTheme.darkSurface : null,
       icon: provider.isGenerating
           ? const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(
-                  color: Colors.white, strokeWidth: 2),
+              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
             )
           : const Icon(Icons.auto_fix_high_rounded, color: Colors.white),
       label: Text(
-        provider.isGenerating ? 'Đang tạo...' : 'Tạo Outfit Mới',
-        style: GoogleFonts.outfit(
-            color: Colors.white, fontWeight: FontWeight.bold),
+        provider.isGenerating ? 'Đang phân tích Smart Fit...' : 'Tạo Outfit Smart Fit',
+        style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
       ),
       extendedIconLabelSpacing: 8,
     );
@@ -348,33 +357,64 @@ class _OutfitCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Occasion badge
+                  // Occasion & 2D Canvas badge
                   Positioned(
                     top: 12,
                     left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(outfit.occasion.icon,
-                              style: const TextStyle(fontSize: 14)),
-                          const SizedBox(width: 4),
-                          Text(
-                            outfit.occasion.displayName,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.65),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ],
-                      ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(outfit.occasion.icon,
+                                  style: const TextStyle(fontSize: 13)),
+                              const SizedBox(width: 4),
+                              Text(
+                                outfit.occasion.displayName,
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 5),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [AppTheme.primaryColor, AppTheme.accentColor],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.layers_rounded, color: Colors.white, size: 12),
+                              const SizedBox(width: 3),
+                              Text(
+                                '2D Canvas',
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   // Favorite button
@@ -456,6 +496,36 @@ class _OutfitCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
+                  if (outfit.smartFitAdvice != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      margin: const EdgeInsets.only(bottom: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryLight.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppTheme.primaryLight.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('🏷️', style: TextStyle(fontSize: 12)),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              outfit.smartFitAdvice!.sizeRecommendation,
+                              style: GoogleFonts.inter(
+                                color: AppTheme.primaryLight,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   Text(
                     outfit.aiReason,
                     maxLines: 2,

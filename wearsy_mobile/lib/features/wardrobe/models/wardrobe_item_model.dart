@@ -41,6 +41,26 @@ extension WardrobeCategoryExtension on WardrobeCategory {
         return '👜';
     }
   }
+
+  /// Thứ tự xếp lớp hiển thị trên 2D Layering Canvas
+  /// Layer 1: Lớp nền (Áo thun, sơ mi, quần, chân váy, đầm)
+  /// Layer 2: Lớp ngoài (Áo khoác, Blazer, Cardigan, Trench coat)
+  /// Layer 3: Giày/Dép
+  /// Layer 4: Phụ kiện (Mũ, túi xách, thắt lưng, kính)
+  int get defaultLayerOrder {
+    switch (this) {
+      case WardrobeCategory.tops:
+      case WardrobeCategory.bottoms:
+      case WardrobeCategory.dresses:
+        return 1;
+      case WardrobeCategory.outerwear:
+        return 2;
+      case WardrobeCategory.shoes:
+        return 3;
+      case WardrobeCategory.accessories:
+        return 4;
+    }
+  }
 }
 
 class WardrobeItemModel {
@@ -52,6 +72,7 @@ class WardrobeItemModel {
   final String imageUrl;
   final List<String> tags;
   final double aiMatchScore;
+  final int layerOrder;
 
   const WardrobeItemModel({
     required this.id,
@@ -60,23 +81,29 @@ class WardrobeItemModel {
     required this.color,
     required this.brand,
     required this.imageUrl,
-    required this.tags,
-    required this.aiMatchScore,
-  });
+    this.tags = const [],
+    this.aiMatchScore = 9.0,
+    int? layerOrder,
+  }) : layerOrder = layerOrder ?? 1;
 
   factory WardrobeItemModel.fromJson(Map<String, dynamic> json) {
+    final cat = WardrobeCategory.values.firstWhere(
+      (e) => e.name == json['category'],
+      orElse: () => WardrobeCategory.tops,
+    );
+    final rawOrder = json['layer_order'] ?? json['layerOrder'];
+    final parsedOrder = (rawOrder as num?)?.toInt() ?? cat.defaultLayerOrder;
+
     return WardrobeItemModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
-      category: WardrobeCategory.values.firstWhere(
-        (e) => e.name == json['category'],
-        orElse: () => WardrobeCategory.tops,
-      ),
+      category: cat,
       color: json['color']?.toString() ?? '',
       brand: json['brand']?.toString() ?? '',
       imageUrl: json['image_url']?.toString() ?? '',
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      aiMatchScore: (json['ai_match_score'] as num?)?.toDouble() ?? 0.0,
+      aiMatchScore: (json['ai_match_score'] as num?)?.toDouble() ?? 9.0,
+      layerOrder: parsedOrder,
     );
   }
 
@@ -89,16 +116,19 @@ class WardrobeItemModel {
     String? imageUrl,
     List<String>? tags,
     double? aiMatchScore,
+    int? layerOrder,
   }) {
+    final effectiveCategory = category ?? this.category;
     return WardrobeItemModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      category: category ?? this.category,
+      category: effectiveCategory,
       color: color ?? this.color,
       brand: brand ?? this.brand,
       imageUrl: imageUrl ?? this.imageUrl,
       tags: tags ?? this.tags,
       aiMatchScore: aiMatchScore ?? this.aiMatchScore,
+      layerOrder: layerOrder ?? this.layerOrder,
     );
   }
 
@@ -112,7 +142,9 @@ class WardrobeItemModel {
       'image_url': imageUrl,
       'tags': tags,
       'ai_match_score': aiMatchScore,
+      'layer_order': layerOrder,
     };
   }
 }
+
 
