@@ -526,13 +526,53 @@ Tài liệu danh sách tài khoản demo và chế độ offline sẵn có tại
 
 ---
 
-## 10. Tổng kết & Hướng Phát triển Tiếp theo
+## 11. Tính Năng Đột Phá: Layering Canvas 2D & Smart Fit (Vóc Dáng & Chiều Cao)
 
-Tài liệu kỹ thuật này phản ánh toàn bộ kiến trúc, cơ sở dữ liệu và mã nguồn sản phẩm của dự án **WEARSY v1.0.0**. Hệ thống được thiết kế theo các tiêu chuẩn kỹ thuật cao, đáp ứng đầy đủ tính mở rộng (Scalability), tính bảo mật (Security) và trải nghiệm người dùng (UX).
+### 11.1. Kiến trúc Tổng thể (3 Tầng Xử lý Tuần tự)
 
-**Các hướng nâng cấp trong phiên bản tiếp theo (v2.0)**:
-1. Tích hợp tính năng Ảo hóa Thử đồ 3D (AR Virtual Try-On) trực tiếp trên di động.
-2. Nâng cấp mô hình AI Recommendation engine riêng biệt (Fine-tuned Fashion Model).
+```
+[User Input: Chiều cao, Cân nặng, Giới tính] 
+                │
+                ▼
+[1. Deterministic Engine: Tính BMI & Ước tính Size/Tỷ lệ] (Local / Backend < 5ms)
+                │
+                ▼
+[2. AI Context Engine: Phân tích Phối đồ + Thẩm mỹ vóc dáng] (Gemini 1.5 Flash)
+                │
+                ▼
+[3. Layering Canvas 2D Engine: Sắp xếp lớp hiển thị trên UI] (Flutter Interactive Canvas)
+```
+
+### 11.2. Bước 1: Thuật toán Thể trạng Chuẩn Châu Á (Deterministic Sizing Logic)
+Thực hiện ngay trên client/server trong vòng `< 5ms`:
+1. **Chỉ số BMI**: $\text{BMI} = \frac{\text{Cân nặng (kg)}}{(\text{Chiều cao (m)})^2}$
+2. **Phân loại vóc dáng (Asian Standard Body Frame)**:
+   - $\text{BMI} < 18.5$: Gầy (`Slim` / `Underweight`)
+   - $18.5 \le \text{BMI} < 23.0$: Cân đối (`Fit` / `Standard`)
+   - $23.0 \le \text{BMI} < 25.0$: Hơi thừa cân (`Overweight` / `Plump`)
+   - $\text{BMI} \ge 25.0$: Đầy đặn (`Plus-size`)
+3. **Ánh xạ Size chuẩn**:
+   - *Nữ*: Cao 1m50 - 1m58, Nặng 40 - 47kg $\rightarrow$ Size S.
+   - *Nữ*: Cao 1m58 - 1m65, Nặng 48 - 54kg $\rightarrow$ Size M.
+   - *Nam*: Cao 1m60 - 1m68, Nặng 50 - 60kg $\rightarrow$ Size M.
+   - *Nam*: Cao 1m68 - 1m78, Nặng 60 - 72kg $\rightarrow$ Size L.
+4. **Cảnh báo độ dài (Length Hazard Detection)**:
+   - Nữ $< 155\text{ cm}$ chọn Quần dài/Đầm maxi: Kích hoạt cờ `FLAG_MAY_BE_LONG` (Nguy cơ quệt gót).
+   - Nam $> 180\text{ cm}$ chọn Quần tây regular: Kích hoạt cờ `FLAG_MAY_BE_SHORT` (Nguy cơ cộc mắt cá).
+
+### 11.3. Bước 2: Thứ tự Xếp lớp & Tỷ lệ Co giãn (2D Layering Engine)
+- **Z-Index (Layer Order)**:
+  - `layer_order = 1`: Lớp nền (Áo thun, sơ mi, quần tây, chân váy, đầm liền).
+  - `layer_order = 2`: Lớp ngoài (Áo khoác, Blazer, Cardigan, Trench coat, Denim jacket).
+  - `layer_order = 3`: Giày / Dép (Sneakers, Loafers, Boots, Sandal).
+  - `layer_order = 4`: Phụ kiện (Mũ, túi xách, đồng hồ, kính).
+- **Scale Ratio**: $\text{Scale Ratio} = \frac{\text{Chiều cao người dùng}}{165\text{ cm}}$ (Giới hạn từ $0.85$ đến $1.18$ để cân đối màn hình).
+
+### 11.4. Bước 3: Giao diện Người dùng (UI Experience)
+- **Khung Layering 2D Canvas**: Khung vẽ nghệ thuật studio với lưới tọa độ, thước đo chiều cao động, thẻ Z-index và cho phép chạm bật/tắt từng lớp trang phục trực quan.
+- **Thẻ Smart Fit**: Hiển thị Form dáng chuẩn, Mẹo tôn dáng (Body proportion tip), Cảnh báo tỷ lệ, Thang điểm Thanh lịch (Elegance) và Hài hòa màu sắc (Color score).
+- **Điều chỉnh thể trạng trực tiếp**: Hỗ trợ thanh trượt Chiều cao & Cân nặng ngay trên màn hình chi tiết để thử nghiệm khả năng thích ứng thời gian thực của AI.
+
 3. Kết nối mạng xã hội thời trang cho phép người dùng chia sẻ tủ đồ và outfit hàng ngày (Social Fashion Feed).
 
 ---
