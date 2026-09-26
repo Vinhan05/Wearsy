@@ -65,7 +65,7 @@ class MockDataService {
         category: WardrobeCategory.outerwear,
         color: 'Be',
         brand: 'Mango',
-        imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
         tags: ['Smart Casual', 'Business'],
         aiMatchScore: 8.8,
       ),

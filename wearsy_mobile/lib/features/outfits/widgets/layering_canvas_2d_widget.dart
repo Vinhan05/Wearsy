@@ -304,42 +304,80 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget> {
     required List<WardrobeItemModel> accessories,
     required double scaleRatio,
   }) {
+    final hasOuter = outerwear.isNotEmpty;
+    final hasTop = tops.isNotEmpty;
+    final hasDress = dresses.isNotEmpty;
+    final hasBottom = bottoms.isNotEmpty;
+    final hasShoe = shoes.isNotEmpty;
+
     return Stack(
       alignment: Alignment.center,
       children: [
-        // ─── TẦNG 1: LỚP NỀN (ÁO & QUẦN HOẶC ĐẦM) ───────────────────────────
+        // ─── PHẦN THÂN TRÊN & DƯỚI (Upper Body & Lower Body) ─────────────────
         Positioned(
-          top: 15,
-          left: 10,
-          right: 10,
-          bottom: 75,
+          top: 10,
+          left: 6,
+          right: 6,
+          bottom: hasShoe ? 72 : 12,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (dresses.isNotEmpty)
+              // 1. Thân trên: Đầm liền HOẶC (Áo trong & Áo khoác ngoài)
+              if (hasDress)
                 Expanded(
-                  flex: 3,
+                  flex: 5,
                   child: _buildItemCard(
                     dresses.first,
-                    badgeText: 'Lớp 1: Đầm liền',
+                    badgeText: 'Đầm liền (Dress)',
                   ),
                 )
               else ...[
-                if (tops.isNotEmpty)
-                  Expanded(
-                    flex: 2,
-                    child: _buildItemCard(
-                      tops.first,
-                      badgeText: 'Lớp 1: Áo trong',
-                    ),
-                  ),
+                // Nửa trên: Áo trong & Áo khoác
+                Expanded(
+                  flex: 3,
+                  child: (hasTop && hasOuter)
+                      ? Row(
+                          children: [
+                            // Áo trong (Base Layer)
+                            Expanded(
+                              flex: 1,
+                              child: _buildItemCard(
+                                tops.first,
+                                badgeText: 'Lớp 1: Áo trong',
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            // Áo khoác ngoài (Outer Layer)
+                            Expanded(
+                              flex: 1,
+                              child: _buildItemCard(
+                                outerwear.first,
+                                badgeText: 'Lớp 2: Khoác ngoài',
+                                isLayer2Outer: true,
+                              ),
+                            ),
+                          ],
+                        )
+                      : (hasOuter
+                          ? _buildItemCard(
+                              outerwear.first,
+                              badgeText: 'Lớp 2: Khoác ngoài',
+                              isLayer2Outer: true,
+                            )
+                          : (hasTop
+                              ? _buildItemCard(
+                                  tops.first,
+                                  badgeText: 'Lớp 1: Áo trong',
+                                )
+                              : const SizedBox.shrink())),
+                ),
                 const SizedBox(height: 6),
-                if (bottoms.isNotEmpty)
+                // Nửa dưới: Quần / Chân váy
+                if (hasBottom)
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: _buildItemCard(
                       bottoms.first,
-                      badgeText: 'Lớp 1: Quần / Chân váy',
+                      badgeText: 'Lớp dưới: Quần / Váy',
                     ),
                   ),
               ],
@@ -347,39 +385,13 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget> {
           ),
         ),
 
-        // ─── TẦNG 2: ÁO KHOÁC NGOÀI (OUTERWEAR - LAYER ORDER 2) ─────────────
-        if (outerwear.isNotEmpty)
-          Positioned(
-            top: 20,
-            left: 20,
-            right: 20,
-            height: 155 * scaleRatio,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.45),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: _buildItemCard(
-                outerwear.first,
-                badgeText: 'Lớp 2: Áo khoác ngoài (Outer)',
-                isLayer2Outer: true,
-              ),
-            ),
-          ),
-
-        // ─── TẦNG 3: GIÀY DÉP (SHOES - LAYER ORDER 3) ───────────────────────
-        if (shoes.isNotEmpty)
+        // ─── TẦNG 3: GIÀY DÉP (SHOES) ────────────────────────────────────────
+        if (hasShoe)
           Positioned(
             bottom: 0,
             child: SizedBox(
-              width: 140,
-              height: 68,
+              width: 145,
+              height: 66,
               child: _buildItemCard(
                 shoes.first,
                 badgeText: 'Lớp 3: Giày',
@@ -388,13 +400,13 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget> {
             ),
           ),
 
-        // ─── TẦNG 4: PHỤ KIỆN (ACCESSORIES - LAYER ORDER 4) ──────────────────
+        // ─── TẦNG 4: PHỤ KIỆN (ACCESSORIES) ──────────────────────────────────
         if (accessories.isNotEmpty)
           Positioned(
-            right: 5,
-            top: 30,
-            width: 85,
-            height: 85,
+            right: 0,
+            top: 15,
+            width: 80,
+            height: 80,
             child: _buildItemCard(
               accessories.first,
               badgeText: 'Phụ kiện',
@@ -467,7 +479,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget> {
                     ),
                   ),
                 ),
-                errorBuilder: (_, __, ___) => Container(
+                errorWidget: (_, __, ___) => Container(
                   color: AppTheme.darkSurface,
                   child: Center(
                     child: Text(
