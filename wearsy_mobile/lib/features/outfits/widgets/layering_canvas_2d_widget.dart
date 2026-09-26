@@ -35,7 +35,6 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
   // Animation controller cho vòng xoay quỹ đạo Neon 60 FPS
   late AnimationController _orbitController;
   bool _showOrbitRings = true;
-  bool _showHudCallouts = true;
 
   @override
   void initState() {
@@ -209,20 +208,12 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                     scaleRatio: scaleRatio,
                   ),
                 ),
-
-                // 6. Đường chỉ dẫn Callouts thông số cơ thể (Vai, Eo, Dài)
-                if (_showHudCallouts)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: _buildHudCallouts(scaleRatio),
-                    ),
-                  ),
               ],
             ),
           ),
         ),
 
-        // ─── Thanh điều khiển Orbit 360° & Chỉ dẫn HUD Callouts ──────────────
+        // ─── Thanh điều khiển Orbit 360° ─────────────────────────────────────
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           child: Row(
@@ -258,44 +249,6 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                           fontSize: 11,
                           fontWeight: _showOrbitRings ? FontWeight.bold : FontWeight.normal,
                           color: _showOrbitRings ? Colors.white : Colors.white54,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Toggle Chỉ Dẫn Fit Dáng
-              InkWell(
-                onTap: () => setState(() => _showHudCallouts = !_showHudCallouts),
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: _showHudCallouts
-                        ? AppTheme.accentColor.withOpacity(0.35)
-                        : AppTheme.darkCard,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: _showHudCallouts ? AppTheme.accentColor : Colors.white12,
-                      width: 1.0,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.straighten_rounded,
-                        size: 14,
-                        color: _showHudCallouts ? AppTheme.accentColor : Colors.white54,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Chỉ dẫn Fit Dáng',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: _showHudCallouts ? FontWeight.bold : FontWeight.normal,
-                          color: _showHudCallouts ? Colors.white : Colors.white54,
                         ),
                       ),
                     ],
@@ -674,152 +627,6 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  /// HUD Callouts hiển thị các điểm đo & thông số vóc dáng gợi ý (Vai, Eo, Chiều dài)
-  Widget _buildHudCallouts(double scaleRatio) {
-    // Ước tính thông số theo Chiều cao, Cân nặng và Giới tính
-    final isMale = widget.gender.toLowerCase().contains('nam') || widget.gender.toLowerCase().contains('male');
-    final shoulderEstimate = (widget.heightCm * (isMale ? 0.255 : 0.232)).round();
-    final waistEstimate = (widget.weightKg * 1.08 + (isMale ? 16 : 10)).round();
-    final topLengthEstimate = (widget.heightCm * 0.385).round();
-    final bodyAnalysis = SmartFitEngine.analyzeBody(
-      heightCm: widget.heightCm,
-      weightKg: widget.weightKg,
-      gender: isMale ? 'Nam' : 'Nữ',
-    );
-    final fitSize = bodyAnalysis.estimatedSize;
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final h = constraints.maxHeight;
-
-        return Stack(
-          children: [
-            // 1. Callout VAI (Shoulders) - Góc trên bên trái
-            Positioned(
-              left: 50,
-              top: h * 0.16,
-              child: _buildCalloutBadge(
-                label: 'VAI',
-                value: '$shoulderEstimate cm',
-                subValue: 'Khuyên dùng $fitSize',
-                color: const Color(0xFF00E5FF),
-                icon: Icons.accessibility_new_rounded,
-                isLeft: true,
-              ),
-            ),
-
-            // 2. Callout EO (Waist) - Góc giữa bên phải
-            Positioned(
-              right: 14,
-              top: h * 0.44,
-              child: _buildCalloutBadge(
-                label: 'EO',
-                value: '$waistEstimate cm',
-                subValue: 'Vừa vặn chuẩn',
-                color: const Color(0xFFFF4081),
-                icon: Icons.all_inclusive_rounded,
-                isLeft: false,
-              ),
-            ),
-
-            // 3. Callout CHIỀU DÀI ÁO (Length) - Góc dưới bên trái
-            Positioned(
-              left: 50,
-              top: h * 0.65,
-              child: _buildCalloutBadge(
-                label: 'DÀI ÁO',
-                value: '$topLengthEstimate cm',
-                subValue: 'Tỷ lệ Scale ${scaleRatio.toStringAsFixed(2)}x',
-                color: const Color(0xFFB388FF),
-                icon: Icons.straighten_rounded,
-                isLeft: true,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildCalloutBadge({
-    required String label,
-    required String value,
-    required String subValue,
-    required Color color,
-    required IconData icon,
-    required bool isLeft,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xDD0F101A),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: color.withOpacity(0.6),
-          width: 1.0,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.25),
-            blurRadius: 8,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.18),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 12),
-          ),
-          const SizedBox(width: 6),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$label: ',
-                    style: GoogleFonts.inter(
-                      color: color,
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.4,
-                    ),
-                  ),
-                  Text(
-                    value,
-                    style: GoogleFonts.outfit(
-                      color: Colors.white,
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                subValue,
-                style: GoogleFonts.inter(
-                  color: Colors.white60,
-                  fontSize: 8.5,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
