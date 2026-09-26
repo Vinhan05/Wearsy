@@ -362,7 +362,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                       SnackBar(
                         content: Row(
                           children: [
-                            const Icon(Icons.sparkles, color: Colors.amber, size: 20),
+                            const Icon(Icons.auto_awesome, color: Colors.amber, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
