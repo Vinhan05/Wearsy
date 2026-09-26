@@ -1,0 +1,22 @@
+# Dependencies & Builds
+**/node_modules/
+**/dist/
+**/build/
+**/.dart_tool/
+**/.pub-cache/
+**/.pub/
+**/coverage/
+.gradle/
+**/android/.gradle/
+**/android/app/build/
+
+# IDE & Editor
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# System & Logs
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "542169574265",
+    "project_id": "wearsy-mobile",
+    "storage_bucket": "wearsy-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542169574265:android:5609ed305d0f82cf40dda8",
+        "android_client_info": {
+          "package_name": "app.wearsy.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "542169574265-979kf6k2l4sk52jn1mli9o65f469pku9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.wearsy.mobile",
+            "certificate_hash": "7a4a437153d5b3b558428d25ec6a4f852caf3d7d"
+          }
+        },
+        {
+          "client_id": "542169574265-god0pmi4siobijlobf42ooiggc41d0cr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdpkzVHfE5zFaz7Ee8HHLHfXg-iG4EzFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "542169574265-god0pmi4siobijlobf42ooiggc41d0cr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

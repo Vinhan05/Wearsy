@@ -1,0 +1,995 @@
+openapi: 3.0.3
+info:
+  title: WEARSY Smart Wardrobe & AI Fashion Assistant API
+  description: |
+    Hệ thống RESTful API cho ứng dụng tủ đồ thông minh **WEARSY**.
+    Tích hợp phân tích hình ảnh AI, gợi ý phối đồ theo ngữ cảnh (AI Outfit Recommendation), kiểm tra độ tương thích mua sắm thông minh (Smart Shopping Check) và phân hệ chấm điểm phối màu Gamification.
+    
+    **Chủ trì kiến trúc:** Võ Thế Dân - Phụ trách Kỹ thuật & An toàn thông tin.
+  version: 1.0.0
+  contact:
+    name: WEARSY Engineering Team
+    email: dev@wearsy.app
+
+servers:
+  - url: https://api.wearsy.app/v1
+    description: Production Server
+  - url: https://staging-api.wearsy.app/v1
+    description: Staging Test Server
+  - url: http://localhost:8000/v1
+    description: Local Development Server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Authentication & Profile
+    description: Quản lý đăng ký, đăng nhập, JWT token và hồ sơ phong cách người dùng
+  - name: Digital Wardrobe
+    description: Quản lý tủ đồ kỹ thuật số, phân loại và phân tích hình ảnh bằng AI
+  - name: AI Outfit Recommendation
+    description: Trợ lý AI gợi ý phối đồ theo hoàn cảnh, thời tiết, hình ảnh địa điểm
+  - name: Smart Shopping Check
+    description: Kiểm tra độ tương thích mua sắm và phân tích món đồ còn thiếu trong tủ đồ
+  - name: Gamification & Style Score
+    description: Chấm điểm phối màu (Color Harmony Score) và thử thách thời trang
+
+paths:
+  # ==========================================================
+  # 1. AUTH & USER PROFILE MODULE
+  # ==========================================================
+  /auth/register:
+    post:
+      summary: Đăng ký tài khoản người dùng mới
+      tags:
+        - Authentication & Profile
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - full_name
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: "SecuredPass123!"
+                full_name:
+                  type: string
+                  example: "Nguyễn Văn A"
+      responses:
+        '201':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '409':
+          description: Email đã tồn tại trong hệ thống
+
+  /auth/login:
+    post:
+      summary: Đăng nhập và nhận JWT Token
+      tags:
+        - Authentication & Profile
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: "SecuredPass123!"
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /users/profile:
+    get:
+      summary: Lấy thông tin chi tiết và hồ sơ người dùng
+      tags:
+        - Authentication & Profile
+      responses:
+        '200':
+          description: Trả về thông tin hồ sơ người dùng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/UserProfile'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+        '401':
+          $ref: '#/components/responses/401Unauthorized'
+
+  /users/style-profile:
+    put:
+      summary: Cập nhật Hồ sơ phong cách cá nhân (Personal Style Profile)
+      tags:
+        - Authentication & Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StyleProfileUpdateInput'
+      responses:
+        '200':
+          description: Cập nhật phong cách thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Cập nhật hồ sơ phong cách thành công."
+                  data:
+                    $ref: '#/components/schemas/UserProfile'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+
+  # ==========================================================
+  # 2. DIGITAL WARDROBE MANAGEMENT MODULE
+  # ==========================================================
+  /wardrobe/items:
+    get:
+      summary: Truy vấn danh sách món đồ trong tủ đồ cá nhân
+      tags:
+        - Digital Wardrobe
+      parameters:
+        - name: category
+          in: query
+          description: Lọc theo nhóm danh mục
+          schema:
+            type: string
+            enum: [TOPS, BOTTOMS, DRESSES, OUTERWEAR, FOOTWEAR, ACCESSORIES]
+        - name: primary_color
+          in: query
+          description: Lọc theo màu sắc chính
+          schema:
+            type: string
+            example: "Trắng"
+        - name: season
+          in: query
+          description: Lọc theo mùa phù hợp
+          schema:
+            type: string
+            enum: [ALL, SPRING, SUMMER, AUTUMN, WINTER]
+        - name: status
+          in: query
+          schema:
+            type: string
+            default: ACTIVE
+      responses:
+        '200':
+          description: Danh sách món đồ trong tủ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WardrobeItem'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+
+    post:
+      summary: Thêm món đồ mới vào tủ đồ trực tuyến
+      tags:
+        - Digital Wardrobe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WardrobeItemInput'
+      responses:
+        '201':
+          description: Thêm món đồ thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Thêm món đồ vào tủ thành công."
+                  data:
+                    $ref: '#/components/schemas/WardrobeItem'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+
+  /wardrobe/analyze-image:
+    post:
+      summary: Tải ảnh trang phục lên để AI tự động trích xuất thông tin
+      description: Nhận diện loại đồ, màu chủ đạo, màu phụ, chất liệu và phong cách gợi ý.
+      tags:
+        - Digital Wardrobe
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: File hình ảnh trang phục (JPEG/PNG/WEBP)
+      responses:
+        '200':
+          description: Kết quả phân tích hình ảnh từ AI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AIImageAnalysisResult'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+
+  /wardrobe/items/{id}:
+    get:
+      summary: Lấy chi tiết thông tin của 1 món đồ trong tủ
+      tags:
+        - Digital Wardrobe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Chi tiết món đồ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/WardrobeItem'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      summary: Xóa món đồ khỏi tủ đồ kỹ thuật số
+      tags:
+        - Digital Wardrobe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Xóa thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Đã xóa món đồ khỏi tủ đồ."
+
+  # ==========================================================
+  # 3. AI OUTFIT RECOMMENDATION MODULE
+  # ==========================================================
+  /outfits/recommend:
+    post:
+      summary: Gợi ý outfit từ tủ đồ hiện có theo sự kiện/hoàn cảnh
+      tags:
+        - AI Outfit Recommendation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutfitRecommendRequest'
+      responses:
+        '200':
+          description: Danh sách gợi ý trang phục kèm điểm số & lý do AI phân tích
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Đã tạo gợi ý trang phục thành công."
+                  data:
+                    type: object
+                    properties:
+                      outfits:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OutfitRecommendation'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+
+  /outfits/recommend-by-context:
+    post:
+      summary: Gợi ý outfit bằng cách phân tích hình ảnh địa điểm sắp đến
+      description: Gửi ảnh địa điểm (nhà hàng, quán cafe, văn phòng, bãi biển...) để AI phân tích dress-code phù hợp.
+      tags:
+        - AI Outfit Recommendation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - context_image
+              properties:
+                context_image:
+                  type: string
+                  format: binary
+                additional_note:
+                  type: string
+                  example: "Đi ăn tối lúc 19h"
+      responses:
+        '200':
+          description: Gợi ý outfit phù hợp với không gian & dress code nhận diện được
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      detected_vibe:
+                        type: string
+                        example: "Không gian tiệc ngoài trời sang trọng, ấm cúng"
+                      dresscode_recommendation:
+                        type: string
+                        example: "Smart Casual / Semi-formal"
+                      outfits:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OutfitRecommendation'
+
+  /outfits/{id}/rate:
+    post:
+      summary: Đánh giá outfit gợi ý để AI học hỏi gu thời trang cá nhân
+      tags:
+        - AI Outfit Recommendation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  example: 5
+                feedback:
+                  type: string
+                  example: "Rất thích cách kết hợp màu này"
+                is_favorite:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Đã ghi nhận phản hồi và cập nhật model AI cá nhân hóa
+
+  # ==========================================================
+  # 4. SMART SHOPPING CHECK MODULE
+  # ==========================================================
+  /shopping/compatibility-check:
+    post:
+      summary: Đánh giá độ tương thích của món đồ dự định mua với tủ đồ hiện có
+      tags:
+        - Smart Shopping Check
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingCompatibilityCheckRequest'
+      responses:
+        '200':
+          description: Phân tích độ tương thích & khuyến nghị quyết định mua sắm
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/ShoppingCompatibilityCheckResponse'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+
+  /shopping/missing-items:
+    get:
+      summary: Xác định danh sách các món đồ thực sự còn thiếu trong tủ đồ
+      tags:
+        - Smart Shopping Check
+      responses:
+        '200':
+          description: Danh sách gợi ý các món đồ cơ bản cần bổ sung để tối ưu khả năng mix & match
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        recommended_item_type:
+                          type: string
+                          example: "Áo Blazer đen trơn"
+                        priority:
+                          type: string
+                          enum: [HIGH, MEDIUM, LOW]
+                          example: HIGH
+                        reason:
+                          type: string
+                          example: "Giúp tạo thêm 8 outfit công sở với các chân váy và quần tây hiện có."
+
+  # ==========================================================
+  # 5. GAMIFICATION & COLOR SCORE MODULE
+  # ==========================================================
+  /gamification/color-score:
+    post:
+      summary: Tính toán và chấm điểm phối màu (Color Harmony Score) cho outfit
+      tags:
+        - Gamification & Style Score
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - colors
+              properties:
+                colors:
+                  type: array
+                  items:
+                    type: string
+                  example: ["#FFFFFF", "#1E3A8A", "#8B5CF6"]
+                  description: Danh sách mã màu Hex của các món đồ trong outfit
+      responses:
+        '200':
+          description: Điểm số phối màu và phân tích quy tắc bánh xe màu sắc
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      score:
+                        type: number
+                        example: 9.2
+                      rule_applied:
+                        type: string
+                        example: "Quy tắc phối màu tương đồng (Analogous) & tỷ lệ 60-30-10"
+                      feedback:
+                        type: string
+                        example: "Sự kết hợp màu sắc thanh thoát, độ tương phản vừa đủ tạo điểm nhấn."
+
+  /gamification/challenges:
+    get:
+      summary: Lấy danh sách thử thách phối đồ theo chủ đề
+      tags:
+        - Gamification & Style Score
+      responses:
+        '200':
+          description: Danh sách thử thách
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        challenge_id:
+                          type: string
+                          example: "ch_earth_tone_2026"
+                        title:
+                          type: string
+                          example: "Thử thách Phối đồ Tone Đất (Earth Tone Challenge)"
+                        reward_badge:
+                          type: string
+                          example: "Master of Earth Tone"
+                        status:
+                          type: string
+                          enum: [AVAILABLE, IN_PROGRESS, COMPLETED]
+
+# ==========================================================
+# COMPONENTS & SCHEMAS
+# ==========================================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Nhập JWT Token theo định dạng: Bearer <token>"
+
+  responses:
+    400BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ (Validation Error)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardErrorResponse'
+
+    401Unauthorized:
+      description: Chưa xác thực hoặc Token không hợp lệ / hết hạn
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardErrorResponse'
+
+    404NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StandardErrorResponse'
+
+  schemas:
+    # Meta object
+    ResponseMeta:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-09-17T14:39:16Z"
+
+    # Standard Error Format
+    StandardErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        code:
+          type: integer
+          example: 400
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              example: "VALIDATION_ERROR"
+            message:
+              type: string
+              example: "Dữ liệu đầu vào không hợp lệ."
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: "category"
+                  issue:
+                    type: string
+                    example: "Trường loại trang phục không được bỏ trống."
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    # Auth schemas
+    AuthSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Thao tác thực hiện thành công."
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            expires_in:
+              type: integer
+              example: 86400
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                email:
+                  type: string
+                full_name:
+                  type: string
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        full_name:
+          type: string
+        preferred_styles:
+          type: array
+          items:
+            type: string
+          example: ["Thanh lịch", "Năng động", "Minimalism"]
+        color_preferences:
+          type: object
+          example: { "favorites": ["Navy", "White", "Beige"], "avoid": ["Neon Green"] }
+        budget_range:
+          type: object
+          example: { "min": 200000, "max": 1500000, "currency": "VND" }
+        body_measurements:
+          type: object
+          example: { "height": 170, "weight": 62, "body_shape": "Rectangle" }
+
+    StyleProfileUpdateInput:
+      type: object
+      properties:
+        preferred_styles:
+          type: array
+          items:
+            type: string
+        color_preferences:
+          type: object
+        budget_range:
+          type: object
+        body_measurements:
+          type: object
+
+    # Wardrobe Schemas
+    WardrobeItemInput:
+      type: object
+      required:
+        - name
+        - category_id
+        - image_url
+        - primary_color
+      properties:
+        name:
+          type: string
+          example: "Áo sơ mi lụa trắng"
+        category_id:
+          type: integer
+          example: 2
+        image_url:
+          type: string
+          example: "https://cdn.wearsy.app/wardrobe/shirt_01.jpg"
+        primary_color:
+          type: string
+          example: "Trắng"
+        sub_colors:
+          type: array
+          items:
+            type: string
+          example: ["Xám nhạt"]
+        style_tags:
+          type: array
+          items:
+            type: string
+          example: ["Công sở", "Thanh lịch"]
+        season:
+          type: string
+          enum: [ALL, SPRING, SUMMER, AUTUMN, WINTER]
+          default: ALL
+        purchase_price:
+          type: number
+          example: 350000
+
+    WardrobeItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "Áo sơ mi trắng"
+        category_id:
+          type: integer
+          example: 2
+        category_name:
+          type: string
+          example: "Áo sơ mi (Shirt)"
+        image_url:
+          type: string
+          example: "https://cdn.wearsy.app/wardrobe/shirt_01.jpg"
+        bg_removed_url:
+          type: string
+          example: "https://cdn.wearsy.app/wardrobe/shirt_01_nobg.png"
+        primary_color:
+          type: string
+          example: "Trắng"
+        sub_colors:
+          type: array
+          items:
+            type: string
+        style_tags:
+          type: array
+          items:
+            type: string
+        season:
+          type: string
+        purchase_price:
+          type: number
+        wear_count:
+          type: integer
+          example: 4
+        ai_processing_status:
+          type: string
+          example: "COMPLETED"
+        status:
+          type: string
+          example: "ACTIVE"
+        created_at:
+          type: string
+          format: date-time
+
+    AIImageAnalysisResult:
+      type: object
+      properties:
+        detected_category:
+          type: string
+          example: "Áo sơ mi"
+        category_id_matched:
+          type: integer
+          example: 2
+        primary_color:
+          type: string
+          example: "Trắng"
+        primary_color_hex:
+          type: string
+          example: "#FFFFFF"
+        sub_colors:
+          type: array
+          items:
+            type: string
+          example: ["Xanh navy sọc nhỏ"]
+        detected_styles:
+          type: array
+          items:
+            type: string
+          example: ["Smart Casual", "Office", "Elegant"]
+        material:
+          type: string
+          example: "Cotton lụa"
+        preview_image_url:
+          type: string
+          example: "https://cdn.wearsy.app/temp/ai_cropped_shirt.jpg"
+
+    # Outfit schemas
+    OutfitRecommendRequest:
+      type: object
+      required:
+        - occasion
+      properties:
+        occasion:
+          type: string
+          example: "Báo cáo đề tài học tập"
+        style_preference:
+          type: string
+          example: "Thanh lịch"
+        weather:
+          type: object
+          properties:
+            temperature:
+              type: number
+              example: 28
+            condition:
+              type: string
+              example: "Nắng nhẹ"
+        max_options:
+          type: integer
+          default: 2
+
+    OutfitRecommendation:
+      type: object
+      properties:
+        outfit_id:
+          type: string
+          example: "outfit_88219"
+        title:
+          type: string
+          example: "Trang phục Thanh lịch Báo cáo"
+        match_score:
+          type: number
+          example: 10.0
+        elegance_score:
+          type: number
+          example: 9.5
+        description:
+          type: string
+          example: "Thanh lịch, chỉnh chu và hoàn toàn phù hợp cho môi trường báo cáo."
+        requires_new_purchase:
+          type: boolean
+          example: false
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              item_id:
+                type: string
+                example: "item_01"
+              name:
+                type: string
+                example: "Áo thun trắng"
+              category:
+                type: string
+                example: "Top"
+              primary_color:
+                type: string
+                example: "Trắng"
+
+    # Shopping Schemas
+    ShoppingCompatibilityCheckRequest:
+      type: object
+      required:
+        - item_name
+        - price
+      properties:
+        item_name:
+          type: string
+          example: "Giày tây Da Oxford"
+        category:
+          type: string
+          example: "Shoes"
+        price:
+          type: number
+          example: 599000
+        image_url:
+          type: string
+          example: "https://cdn.wearsy.app/temp/shoes_oxford.jpg"
+        color:
+          type: string
+          example: "Nâu"
+
+    ShoppingCompatibilityCheckResponse:
+      type: object
+      properties:
+        prospective_item:
+          type: string
+          example: "Giày tây Da Oxford"
+        price:
+          type: number
+          example: 599000
+        compatibility_score:
+          type: string
+          example: "Cao"
+        matching_items_count:
+          type: integer
+          example: 12
+        budget_status:
+          type: string
+          example: "Phù hợp"
+        recommendation_status:
+          type: string
+          example: "ĐÁNG ĐỂ CÂN NHẮC"
+        recommendation_reason:
+          type: string
+          example: "Sản phẩm có thể kết hợp linh hoạt với 12 trang phục hiện có trong tủ đồ và phù hợp phong cách lịch lãm bạn đang theo đuổi."

@@ -1,0 +1,4 @@
+{
+  "typescript.tsdk": "wearsy-backend/node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "relative"
+}
