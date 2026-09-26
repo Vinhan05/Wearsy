@@ -74,7 +74,7 @@ class WardrobeItemModel {
   final double aiMatchScore;
   final int layerOrder;
 
-  const WardrobeItemModel({
+  WardrobeItemModel({
     required this.id,
     required this.name,
     required this.category,
@@ -84,7 +84,7 @@ class WardrobeItemModel {
     this.tags = const [],
     this.aiMatchScore = 9.0,
     int? layerOrder,
-  }) : layerOrder = layerOrder ?? 1;
+  }) : layerOrder = layerOrder ?? category.defaultLayerOrder;
 
   factory WardrobeItemModel.fromJson(Map<String, dynamic> json) {
     final cat = WardrobeCategory.values.firstWhere(

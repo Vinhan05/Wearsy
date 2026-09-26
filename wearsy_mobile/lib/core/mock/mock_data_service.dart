@@ -95,7 +95,7 @@ class MockDataService {
         category: WardrobeCategory.bottoms,
         color: 'Navy',
         brand: 'Levi\'s',
-        imageUrl: 'https://images.unsplash.com/photo-1542272454315-4c01d7abdf4a?q=80&w=600&auto=format&fit=crop',
+        imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=600&auto=format&fit=crop',
         tags: ['Casual', 'Weekend', 'Versatile'],
         aiMatchScore: 9.1,
       ),

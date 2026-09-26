@@ -48,6 +48,7 @@ class WardrobeProvider with ChangeNotifier {
       'test@wearsy.app',
       'admin.demo@wearsy.app',
       'user.test@gmail.com',
+      'nguyenvana@example.com',
     };
 
     if (testAccounts.contains(clean)) return true;
