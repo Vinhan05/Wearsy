@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../models/outfit_model.dart';
-import '../../../core/theme/app_theme.dart';
 import '../providers/outfit_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
+import 'ai_stylist_chat_screen.dart';
 import 'outfit_detail_screen.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 
 class OutfitScreen extends StatelessWidget {
   const OutfitScreen({super.key});
@@ -21,203 +23,149 @@ class _OutfitBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<ThemeProvider>(context); // Listen to Theme changes
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: AppTheme.lightBackground,
       body: SafeArea(
         child: Column(
           children: [
             _buildHeader(context),
-            _buildOccasionFilter(context),
-            Expanded(child: _buildOutfitList(context)),
+            const SizedBox(height: 8),
+            _buildFilterPills(context),
+            const SizedBox(height: 12),
+            Expanded(child: _buildGrid(context)),
           ],
         ),
       ),
-      floatingActionButton: _buildGenerateFAB(context),
+      floatingActionButton: _buildChatFAB(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'AI Outfit Gợi Ý',
-                style: GoogleFonts.outfit(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                'Phối đồ thông minh với Gemini AI',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: AppTheme.darkTextSecondary,
-                ),
-              ),
-            ],
+          Text(
+            'Phối đồ AI',
+            style: GoogleFonts.outfit(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.darkTextPrimary,
+            ),
           ),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: AppTheme.accentGradient,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.bolt_rounded,
-                    color: Colors.white, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  'Gemini AI',
-                  style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppTheme.primaryColor,
+            size: 26,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildOccasionFilter(BuildContext context) {
-    final provider = Provider.of<OutfitProvider>(context);
-    final occasions = [null, ...OutfitOccasion.values];
-
-    return SizedBox(
-      height: 48,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: occasions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final occ = occasions[index];
-          final isSelected = provider.selectedOccasion == occ;
-          final label = occ == null ? 'Tất cả' : occ.displayName;
-          final icon = occ == null ? '✨' : occ.icon;
-
-          return GestureDetector(
-            onTap: () => provider.setOccasion(occ),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                gradient: isSelected ? AppTheme.primaryGradient : null,
-                color: isSelected ? null : AppTheme.darkCard,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: isSelected
-                      ? Colors.transparent
-                      : Colors.white.withOpacity(0.1),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Text(icon, style: const TextStyle(fontSize: 14)),
-                  const SizedBox(width: 6),
-                  Text(
-                    label,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected
-                          ? Colors.white
-                          : AppTheme.darkTextSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+  Widget _buildFilterPills(BuildContext context) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          'Gần đây',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildOutfitList(BuildContext context) {
-    final provider = Provider.of<OutfitProvider>(context);
+  Widget _buildGrid(BuildContext context) {
+    final outfitProvider = Provider.of<OutfitProvider>(context);
+    final wardrobeProvider = Provider.of<WardrobeProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final outfits = outfitProvider.filteredOutfits;
 
-    if (provider.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppTheme.primaryLight),
-      );
-    }
-
-    if (provider.isGenerating) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(color: AppTheme.primaryLight),
-            const SizedBox(height: 20),
-            Text(
-              '✨ Gemini AI đang phân tích tủ đồ...',
-              style: GoogleFonts.outfit(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Đang tìm kiếm tổ hợp màu sắc tối ưu',
-              style: GoogleFonts.inter(
-                color: AppTheme.darkTextSecondary,
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    final outfits = provider.filteredOutfits;
     if (outfits.isEmpty) {
-      final isWardrobeEmpty = Provider.of<WardrobeProvider>(context).allItems.isEmpty;
       return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 84,
+                height: 84,
                 decoration: BoxDecoration(
-                  color: AppTheme.secondaryColor.withOpacity(0.12),
+                  color: AppTheme.lavenderCard,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppTheme.secondaryColor.withOpacity(0.25)),
                 ),
-                child: const Icon(Icons.auto_awesome_outlined,
-                    color: AppTheme.secondaryColor, size: 40),
+                child: Icon(
+                  Icons.checkroom_rounded,
+                  color: AppTheme.primaryLight,
+                  size: 44,
+                ),
               ),
               const SizedBox(height: 18),
               Text(
-                isWardrobeEmpty ? 'Chưa có outfit AI nào' : 'Chưa có outfit cho dịp này',
+                'Chưa Có Outfit AI Nào',
                 style: GoogleFonts.outfit(
-                    color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.darkTextPrimary,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
-                isWardrobeEmpty
-                    ? 'Tài khoản mới bắt đầu từ tủ đồ trống. Hãy thêm các món đồ yêu thích để AI tự động phối outfit!'
-                    : 'Nhấn "Tạo Outfit Mới" để AI phân tích và đề xuất set đồ phù hợp ngay!',
-                style: GoogleFonts.inter(
-                    color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.5),
+                'Tài khoản mới chưa lưu bộ phối đồ nào. Hãy trò chuyện với Wearsy AI Stylist để tạo outfit chuẩn phong cách của bạn!',
                 textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: AppTheme.darkTextSecondary,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                icon: const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
+                label: Text(
+                  'Tạo Outfit Mới Với AI',
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MultiProvider(
+                        providers: [
+                          ChangeNotifierProvider.value(value: outfitProvider),
+                          ChangeNotifierProvider.value(value: wardrobeProvider),
+                          ChangeNotifierProvider.value(value: authProvider),
+                        ],
+                        child: const AiStylistChatScreen(),
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -225,275 +173,159 @@ class _OutfitBody extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.72,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+      ),
       itemCount: outfits.length,
-      itemBuilder: (context, index) =>
-          _OutfitCard(outfit: outfits[index]),
+      itemBuilder: (context, index) {
+        final outfit = outfits[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider.value(value: outfitProvider),
+                    ChangeNotifierProvider.value(value: wardrobeProvider),
+                    ChangeNotifierProvider.value(value: authProvider),
+                  ],
+                  child: OutfitDetailScreen(outfit: outfit),
+                ),
+              ),
+            );
+          },
+          child: _OutfitCard(
+            title: outfit.name,
+            score: outfit.aiScore.toStringAsFixed(1),
+            imageUrl: outfit.coverImageUrl,
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildGenerateFAB(BuildContext context) {
-    final provider = Provider.of<OutfitProvider>(context);
-
-    return FloatingActionButton.extended(
-      onPressed: provider.isGenerating
-          ? null
-          : () {
-              final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
-              if (wardrobe.allItems.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Tủ đồ của bạn đang trống! Hãy thêm quần áo vào tủ để AI phối outfit nhé.',
-                      style: GoogleFonts.inter(),
-                    ),
-                    backgroundColor: AppTheme.warningColor,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildChatFAB(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16, right: 8),
+      child: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MultiProvider(
+                providers: [
+                  ChangeNotifierProvider.value(
+                    value: Provider.of<OutfitProvider>(context, listen: false),
                   ),
-                );
-                return;
-              }
-              provider.generateNewOutfit();
-            },
-      backgroundColor:
-          provider.isGenerating ? AppTheme.darkSurface : null,
-      icon: provider.isGenerating
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                  color: Colors.white, strokeWidth: 2),
-            )
-          : const Icon(Icons.auto_fix_high_rounded, color: Colors.white),
-      label: Text(
-        provider.isGenerating ? 'Đang tạo...' : 'Tạo Outfit Mới',
-        style: GoogleFonts.outfit(
-            color: Colors.white, fontWeight: FontWeight.bold),
+                  ChangeNotifierProvider.value(
+                    value: Provider.of<WardrobeProvider>(context, listen: false),
+                  ),
+                  ChangeNotifierProvider.value(
+                    value: Provider.of<AuthProvider>(context, listen: false),
+                  ),
+                ],
+                child: const AiStylistChatScreen(),
+              ),
+            ),
+          );
+        },
+        backgroundColor: AppTheme.primaryColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 4,
+        label: Text(
+          'Wearsy AI Chat',
+          style: GoogleFonts.outfit(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+        ),
       ),
-      extendedIconLabelSpacing: 8,
     );
   }
 }
 
 class _OutfitCard extends StatelessWidget {
-  final OutfitModel outfit;
-  const _OutfitCard({required this.outfit});
+  final String title;
+  final String score;
+  final String imageUrl;
+
+  const _OutfitCard({
+    required this.title,
+    required this.score,
+    required this.imageUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<OutfitProvider>(context, listen: false);
-
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChangeNotifierProvider.value(
-            value: provider,
-            child: OutfitDetailScreen(outfit: outfit),
-          ),
-        ),
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: AppTheme.darkCard,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.06)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: AppTheme.lavenderCard,
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           children: [
-            // Cover image
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
-              child: Stack(
+            // Top lavender header bar with Title & Score
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Image.network(
-                    outfit.coverImageUrl,
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      height: 180,
-                      color: AppTheme.darkSurface,
-                      child: const Icon(Icons.auto_awesome_rounded,
-                          color: AppTheme.primaryLight, size: 48),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.darkTextPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  // Gradient overlay
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            AppTheme.darkCard.withOpacity(0.95),
-                          ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF383350),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('✨ ', style: TextStyle(fontSize: 10)),
+                        Text(
+                          score,
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  // Occasion badge
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(outfit.occasion.icon,
-                              style: const TextStyle(fontSize: 14)),
-                          const SizedBox(width: 4),
-                          Text(
-                            outfit.occasion.displayName,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Favorite button
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Consumer<OutfitProvider>(
-                      builder: (_, prov, __) {
-                        final isFav = prov.outfits
-                            .firstWhere((o) => o.id == outfit.id,
-                                orElse: () => outfit)
-                            .isFavorite;
-                        return GestureDetector(
-                          onTap: () => prov.toggleFavorite(outfit.id),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              isFav
-                                  ? Icons.favorite_rounded
-                                  : Icons.favorite_border_rounded,
-                              color: isFav
-                                  ? AppTheme.accentColor
-                                  : Colors.white,
-                              size: 18,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  // AI score badge
-                  Positioned(
-                    bottom: 12,
-                    right: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.auto_awesome,
-                              color: Colors.white, size: 12),
-                          const SizedBox(width: 4),
-                          Text(
-                            outfit.aiScore.toStringAsFixed(1),
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            // Info section
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    outfit.name,
-                    style: GoogleFonts.outfit(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    outfit.aiReason,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: AppTheme.darkTextSecondary,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Icon(Icons.wb_sunny_outlined,
-                          color: AppTheme.warningColor, size: 14),
-                      const SizedBox(width: 4),
-                      Text(
-                        outfit.weatherSuitable.join(', '),
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: AppTheme.warningColor,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        '${outfit.itemIds.length} món',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: AppTheme.primaryLight,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.arrow_forward_ios_rounded,
-                          color: AppTheme.primaryLight, size: 12),
-                    ],
-                  ),
-                ],
+            // Image
+            Expanded(
+              child: Image.network(
+                imageUrl,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: AppTheme.lavenderCard,
+                  child: Icon(Icons.checkroom_rounded,
+                      color: AppTheme.primaryLight, size: 40),
+                ),
               ),
             ),
           ],
@@ -502,3 +334,4 @@ class _OutfitCard extends StatelessWidget {
     );
   }
 }
+

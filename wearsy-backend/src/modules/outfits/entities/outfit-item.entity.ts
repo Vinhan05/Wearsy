@@ -21,7 +21,9 @@ export class OutfitItemEntity {
   @Index()
   outfit_id: string;
 
-  @ManyToOne(() => OutfitEntity, (outfit) => outfit.items, { onDelete: 'CASCADE' })
+  @ManyToOne(() => OutfitEntity, (outfit) => outfit.items, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'outfit_id' })
   outfit: OutfitEntity;
 

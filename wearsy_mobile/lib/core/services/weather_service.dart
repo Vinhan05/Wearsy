@@ -205,7 +205,12 @@ class WeatherService {
           'Không khí se lạnh vùng $location, thời điểm tuyệt vời cho phong cách thu đông nhiều lớp (layering) sang trọng.';
       formula =
           'Áo len dệt kim cổ lọ + Áo khoác dạ dáng dài / Trench Coat + Quần âu ống suông + Giày da / Chelsea Boots';
-      items = ['Áo len cổ lọ', 'Áo dạ dáng dài', 'Quần âu ống suông', 'Boots da'];
+      items = [
+        'Áo len cổ lọ',
+        'Áo dạ dáng dài',
+        'Quần âu ống suông',
+        'Boots da'
+      ];
     }
     // Phân tích kịch bản mưa (WMO 51-65, 80-82, 95-99)
     else if ((code >= 51 && code <= 65) || (code >= 80 && code <= 99)) {
@@ -216,7 +221,12 @@ class WeatherService {
           'Thời tiết có mưa tại $location. Hãy ưu tiên trang phục nhanh khô, quần tối màu chống bẩn và mang theo ô/áo mưa.';
       formula =
           'Áo khoác gió trượt nước (Windbreaker) + Quần cropped tối màu + Sneaker da / Giày chống thấm';
-      items = ['Áo khoác gió', 'Quần cropped đen', 'Sneaker chống nước', 'Ô gấp'];
+      items = [
+        'Áo khoác gió',
+        'Quần cropped đen',
+        'Sneaker chống nước',
+        'Ô gấp'
+      ];
     }
     // Phân tích kịch bản nắng gắt (> 30°C - đặc trưng TP.HCM, Nha Trang ban ngày)
     else if (temp >= 31) {
@@ -238,7 +248,12 @@ class WeatherService {
           'Thời tiết $location hôm nay rất đẹp ($temp°C), hoàn hảo cho mọi phong cách dạo phố, công sở hoặc cà phê cuối tuần.';
       formula =
           'Áo thun cotton cao cấp + Áo sơ mi flannel/oversize khoác ngoài + Quần jeans slim-fit + Giày retro sneaker';
-      items = ['Áo thun cotton', 'Sơ mi khoác ngoài', 'Quần jeans', 'Retro sneaker'];
+      items = [
+        'Áo thun cotton',
+        'Sơ mi khoác ngoài',
+        'Quần jeans',
+        'Retro sneaker'
+      ];
     }
 
     return {

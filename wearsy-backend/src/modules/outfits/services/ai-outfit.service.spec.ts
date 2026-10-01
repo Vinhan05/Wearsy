@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { InternalServerErrorException } from '@nestjs/common';
-import {
-  AiOutfitService,
-  WardrobeItemDto,
-  RecommendedOutfitDto,
-} from './ai-outfit.service';
+import { AiOutfitService, WardrobeItemDto } from './ai-outfit.service';
 
 // Mock module @google/genai
 const mockGenerateContent = jest.fn();
@@ -83,10 +79,11 @@ describe('AiOutfitService', () => {
     });
 
     it('2. Trả về danh sách bộ outfit hợp lệ được AI gợi ý', async () => {
-      const mockAiResponse: RecommendedOutfitDto[] = [
+      const mockAiResponse = [
         {
           title: 'Trang phục Thuyết trình Thanh lịch',
           elegance_score: 9.5,
+          color_score: 9.0,
           ai_reasoning: 'Áo sơ mi kết hợp quần âu đen mang lại vẻ lịch sự.',
           item_ids: ['item-1', 'item-2', 'item-3'],
         },
@@ -137,10 +134,7 @@ describe('AiOutfitService', () => {
       );
 
       await expect(
-        service.generateOutfitRecommendations(
-          'Đi tiệc tối',
-          sampleWardrobe,
-        ),
+        service.generateOutfitRecommendations('Đi tiệc tối', sampleWardrobe),
       ).rejects.toThrow(InternalServerErrorException);
     });
   });

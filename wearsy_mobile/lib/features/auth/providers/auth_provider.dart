@@ -53,7 +53,8 @@ class AuthProvider with ChangeNotifier {
     _clearError();
 
     try {
-      final authData = await _authService.login(email: email, password: password);
+      final authData =
+          await _authService.login(email: email, password: password);
       _user = authData.user;
       _status = AuthStatus.authenticated;
       notifyListeners();
@@ -193,6 +194,11 @@ class AuthProvider with ChangeNotifier {
           email: _user!.email,
           fullName: fullName,
         );
+        await _authService.persistUserProfile(_user!);
+        await _authService.updateProfileOnServer(
+          fullName: fullName,
+          userEmail: _user!.email,
+        );
       }
       notifyListeners();
       return true;
@@ -201,6 +207,24 @@ class AuthProvider with ChangeNotifier {
       return false;
     } finally {
       _setLoading(false);
+    }
+  }
+
+  Future<bool> updateAvatar(String avatarPath) async {
+    try {
+      if (_user != null) {
+        _user = _user!.copyWith(avatarUrl: avatarPath);
+        await _authService.persistUserProfile(_user!);
+        await _authService.updateProfileOnServer(
+          avatarUrl: avatarPath,
+          userEmail: _user!.email,
+        );
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _setError('Cập nhật ảnh đại diện thất bại.');
+      return false;
     }
   }
 

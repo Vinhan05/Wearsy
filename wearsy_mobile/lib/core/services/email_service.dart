@@ -8,9 +8,18 @@ class EmailService {
   static const String _prefKeySmtpPassword = 'smtp_sender_password';
 
   // Default credentials (Brevo Relay)
-  static String senderEmail = 'baee6e001@smtp-brevo.com';
-  static String senderAppPassword = 'YOUR_BREVO_SMTP_KEY';
-  static String senderFrom = 'vo.thedan@outlook.com';
+  static String senderEmail = const String.fromEnvironment(
+    'SMTP_USER',
+    defaultValue: 'baee6e001@smtp-brevo.com',
+  );
+  static String senderAppPassword = const String.fromEnvironment(
+    'SMTP_PASSWORD',
+    defaultValue: '',
+  );
+  static String senderFrom = const String.fromEnvironment(
+    'SMTP_FROM',
+    defaultValue: 'vo.thedan@outlook.com',
+  );
   static String senderFromName = 'WEARSY Support';
 
   /// Khởi tạo và nạp cấu hình SMTP từ bộ nhớ máy (nếu có)
@@ -51,7 +60,8 @@ class EmailService {
   }
 
   /// Kiểm tra xem đã có cấu hình SMTP hay chưa
-  static bool get isConfigured => senderEmail.isNotEmpty && senderAppPassword.isNotEmpty;
+  static bool get isConfigured =>
+      senderEmail.isNotEmpty && senderAppPassword.isNotEmpty;
 
   /// Gửi email chứa mã OTP 6 số thật tới hộp thư người nhận
   static Future<EmailSendResult> sendOtpEmail({
@@ -82,7 +92,8 @@ class EmailService {
           : gmail(senderEmail, cleanPassword);
 
       // 2. Tạo nội dung email HTML cao cấp chuẩn WEARSY
-      final displayName = (userName != null && userName.isNotEmpty) ? userName : 'Bạn';
+      final displayName =
+          (userName != null && userName.isNotEmpty) ? userName : 'Bạn';
 
       final htmlContent = '''
 <!DOCTYPE html>
@@ -152,18 +163,23 @@ class EmailService {
         ..subject = 'WEARSY Verification Code'
         ..html = htmlContent;
 
-      developer.log('Sending OTP email to: $toEmail via $senderEmail', name: 'EmailService');
+      developer.log('Sending OTP email to: $toEmail via $senderEmail',
+          name: 'EmailService');
       final sendReport = await send(message, smtpServer);
-      developer.log('Email sent successfully: ${sendReport.toString()}', name: 'EmailService');
+      developer.log('Email sent successfully: ${sendReport.toString()}',
+          name: 'EmailService');
 
       return EmailSendResult(success: true);
     } on MailerException catch (e) {
-      developer.log('MailerException sending email: ${e.toString()}', name: 'EmailService');
+      developer.log('MailerException sending email: ${e.toString()}',
+          name: 'EmailService');
       String friendlyMsg = 'Không thể gửi email OTP.';
       for (var p in e.problems) {
         developer.log('Problem: ${p.code}: ${p.msg}', name: 'EmailService');
-        if (p.msg.contains('Username and Password not accepted') || p.msg.contains('BadCredentials')) {
-          friendlyMsg = 'Gmail hoặc Mật khẩu ứng dụng (App Password) không hợp lệ.';
+        if (p.msg.contains('Username and Password not accepted') ||
+            p.msg.contains('BadCredentials')) {
+          friendlyMsg =
+              'Gmail hoặc Mật khẩu ứng dụng (App Password) không hợp lệ.';
         }
       }
       return EmailSendResult(

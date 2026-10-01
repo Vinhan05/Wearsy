@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../../outfits/providers/outfit_provider.dart';
 import '../../outfits/screens/outfit_screen.dart';
 import '../../profile/screens/profile_screen.dart';
@@ -29,8 +30,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     });
   }
 
-  final List<Widget> _screens = [
-    const DashboardScreen(),
+  void _switchTab(int index) {
+    if (index >= 0 && index < 4 && mounted) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
+  }
+
+  List<Widget> get _screens => [
+    DashboardScreen(onSwitchTab: _switchTab),
     const WardrobeScreen(),
     const OutfitScreen(),
     const ProfileScreen(),
@@ -38,58 +47,123 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen to ThemeProvider so whole navigation shell & tabs react immediately
+    Provider.of<ThemeProvider>(context);
+
     return Scaffold(
+      backgroundColor: AppTheme.lightBackground,
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppTheme.darkCard,
-          border: Border(
-              top: BorderSide(color: Colors.white.withOpacity(0.08))),
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: AppTheme.primaryColor.withOpacity(0.08),
               blurRadius: 20,
-              offset: const Offset(0, -5),
+              offset: const Offset(0, -4),
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          backgroundColor: AppTheme.darkCard,
-          selectedItemColor: AppTheme.primaryLight,
-          unselectedItemColor: AppTheme.darkTextSecondary,
-          type: BottomNavigationBarType.fixed,
-          elevation: 0,
-          selectedFontSize: 12,
-          unselectedFontSize: 11,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view_rounded),
-              activeIcon: Icon(Icons.grid_view_rounded, size: 26),
-              label: 'Trang chủ',
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // 1. Trang chủ
+                _buildNavItem(
+                  index: 0,
+                  icon: Icons.home_rounded,
+                  label: 'Trang chủ',
+                ),
+                // 2. Tủ Đồ
+                _buildNavItem(
+                  index: 1,
+                  icon: Icons.checkroom_rounded,
+                  label: 'Tủ Đồ',
+                ),
+                // 3. Center Add (+) Button
+                GestureDetector(
+                  onTap: () {
+                    WardrobeScreen.showAddOptionsModal(context);
+                  },
+                  child: Container(
+                    width: 52,
+                    height: 52,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryColor.withOpacity(0.35),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.add_rounded,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
+                ),
+                // 4. Phối đồ AI
+                _buildNavItem(
+                  index: 2,
+                  icon: Icons.auto_awesome_rounded,
+                  label: 'Phối đồ AI',
+                ),
+                // 5. Hồ Sơ
+                _buildNavItem(
+                  index: 3,
+                  icon: Icons.person_rounded,
+                  label: 'Hồ Sơ',
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.checkroom_rounded),
-              activeIcon: Icon(Icons.checkroom_rounded, size: 26),
-              label: 'Tủ đồ',
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required String label,
+  }) {
+    final isSelected = _currentIndex == index;
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: isSelected ? AppTheme.primaryColor : AppTheme.darkTextSecondary.withOpacity(0.7),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.auto_awesome_rounded),
-              activeIcon: Icon(Icons.auto_awesome_rounded, size: 26),
-              label: 'AI Outfit',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded),
-              activeIcon: Icon(Icons.person_rounded, size: 26),
-              label: 'Hồ sơ',
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? AppTheme.primaryColor : AppTheme.darkTextSecondary.withOpacity(0.7),
+              ),
             ),
           ],
         ),

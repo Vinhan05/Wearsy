@@ -20,3 +20,14 @@
 *.log
 .DS_Store
 Thumbs.db
+
+# Environment & Secrets & Backups
+.env
+.env.*
+*.env
+*.backup
+*.bak
+*.secret
+*.key
+*.pem
+credentials.json

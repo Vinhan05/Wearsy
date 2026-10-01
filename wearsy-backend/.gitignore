@@ -14,5 +14,12 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 
-# Env
+# Env & Secrets & Backups
 .env
+.env.*
+*.env
+*.backup
+*.bak
+*.secret
+*.pem
+*.key

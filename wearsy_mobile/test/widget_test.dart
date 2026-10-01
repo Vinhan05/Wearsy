@@ -2,7 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wearsy_mobile/main.dart';
 
 void main() {
-  testWidgets('WearsyApp smoke test renders login screen', (WidgetTester tester) async {
+  testWidgets('WearsyApp smoke test renders login screen',
+      (WidgetTester tester) async {
     // Build WearsyApp and trigger a frame.
     await tester.pumpWidget(const WearsyApp());
     await tester.pump();

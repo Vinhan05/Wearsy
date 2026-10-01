@@ -22,6 +22,9 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   mailer: ^7.2.0
   image_picker: ^1.2.3
+  crypto: ^3.0.3
+  flutter_windowmanager_plus: ^1.1.1
+
 
 dev_dependencies:
   flutter_test:
