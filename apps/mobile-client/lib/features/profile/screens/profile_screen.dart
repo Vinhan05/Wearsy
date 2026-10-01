@@ -600,6 +600,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   );
 
+                  if (!context.mounted) return;
                   if (confirm != true) return;
 
                   try {
@@ -608,12 +609,11 @@ class ProfileScreen extends StatelessWidget {
                     await authProvider.logout();
                   } catch (_) {}
 
-                  if (context.mounted) {
-                    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-                      (route) => false,
-                    );
-                  }
+                  if (!context.mounted) return;
+                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                    (route) => false,
+                  );
                 },
                 child: Container(
                   width: double.infinity,

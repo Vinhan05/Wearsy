@@ -262,17 +262,17 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   Navigator.pop(sheetCtx);
                   final picker = ImagePicker();
                   final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+                  if (!mounted) return;
                   if (image != null) {
                     await Provider.of<AuthProvider>(context, listen: false).updateAvatar(image.path);
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('📸 Cập nhật ảnh đại diện thành công!', style: GoogleFonts.inter()),
-                          backgroundColor: AppTheme.primaryColor,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('📸 Cập nhật ảnh đại diện thành công!', style: GoogleFonts.inter()),
+                        backgroundColor: AppTheme.primaryColor,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
                   }
                 },
               ),
@@ -290,17 +290,17 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   Navigator.pop(sheetCtx);
                   final picker = ImagePicker();
                   final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+                  if (!mounted) return;
                   if (image != null) {
                     await Provider.of<AuthProvider>(context, listen: false).updateAvatar(image.path);
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('🖼️ Cập nhật ảnh đại diện thành công!', style: GoogleFonts.inter()),
-                          backgroundColor: AppTheme.primaryColor,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('🖼️ Cập nhật ảnh đại diện thành công!', style: GoogleFonts.inter()),
+                        backgroundColor: AppTheme.primaryColor,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
                   }
                 },
               ),

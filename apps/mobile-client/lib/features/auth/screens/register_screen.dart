@@ -335,6 +335,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               Provider.of<AuthProvider>(context, listen: false);
                           final res = await ap.sendOtpEmail(email,
                               fullName: _nameController.text.trim());
+                          if (!context.mounted) return;
                           if (res.success) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
