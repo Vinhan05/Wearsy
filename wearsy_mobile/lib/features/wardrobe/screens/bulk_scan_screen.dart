@@ -244,7 +244,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
         actions: [
           if (_scanResult != null)
             IconButton(
-              icon: const Icon(Icons.refresh_rounded,
+              icon: Icon(Icons.refresh_rounded,
                   color: AppTheme.primaryLight),
               onPressed: () => _pickImage(ImageSource.camera),
               tooltip: 'Chụp lại',
@@ -296,7 +296,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                     color: AppTheme.primaryColor.withOpacity(0.25),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.shelves,
                     color: AppTheme.primaryLight,
                     size: 40,
@@ -749,7 +749,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
         children: [
           Row(
             children: [
-              const Icon(Icons.insights_rounded,
+              Icon(Icons.insights_rounded,
                   color: AppTheme.primaryLight, size: 20),
               const SizedBox(width: 8),
               Text(
@@ -893,7 +893,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.edit_outlined,
+            icon: Icon(Icons.edit_outlined,
                 color: AppTheme.darkTextSecondary, size: 18),
             onPressed: () => _editItemDialog(item),
             tooltip: 'Sửa tên',

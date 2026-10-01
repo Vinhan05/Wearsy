@@ -182,7 +182,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.layers_rounded,
+                        Icon(Icons.layers_rounded,
                             color: AppTheme.primaryLight, size: 13),
                         const SizedBox(width: 4),
                         Text(
@@ -281,7 +281,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
             children: [
               Row(
                 children: [
-                  const Icon(Icons.touch_app_rounded,
+                  Icon(Icons.touch_app_rounded,
                       color: AppTheme.primaryLight, size: 16),
                   const SizedBox(width: 6),
                   Text(

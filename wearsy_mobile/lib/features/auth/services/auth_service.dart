@@ -25,66 +25,87 @@ class AuthService {
     scopes: ['email', 'profile'],
   );
 
-  /// Real Email & Password Login with generic authentication error (Security standard)
+  /// Real Email & Password Login with Backend Database API
+  /// Merge with local persistent profile so user's custom name, avatar, and VIP status are never lost
+  Future<UserModel> _mergeWithLocalSavedUser(UserModel newUser) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cleanEmail = newUser.email.trim().toLowerCase();
+      final savedJson = prefs.getString('saved_user_profile_$cleanEmail');
+      if (savedJson != null && savedJson.isNotEmpty) {
+        final decoded = jsonDecode(savedJson) as Map<String, dynamic>;
+        final savedUser = UserModel.fromJson(decoded);
+
+        final bestFullName = (newUser.fullName.isNotEmpty &&
+                newUser.fullName != 'Nguyễn Văn Demo' &&
+                !newUser.fullName.contains('@'))
+            ? newUser.fullName
+            : (savedUser.fullName.isNotEmpty
+                ? savedUser.fullName
+                : newUser.fullName);
+
+        final bestAvatar = newUser.avatarUrl ?? savedUser.avatarUrl;
+        final isVip = newUser.hasActiveVip ||
+            savedUser.hasActiveVip ||
+            newUser.isVip ||
+            savedUser.isVip;
+
+        DateTime? bestExpiry = newUser.vipExpiresAt;
+        if (savedUser.vipExpiresAt != null) {
+          if (bestExpiry == null ||
+              savedUser.vipExpiresAt!.isAfter(bestExpiry)) {
+            bestExpiry = savedUser.vipExpiresAt;
+          }
+        }
+
+        return newUser.copyWith(
+          fullName: bestFullName,
+          avatarUrl: bestAvatar,
+          isVip: isVip,
+          vipExpiresAt: bestExpiry,
+          preferredStyles: savedUser.preferredStyles.isNotEmpty
+              ? savedUser.preferredStyles
+              : newUser.preferredStyles,
+          bodyMeasurements:
+              savedUser.bodyMeasurements ?? newUser.bodyMeasurements,
+          budgetRange: savedUser.budgetRange ?? newUser.budgetRange,
+          colorPreferences:
+              savedUser.colorPreferences ?? newUser.colorPreferences,
+        );
+      }
+    } catch (_) {}
+    return newUser;
+  }
+
+  /// Real Email & Password Login with Backend Database API
   Future<AuthSuccessData> login({
     required String email,
     required String password,
+    String? fullName,
   }) async {
     final cleanEmail = email.trim().toLowerCase();
 
-    // 1. Kiểm tra tài khoản Demo (Bao gồm admin.demo, demo@wearsy.app, user.test,...)
-    if (_isDemoEmail(cleanEmail)) {
-      final prefs = await SharedPreferences.getInstance();
-      final customPwd = prefs.getString('user_pwd_$cleanEmail') ??
-          prefs.getString('reg_pwd_$cleanEmail');
-      final expectedPwd = customPwd ??
-          (cleanEmail == 'nguyenvana@example.com' ? '12345678' : '123456');
-      if (password != expectedPwd) {
-        throw ApiException(
-          statusCode: 401,
-          message:
-              'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
-        );
-      }
-      final defaultName = cleanEmail == 'demo@wearsy.app'
-          ? 'Nguyễn Văn Demo'
-          : _deriveNameFromEmail(cleanEmail);
-      final mockData = MockDataService.getMockAuthData(
-        email: cleanEmail,
-        fullName: defaultName,
-      );
-      final user = await _getSavedOrMockUser(cleanEmail, defaultName);
-      final authData = AuthSuccessData(
-        token: mockData.token,
-        expiresIn: mockData.expiresIn,
-        user: user,
-      );
-      await TokenStorage.saveSession(
-        token: authData.token,
-        userId: authData.user.id,
-        email: authData.user.email,
-        fullName: authData.user.fullName,
-      );
-      await Future.delayed(const Duration(milliseconds: 600));
-      return authData;
-    }
-
-    // 2. Thử đăng nhập qua Server Backend API
+    // Đăng nhập trực tiếp qua Server Backend API (PostgreSQL database)
     try {
       final response = await _apiClient.post(
         ApiConstants.login,
         body: {'email': cleanEmail, 'password': password},
       );
-      final authData = AuthSuccessData.fromJson(response);
+      final rawAuthData = AuthSuccessData.fromJson(response);
+      final mergedUser = await _mergeWithLocalSavedUser(rawAuthData.user);
       await TokenStorage.saveSession(
-        token: authData.token,
-        userId: authData.user.id,
-        email: authData.user.email,
-        fullName: authData.user.fullName,
+        token: rawAuthData.token,
+        userId: mergedUser.id,
+        email: mergedUser.email,
+        fullName: mergedUser.fullName,
       );
-      return authData;
+      await persistUserProfile(mergedUser);
+      return AuthSuccessData(
+        token: rawAuthData.token,
+        expiresIn: rawAuthData.expiresIn,
+        user: mergedUser,
+      );
     } on ApiException catch (e) {
-      // Nếu server trả về lỗi xác thực, luôn hiển thị thông báo chung để bảo mật
       if (e.statusCode == 401 || e.statusCode == 400 || e.statusCode == 403) {
         throw ApiException(
           statusCode: 401,
@@ -92,49 +113,13 @@ class AuthService {
               'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
         );
       }
-    } catch (_) {
-      // Backend offline hoặc endpoint chưa khả dụng
+      rethrow;
+    } catch (e) {
+      throw ApiException(
+        statusCode: 500,
+        message: 'Không thể kết nối đến máy chủ Backend. Vui lòng kiểm tra kết nối mạng và thử lại.',
+      );
     }
-
-    // 3. Fallback: Kiểm tra tài khoản đã đăng ký cục bộ trên thiết bị (Offline Mode)
-    final prefs = await SharedPreferences.getInstance();
-    final savedPwd = prefs.getString('user_pwd_$cleanEmail') ??
-        prefs.getString('reg_pwd_$cleanEmail');
-    if (savedPwd != null) {
-      if (savedPwd != password) {
-        throw ApiException(
-          statusCode: 401,
-          message:
-              'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
-        );
-      }
-      final savedName = prefs.getString('reg_name_$cleanEmail') ??
-          _deriveNameFromEmail(cleanEmail);
-      final mockData = MockDataService.getMockAuthData(
-        email: cleanEmail,
-        fullName: savedName,
-      );
-      final user = await _getSavedOrMockUser(cleanEmail, savedName);
-      final authData = AuthSuccessData(
-        token: mockData.token,
-        expiresIn: mockData.expiresIn,
-        user: user,
-      );
-      await TokenStorage.saveSession(
-        token: authData.token,
-        userId: authData.user.id,
-        email: cleanEmail,
-        fullName: savedName,
-      );
-      await Future.delayed(const Duration(milliseconds: 600));
-      return authData;
-    }
-
-    // Không tìm thấy tài khoản hoặc mật khẩu không chính xác
-    throw ApiException(
-      statusCode: 401,
-      message: 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
-    );
   }
 
   /// Real Google SSO Authentication with dynamic user profile extraction
@@ -151,18 +136,6 @@ class AuthService {
                 googleUser.displayName!.isNotEmpty)
             ? googleUser.displayName
             : _deriveNameFromEmail(googleUser.email);
-
-        final authData = MockDataService.getMockAuthData(
-          fullName: realName!,
-          email: realEmail,
-        );
-        await TokenStorage.saveSession(
-          token: 'google_sso_token_${googleUser.id}',
-          userId: authData.user.id,
-          email: realEmail,
-          fullName: realName,
-        );
-        return authData;
       }
     } catch (e) {
       // 2. Silent Sign In fallback
@@ -195,21 +168,40 @@ class AuthService {
     }
 
     // Default to selected Google Account (acondog468@gmail.com / A CON DOG)
-    final finalEmail = realEmail ?? 'acondog468@gmail.com';
-    final finalName = realName ?? 'A CON DOG';
+    final finalEmail = (realEmail ?? 'acondog468@gmail.com').trim().toLowerCase();
+    final finalName = (realName != null && realName.isNotEmpty) ? realName : 'A CON DOG';
 
-    final authData = MockDataService.getMockAuthData(
-      fullName: finalName,
-      email: finalEmail,
-    );
+    UserModel? serverUser;
+    String? serverToken;
+    try {
+      final res = await _apiClient.post(
+        ApiConstants.googleLogin,
+        body: {'email': finalEmail, 'full_name': finalName},
+      );
+      if (res is Map<String, dynamic> && res['user'] != null) {
+        serverUser = UserModel.fromJson(res['user'] as Map<String, dynamic>);
+        serverToken = res['token']?.toString();
+      }
+    } catch (_) {}
+
+    final baseUser = serverUser ?? await _getSavedOrMockUser(finalEmail, finalName);
+    final mergedUser = await _mergeWithLocalSavedUser(baseUser);
+
+    final token = serverToken ?? 'google_sso_token_${DateTime.now().millisecondsSinceEpoch}';
     await TokenStorage.saveSession(
-      token: 'google_sso_token_${DateTime.now().millisecondsSinceEpoch}',
-      userId: authData.user.id,
+      token: token,
+      userId: mergedUser.id,
       email: finalEmail,
-      fullName: finalName,
+      fullName: mergedUser.fullName,
     );
-    await Future.delayed(const Duration(milliseconds: 600));
-    return authData;
+    await persistUserProfile(mergedUser);
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    return AuthSuccessData(
+      token: token,
+      expiresIn: 86400,
+      user: mergedUser,
+    );
   }
 
   /// Real Facebook SSO Authentication
@@ -229,24 +221,43 @@ class AuthService {
       }
     } catch (_) {}
 
-    final finalEmail = realEmail ?? 'facebook.user@wearsy.app';
+    final finalEmail = (realEmail ?? 'facebook.user@wearsy.app').trim().toLowerCase();
     final finalName = realName ?? 'Trần Ngọc (Facebook User)';
 
-    final authData = MockDataService.getMockAuthData(
-      fullName: finalName,
-      email: finalEmail,
-    );
+    UserModel? serverUser;
+    String? serverToken;
+    try {
+      final res = await _apiClient.post(
+        ApiConstants.facebookLogin,
+        body: {'email': finalEmail, 'full_name': finalName},
+      );
+      if (res is Map<String, dynamic> && res['user'] != null) {
+        serverUser = UserModel.fromJson(res['user'] as Map<String, dynamic>);
+        serverToken = res['token']?.toString();
+      }
+    } catch (_) {}
+
+    final baseUser = serverUser ?? await _getSavedOrMockUser(finalEmail, finalName);
+    final mergedUser = await _mergeWithLocalSavedUser(baseUser);
+
+    final token = serverToken ?? 'facebook_sso_token_${DateTime.now().millisecondsSinceEpoch}';
     await TokenStorage.saveSession(
-      token: 'facebook_sso_token_${DateTime.now().millisecondsSinceEpoch}',
-      userId: authData.user.id,
+      token: token,
+      userId: mergedUser.id,
       email: finalEmail,
-      fullName: finalName,
+      fullName: mergedUser.fullName,
     );
-    await Future.delayed(const Duration(milliseconds: 600));
-    return authData;
+    await persistUserProfile(mergedUser);
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    return AuthSuccessData(
+      token: token,
+      expiresIn: 86400,
+      user: mergedUser,
+    );
   }
 
-  /// Real Registration
+  /// Real Registration via Backend Database API
   Future<AuthSuccessData> register({
     required String fullName,
     required String email,
@@ -256,65 +267,23 @@ class AuthService {
   }) async {
     final cleanEmail = email.trim().toLowerCase();
 
-    // Lưu thông tin đăng ký vào SharedPreferences để có thể đăng nhập offline
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('reg_pwd_$cleanEmail', password);
-      await prefs.setString('reg_name_$cleanEmail', fullName);
-      await prefs.setBool('is_new_account_$cleanEmail', true);
-      if (gender != null)
-        await prefs.setString('user_gender_$cleanEmail', gender);
-      if (birthDate != null)
-        await prefs.setString(
-            'user_birthdate_$cleanEmail', birthDate.toIso8601String());
-    } catch (_) {}
-
-    if (_isDemoEmail(cleanEmail)) {
-      final authData = MockDataService.getMockAuthData(
-        fullName: fullName,
-        email: cleanEmail,
-      );
-      await TokenStorage.saveSession(
-        token: authData.token,
-        userId: authData.user.id,
-        email: authData.user.email,
-        fullName: authData.user.fullName,
-      );
-      await Future.delayed(const Duration(milliseconds: 800));
-      return authData;
-    }
-
-    try {
-      final response = await _apiClient.post(
-        ApiConstants.register,
-        body: {
-          'full_name': fullName,
-          'email': cleanEmail,
-          'password': password,
-        },
-      );
-      final authData = AuthSuccessData.fromJson(response);
-      await TokenStorage.saveSession(
-        token: authData.token,
-        userId: authData.user.id,
-        email: authData.user.email,
-        fullName: authData.user.fullName,
-      );
-      return authData;
-    } catch (_) {
-      final authData = MockDataService.getMockAuthData(
-        fullName: fullName,
-        email: cleanEmail,
-      );
-      await TokenStorage.saveSession(
-        token: authData.token,
-        userId: authData.user.id,
-        email: authData.user.email,
-        fullName: authData.user.fullName,
-      );
-      await Future.delayed(const Duration(milliseconds: 800));
-      return authData;
-    }
+    final response = await _apiClient.post(
+      ApiConstants.register,
+      body: {
+        'full_name': fullName,
+        'email': cleanEmail,
+        'password': password,
+      },
+    );
+    final authData = AuthSuccessData.fromJson(response);
+    await TokenStorage.saveSession(
+      token: authData.token,
+      userId: authData.user.id,
+      email: authData.user.email,
+      fullName: authData.user.fullName,
+    );
+    await _persistUserProfile(authData.user);
+    return authData;
   }
 
   static final Map<String, _PendingOtp> _pendingOtps = {};
@@ -405,7 +374,9 @@ class AuthService {
         final user = UserModel.fromJson(decoded);
         return user.copyWith(
           email: cleanEmail,
-          fullName: fullName.isNotEmpty ? fullName : user.fullName,
+          fullName: (user.fullName.isNotEmpty && user.fullName != 'Nguyễn Văn Demo')
+              ? user.fullName
+              : (fullName.isNotEmpty ? fullName : user.fullName),
         );
       }
     } catch (_) {}
@@ -421,31 +392,31 @@ class AuthService {
     final cleanEmail = email.trim().toLowerCase();
     final fullName = await TokenStorage.getUserName() ?? 'Người Dùng WEARSY';
 
-    // 1. Kiểm tra xem đã có hồ sơ người dùng lưu trong SharedPreferences không
+    // 1. Luôn tải trực tiếp từ PostgreSQL Server Database trước để đảm bảo dữ liệu mới nhất
+    try {
+      final response = await _apiClient.get(
+        ApiConstants.profile,
+        queryParameters: {'email': cleanEmail},
+      );
+      if (response is Map<String, dynamic> && response['email'] != null) {
+        final serverUser = UserModel.fromJson(response);
+        final merged = await _mergeWithLocalSavedUser(serverUser);
+        await _persistUserProfile(merged);
+        return merged;
+      }
+    } catch (_) {}
+
+    // 2. Fallback nếu mất mạng hoặc offline: Đọc từ cache theo đúng email người dùng
     try {
       final prefs = await SharedPreferences.getInstance();
-      var savedUserJson = prefs.getString('saved_user_profile_$cleanEmail');
-      savedUserJson ??= prefs.getString('saved_user_profile_current');
+      final savedUserJson = prefs.getString('saved_user_profile_$cleanEmail');
       if (savedUserJson != null && savedUserJson.isNotEmpty) {
         final decoded = jsonDecode(savedUserJson) as Map<String, dynamic>;
         return UserModel.fromJson(decoded);
       }
     } catch (_) {}
 
-    final token = await TokenStorage.getToken();
-    if (token != null &&
-        (token.startsWith('mock_token') || token.contains('_sso_'))) {
-      return await _getSavedOrMockUser(cleanEmail, fullName);
-    }
-
-    try {
-      final response = await _apiClient.get(ApiConstants.profile);
-      final user = UserModel.fromJson(response);
-      await _persistUserProfile(user);
-      return user;
-    } catch (_) {
-      return await _getSavedOrMockUser(cleanEmail, fullName);
-    }
+    return await _getSavedOrMockUser(cleanEmail, fullName);
   }
 
   Future<UserModel> updateStyleProfile(Map<String, dynamic> styleData) async {
@@ -479,7 +450,27 @@ class AuthService {
     }
   }
 
-  Future<void> _persistUserProfile(UserModel user) async {
+  Future<void> updateProfileOnServer({String? fullName, String? avatarUrl, String? userEmail}) async {
+    try {
+      var email = userEmail ?? await TokenStorage.getUserEmail() ?? '';
+      if (email.isEmpty) {
+        final cached = await getProfile();
+        email = cached.email;
+      }
+      if (email.isNotEmpty) {
+        await _apiClient.put(
+          ApiConstants.profile,
+          body: {
+            'email': email.trim().toLowerCase(),
+            if (fullName != null) 'full_name': fullName.trim(),
+            if (avatarUrl != null) 'avatar_url': avatarUrl,
+          },
+        );
+      }
+    } catch (_) {}
+  }
+
+  Future<void> persistUserProfile(UserModel user) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final storedEmail = await TokenStorage.getUserEmail();
@@ -493,50 +484,51 @@ class AuthService {
     } catch (_) {}
   }
 
+  Future<void> _persistUserProfile(UserModel user) => persistUserProfile(user);
+
   Future<void> logout() async {
     try {
-      await _googleSignIn.signOut();
-      await FacebookAuth.instance.logOut();
+      await _googleSignIn.signOut().timeout(const Duration(seconds: 2));
+    } catch (_) {}
+    try {
+      await FacebookAuth.instance.logOut().timeout(const Duration(seconds: 2));
+    } catch (_) {}
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('saved_user_profile_current');
     } catch (_) {}
     await TokenStorage.clearSession();
   }
 
-  /// Đổi mật khẩu tài khoản
+  /// Đổi mật khẩu tài khoản qua Backend API
   Future<void> changePassword({
     required String oldPassword,
     required String newPassword,
   }) async {
-    final email = await TokenStorage.getUserEmail() ?? 'demo@wearsy.app';
-    final cleanEmail = email.trim().toLowerCase();
-    final prefs = await SharedPreferences.getInstance();
-
-    // 1. Kiểm tra mật khẩu cũ hiện tại
-    final savedPwd = prefs.getString('user_pwd_$cleanEmail') ??
-        prefs.getString('reg_pwd_$cleanEmail');
-    final currentExpectedPwd =
-        savedPwd ?? (_isDemoEmail(cleanEmail) ? '123456' : null);
-
-    if (currentExpectedPwd != null && currentExpectedPwd != oldPassword) {
-      throw ApiException(
-        statusCode: 400,
-        message: 'Mật khẩu hiện tại không chính xác. Vui lòng kiểm tra lại.',
-      );
-    }
-
-    // 2. Thử cập nhật lên Server Backend nếu có
+    // Gọi trực tiếp API Backend
     try {
-      await _apiClient.put(
-        '/users/change-password',
+      await _apiClient.post(
+        '/auth/change-password',
         body: {
           'old_password': oldPassword,
           'new_password': newPassword,
         },
       );
-    } catch (_) {}
-
-    // 3. Lưu mật khẩu mới vào SharedPreferences cục bộ
-    await prefs.setString('user_pwd_$cleanEmail', newPassword);
-    await prefs.setString('reg_pwd_$cleanEmail', newPassword);
+      await TokenStorage.clearSession();
+    } on ApiException catch (e) {
+      if (e.statusCode == 400 || e.statusCode == 401) {
+        throw ApiException(
+          statusCode: 400,
+          message: 'Mật khẩu hiện tại không chính xác. Vui lòng kiểm tra lại.',
+        );
+      }
+      rethrow;
+    } catch (_) {
+      throw ApiException(
+        statusCode: 500,
+        message: 'Không thể kết nối đến máy chủ Backend để đổi mật khẩu.',
+      );
+    }
   }
 
   /// Xóa tài khoản vĩnh viễn
@@ -544,12 +536,10 @@ class AuthService {
     final email = await TokenStorage.getUserEmail() ?? '';
     final cleanEmail = email.trim().toLowerCase();
 
-    // 1. Thử gọi API Backend nếu có
     try {
       await _apiClient.delete('/users/profile');
     } catch (_) {}
 
-    // 2. Dọn dẹp toàn bộ dữ liệu cục bộ của tài khoản này
     try {
       final prefs = await SharedPreferences.getInstance();
       if (cleanEmail.isNotEmpty) {
@@ -569,7 +559,7 @@ class AuthService {
     await TokenStorage.clearSession();
   }
 
-  /// Nâng cấp tài khoản VIP bằng mã Coupon (WEARSY -> 7 ngày VIP)
+  /// Nâng cấp tài khoản VIP bằng mã Coupon (WEARSY -> 1 năm VIP)
   Future<UserModel> upgradeVip({required String couponCode}) async {
     final cleanCoupon = couponCode.trim().toUpperCase();
 
@@ -577,44 +567,43 @@ class AuthService {
       throw ApiException(
         statusCode: 400,
         message:
-            'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 7 ngày VIP!',
+            'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 1 năm VIP!',
       );
     }
 
-    final email = await TokenStorage.getUserEmail() ?? 'demo@wearsy.app';
+    var email = await TokenStorage.getUserEmail() ?? '';
+    if (email.isEmpty) {
+      final cached = await getProfile();
+      email = cached.email;
+    }
     final cleanEmail = email.trim().toLowerCase();
 
-    // 1. Thử gọi API Backend nếu có kết nối
     try {
       final response = await _apiClient.post(
         ApiConstants.upgradeVip,
         body: {
           'coupon': cleanCoupon,
-          'email': cleanEmail,
+          if (cleanEmail.isNotEmpty) 'email': cleanEmail,
         },
       );
       if (response is Map<String, dynamic> && response['user'] != null) {
         final serverUser =
             UserModel.fromJson(response['user'] as Map<String, dynamic>);
-        await _persistUserProfile(serverUser);
-        return serverUser;
+        final merged = await _mergeWithLocalSavedUser(serverUser);
+        await _persistUserProfile(merged);
+        return merged;
       }
-    } catch (_) {
-      // Backend offline hoặc mock mode, tiếp tục xử lý cục bộ
-    }
+    } catch (_) {}
 
-    // 2. Xử lý nâng cấp VIP cục bộ (Offline / Fallback / Demo Mode)
     final currentUser = await getProfile();
     final now = DateTime.now();
-
-    // Nếu người dùng đã có VIP và còn hạn thì cộng dồn thêm 7 ngày
     DateTime baseTime = now;
     if (currentUser.vipExpiresAt != null &&
         currentUser.vipExpiresAt!.isAfter(now)) {
       baseTime = currentUser.vipExpiresAt!;
     }
 
-    final newVipExpiry = baseTime.add(const Duration(days: 7));
+    final newVipExpiry = baseTime.add(const Duration(days: 365));
     final updatedUser = currentUser.copyWith(
       isVip: true,
       vipExpiresAt: newVipExpiry,
@@ -632,15 +621,6 @@ class AuthService {
       _pendingOtps.clear();
       await TokenStorage.clearSession();
     } catch (_) {}
-  }
-
-  bool _isDemoEmail(String email) {
-    final lower = email.trim().toLowerCase();
-    return lower == 'demo@wearsy.app' ||
-        lower == 'nguyenvana@example.com' ||
-        lower.contains('demo') ||
-        lower.contains('test') ||
-        lower.contains('example.com');
   }
 
   String _deriveNameFromEmail(String email) {

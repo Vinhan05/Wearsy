@@ -73,6 +73,7 @@ class WardrobeItemModel {
   final List<String> tags;
   final double aiMatchScore;
   final int layerOrder;
+  final String wardrobeId;
 
   WardrobeItemModel({
     required this.id,
@@ -84,6 +85,7 @@ class WardrobeItemModel {
     this.tags = const [],
     this.aiMatchScore = 9.0,
     int? layerOrder,
+    this.wardrobeId = 'default',
   }) : layerOrder = layerOrder ?? category.defaultLayerOrder;
 
   factory WardrobeItemModel.fromJson(Map<String, dynamic> json) {
@@ -93,6 +95,9 @@ class WardrobeItemModel {
     );
     final rawOrder = json['layer_order'] ?? json['layerOrder'];
     final parsedOrder = (rawOrder as num?)?.toInt() ?? cat.defaultLayerOrder;
+    final wId = json['wardrobe_id']?.toString() ??
+        json['wardrobeId']?.toString() ??
+        'default';
 
     return WardrobeItemModel(
       id: json['id']?.toString() ?? '',
@@ -106,6 +111,7 @@ class WardrobeItemModel {
               [],
       aiMatchScore: (json['ai_match_score'] as num?)?.toDouble() ?? 9.0,
       layerOrder: parsedOrder,
+      wardrobeId: wId,
     );
   }
 
@@ -119,6 +125,7 @@ class WardrobeItemModel {
     List<String>? tags,
     double? aiMatchScore,
     int? layerOrder,
+    String? wardrobeId,
   }) {
     final effectiveCategory = category ?? this.category;
     return WardrobeItemModel(
@@ -131,6 +138,7 @@ class WardrobeItemModel {
       tags: tags ?? this.tags,
       aiMatchScore: aiMatchScore ?? this.aiMatchScore,
       layerOrder: layerOrder ?? this.layerOrder,
+      wardrobeId: wardrobeId ?? this.wardrobeId,
     );
   }
 
@@ -145,6 +153,8 @@ class WardrobeItemModel {
       'tags': tags,
       'ai_match_score': aiMatchScore,
       'layer_order': layerOrder,
+      'wardrobe_id': wardrobeId,
     };
   }
 }
+

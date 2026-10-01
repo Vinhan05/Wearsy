@@ -182,7 +182,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(
                           color: AppTheme.darkSurface,
-                          child: const Icon(
+                          child: Icon(
                             Icons.auto_awesome_rounded,
                             color: AppTheme.primaryLight,
                             size: 80,
@@ -247,7 +247,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.psychology_rounded,
+                        Icon(Icons.psychology_rounded,
                             color: AppTheme.primaryLight, size: 20),
                         const SizedBox(width: 8),
                         Text(
@@ -385,7 +385,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         backgroundColor: AppTheme.darkCard,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: const BorderSide(color: AppTheme.primaryLight),
+                          side: BorderSide(color: AppTheme.primaryLight),
                         ),
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -469,7 +469,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.checkroom_rounded,
+                    Icon(Icons.checkroom_rounded,
                         color: AppTheme.primaryLight, size: 20),
                     const SizedBox(width: 12),
                     Text('Món đồ #$id',

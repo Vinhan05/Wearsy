@@ -38,8 +38,15 @@ class ApiClient {
     return headers;
   }
 
-  Future<dynamic> get(String endpoint) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+  Future<dynamic> get(String endpoint, {Map<String, dynamic>? queryParameters}) async {
+    var url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+    if (queryParameters != null && queryParameters.isNotEmpty) {
+      final qp = Map<String, String>.from(url.queryParameters);
+      queryParameters.forEach((k, v) {
+        if (v != null) qp[k] = v.toString();
+      });
+      url = url.replace(queryParameters: qp);
+    }
     try {
       final headers = await _getHeaders();
       final response = await _client.get(url, headers: headers);
@@ -101,8 +108,15 @@ class ApiClient {
     }
   }
 
-  Future<dynamic> delete(String endpoint) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+  Future<dynamic> delete(String endpoint, {Map<String, dynamic>? queryParameters}) async {
+    var url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+    if (queryParameters != null && queryParameters.isNotEmpty) {
+      final qp = Map<String, String>.from(url.queryParameters);
+      queryParameters.forEach((k, v) {
+        if (v != null) qp[k] = v.toString();
+      });
+      url = url.replace(queryParameters: qp);
+    }
     try {
       final headers = await _getHeaders();
       final response = await _client.delete(url, headers: headers);

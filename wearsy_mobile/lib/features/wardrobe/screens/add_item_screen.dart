@@ -96,7 +96,8 @@ const List<_FashionSample> _defaultFashionPresets = [
 
 class AddItemScreen extends StatefulWidget {
   final String? initialMode; // 'camera' or 'gallery'
-  const AddItemScreen({super.key, this.initialMode});
+  final WardrobeItemModel? existingItem;
+  const AddItemScreen({super.key, this.initialMode, this.existingItem});
 
   @override
   State<AddItemScreen> createState() => _AddItemScreenState();
@@ -113,6 +114,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   TextEditingController _customTagController = TextEditingController();
 
   WardrobeCategory _selectedCategory = WardrobeCategory.tops;
+  String? _selectedWardrobeId;
   String _currentImageUrl = _defaultFashionPresets.first.imageUrl;
   String? _localImagePath;
   List<String> _galleryImages = [];
@@ -160,17 +162,36 @@ class _AddItemScreenState extends State<AddItemScreen>
   @override
   void initState() {
     super.initState();
-    final first = _defaultFashionPresets.first;
-    _nameController = TextEditingController(text: first.title);
-    _brandController = TextEditingController(text: first.brand);
-    _colorController = TextEditingController(text: first.color);
-    _customUrlController = TextEditingController();
-    _customTagController = TextEditingController();
-    _selectedCategory = first.category;
-    _selectedTags = List.from(first.tags);
-    _aiMatchScore = first.aiMatchScore;
-    _aiAnalysisReason =
-        'Chất liệu dệt kim tông be thanh lịch, tối ưu phối cùng quần âu hoặc jean.';
+    if (widget.existingItem != null) {
+      final item = widget.existingItem!;
+      _nameController = TextEditingController(text: item.name);
+      _brandController = TextEditingController(text: item.brand);
+      _colorController = TextEditingController(text: item.color);
+      _customUrlController = TextEditingController();
+      _customTagController = TextEditingController();
+      _selectedCategory = item.category;
+      _selectedWardrobeId = item.wardrobeId;
+      _selectedTags = List.from(item.tags);
+      _aiMatchScore = item.aiMatchScore;
+      if (item.imageUrl.startsWith('http')) {
+        _currentImageUrl = item.imageUrl;
+      } else {
+        _localImagePath = item.imageUrl;
+      }
+      _aiAnalysisReason = 'Thông tin món đồ đã được tải để chỉnh sửa.';
+    } else {
+      final first = _defaultFashionPresets.first;
+      _nameController = TextEditingController(text: first.title);
+      _brandController = TextEditingController(text: first.brand);
+      _colorController = TextEditingController(text: first.color);
+      _customUrlController = TextEditingController();
+      _customTagController = TextEditingController();
+      _selectedCategory = first.category;
+      _selectedTags = List.from(first.tags);
+      _aiMatchScore = first.aiMatchScore;
+      _aiAnalysisReason =
+          'Chất liệu dệt kim tông be thanh lịch, tối ưu phối cùng quần âu hoặc jean.';
+    }
 
     _scanAnimController = AnimationController(
       vsync: this,
@@ -443,7 +464,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             content: Row(
               children: [
                 const Icon(Icons.auto_awesome,
-                    color: AppTheme.primaryLight, size: 22),
+                    color: Color(0xFFFDCB6E), size: 22),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -461,7 +482,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                       Text(
                         '${result.category.icon} ${result.category.displayName} • Màu ${result.color} • ${result.name}',
                         style: GoogleFonts.inter(
-                            fontSize: 12, color: AppTheme.primaryLight),
+                            fontSize: 12, color: const Color(0xFFCFC3F5)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -470,12 +491,12 @@ class _AddItemScreenState extends State<AddItemScreen>
                 ),
               ],
             ),
-            backgroundColor: AppTheme.darkCard,
+            backgroundColor: const Color(0xFF2C2849),
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              side: const BorderSide(color: AppTheme.primaryLight, width: 1.2),
+              side: BorderSide(color: AppTheme.primaryColor, width: 1.2),
             ),
           ),
         );
@@ -509,7 +530,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               decoration: InputDecoration(
                 hintText: 'https://example.com/item.jpg',
                 hintStyle: const TextStyle(color: Colors.white38),
-                prefixIcon: const Icon(Icons.link_rounded,
+                prefixIcon: Icon(Icons.link_rounded,
                     color: AppTheme.primaryLight),
                 filled: true,
                 fillColor: AppTheme.darkSurface,
@@ -568,9 +589,15 @@ class _AddItemScreenState extends State<AddItemScreen>
     if (!_formKey.currentState!.validate()) return;
 
     final finalImageUrl = _localImagePath ?? _currentImageUrl;
+    final provider = Provider.of<WardrobeProvider>(context, listen: false);
+    final targetWardrobeId = _selectedWardrobeId ?? provider.activeWardrobeId;
+    final targetWardrobe = provider.collections.firstWhere(
+      (c) => c.id == targetWardrobeId,
+      orElse: () => provider.activeWardrobe,
+    );
 
     final newItem = WardrobeItemModel(
-      id: 'w_${DateTime.now().millisecondsSinceEpoch}',
+      id: widget.existingItem?.id ?? 'w_${DateTime.now().millisecondsSinceEpoch}',
       name: _nameController.text.trim(),
       category: _selectedCategory,
       color: _colorController.text.trim().isEmpty
@@ -582,10 +609,14 @@ class _AddItemScreenState extends State<AddItemScreen>
       imageUrl: finalImageUrl,
       tags: _selectedTags.isEmpty ? ['Casual'] : _selectedTags,
       aiMatchScore: double.parse(_aiMatchScore.toStringAsFixed(1)),
+      wardrobeId: targetWardrobeId,
     );
 
-    final provider = Provider.of<WardrobeProvider>(context, listen: false);
-    await provider.addItem(newItem);
+    if (widget.existingItem != null) {
+      await provider.updateItem(newItem);
+    } else {
+      await provider.addItem(newItem);
+    }
 
     if (mounted) {
       Navigator.pop(context);
@@ -597,7 +628,9 @@ class _AddItemScreenState extends State<AddItemScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '✨ Đã thêm "${newItem.name}" vào Tủ Đồ Kỹ Thuật Số!',
+                  widget.existingItem != null
+                      ? '✨ Đã cập nhật "${newItem.name}"!'
+                      : '✨ Đã thêm "${newItem.name}" vào ${targetWardrobe.icon} ${targetWardrobe.name}!',
                   style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -621,14 +654,32 @@ class _AddItemScreenState extends State<AddItemScreen>
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
-        title: Text(
-          'Thêm Đồ Vào Tủ',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+        backgroundColor: AppTheme.darkBackground,
+        iconTheme: IconThemeData(color: AppTheme.darkTextPrimary),
+        title: Row(
+          children: [
+            Icon(Icons.checkroom_rounded, color: AppTheme.primaryColor, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                _nameController.text.isNotEmpty
+                    ? _nameController.text
+                    : (widget.existingItem != null ? 'Chỉnh Sửa Món Đồ' : 'Thêm Đồ Vào Tủ'),
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: AppTheme.darkTextPrimary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
             tooltip: 'Quét lại bằng AI',
-            icon: const Icon(Icons.auto_awesome, color: AppTheme.primaryLight),
+            icon: Icon(Icons.auto_awesome, color: AppTheme.primaryLight),
             onPressed: _isAnalyzing ? null : () => _triggerAIScan(),
           ),
         ],
@@ -675,7 +726,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                           color: AppTheme.primaryColor.withOpacity(0.25),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.auto_awesome,
+                        child: Icon(Icons.auto_awesome,
                             color: AppTheme.primaryLight, size: 20),
                       ),
                       const SizedBox(width: 12),
@@ -690,22 +741,22 @@ class _AddItemScreenState extends State<AddItemScreen>
                                   style: GoogleFonts.outfit(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: AppTheme.darkTextPrimary,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 2),
+                                      horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: Colors.greenAccent.withOpacity(0.2),
+                                    color: AppTheme.primaryColor.withOpacity(0.15),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
                                     '${_selectedCategory.icon} ${_selectedCategory.displayName}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         fontSize: 11,
-                                        color: Colors.greenAccent,
+                                        color: AppTheme.primaryColor,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -738,6 +789,10 @@ class _AddItemScreenState extends State<AddItemScreen>
                     ? 'Vui lòng nhập tên món đồ'
                     : null,
               ),
+              const SizedBox(height: 16),
+
+              // Chọn Tủ đồ mục tiêu
+              _buildWardrobeSelector(),
               const SizedBox(height: 16),
 
               // Danh mục (Category)
@@ -816,7 +871,7 @@ class _AddItemScreenState extends State<AddItemScreen>
       style: GoogleFonts.outfit(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: AppTheme.darkTextPrimary,
       ),
     );
   }
@@ -853,7 +908,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 : CachedNetworkImage(
                     imageUrl: _currentImageUrl,
                     fit: BoxFit.cover,
-                    placeholder: (_, __) => const Center(
+                    placeholder: (_, __) => Center(
                       child: CircularProgressIndicator(
                           color: AppTheme.primaryLight),
                     ),
@@ -876,7 +931,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.auto_awesome,
+                    Icon(Icons.auto_awesome,
                         color: AppTheme.primaryLight, size: 14),
                     const SizedBox(width: 6),
                     Text(
@@ -937,7 +992,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                             spreadRadius: 4,
                           ),
                         ],
-                        gradient: const LinearGradient(
+                        gradient: LinearGradient(
                           colors: [
                             Colors.transparent,
                             AppTheme.primaryLight,
@@ -966,7 +1021,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(
+                      SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
@@ -1068,8 +1123,8 @@ class _AddItemScreenState extends State<AddItemScreen>
               label,
               style: GoogleFonts.inter(
                 fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.darkTextPrimary,
               ),
             ),
           ],
@@ -1097,7 +1152,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppTheme.darkTextPrimary,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -1160,7 +1215,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                             color: AppTheme.secondaryColor.withOpacity(0.15),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.add_photo_alternate_rounded,
+                          child: Icon(Icons.add_photo_alternate_rounded,
                               color: AppTheme.secondaryColor, size: 24),
                         ),
                         const SizedBox(height: 6),
@@ -1240,13 +1295,13 @@ class _AddItemScreenState extends State<AddItemScreen>
                           ),
                         ),
                         if (isSelected)
-                          const Positioned(
+                          Positioned(
                             top: 6,
                             right: 6,
                             child: CircleAvatar(
                               radius: 9,
                               backgroundColor: AppTheme.primaryColor,
-                              child: Icon(Icons.check,
+                              child: const Icon(Icons.check,
                                   size: 12, color: Colors.white),
                             ),
                           ),
@@ -1286,6 +1341,78 @@ class _AddItemScreenState extends State<AddItemScreen>
     return 'Ảnh mẫu';
   }
 
+  Widget _buildWardrobeSelector() {
+    final provider = Provider.of<WardrobeProvider>(context);
+    final collections = provider.collections;
+    final currentWardrobeId = _selectedWardrobeId ?? provider.activeWardrobeId;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.darkSurface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Lưu vào Tủ Đồ 🚪',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.darkTextPrimary,
+                ),
+              ),
+              Text(
+                '${collections.length} tủ đồ',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: AppTheme.primaryLight,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: collections.map((col) {
+              final isSelected = col.id == currentWardrobeId;
+              return ChoiceChip(
+                label: Text('${col.icon} ${col.name}'),
+                selected: isSelected,
+                showCheckmark: isSelected,
+                checkmarkColor: Colors.white,
+                selectedColor: AppTheme.primaryColor,
+                backgroundColor: Colors.white.withOpacity(0.05),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: isSelected
+                        ? Colors.transparent
+                        : Colors.white.withOpacity(0.15),
+                  ),
+                ),
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : AppTheme.darkTextPrimary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                ),
+                onSelected: (val) {
+                  if (val) setState(() => _selectedWardrobeId = col.id);
+                },
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCategorySelector() {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -1300,7 +1427,7 @@ class _AddItemScreenState extends State<AddItemScreen>
           Text(
             'Danh mục phân loại',
             style: GoogleFonts.inter(
-                fontSize: 12, color: AppTheme.darkTextSecondary),
+                fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.darkTextPrimary),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -1324,8 +1451,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                   ),
                 ),
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? Colors.white : AppTheme.darkTextPrimary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 ),
                 onSelected: (val) {
                   if (val) setState(() => _selectedCategory = cat);
@@ -1349,17 +1476,19 @@ class _AddItemScreenState extends State<AddItemScreen>
             padding: const EdgeInsets.only(right: 8.0),
             child: ActionChip(
               backgroundColor: isSelected
-                  ? AppTheme.primaryColor.withOpacity(0.3)
-                  : Colors.white.withOpacity(0.06),
+                  ? AppTheme.primaryColor
+                  : Colors.white,
               side: BorderSide(
-                color: isSelected ? AppTheme.primaryLight : Colors.white12,
+                color: isSelected
+                    ? AppTheme.primaryColor
+                    : Colors.grey.withOpacity(0.2),
               ),
               label: Text(
                 colorName,
                 style: GoogleFonts.inter(
                   fontSize: 12,
-                  color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? Colors.white : AppTheme.darkTextPrimary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 ),
               ),
               onPressed: () {
@@ -1393,8 +1522,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                 'Phong cách / Thẻ gợi ý',
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.darkTextSecondary,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.darkTextPrimary,
                 ),
               ),
               if (_selectedTags.isNotEmpty)
@@ -1442,8 +1571,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                   ),
                 ),
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? Colors.white : AppTheme.darkTextPrimary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 ),
                 onSelected: (val) {
                   setState(() {
@@ -1465,7 +1594,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             const SizedBox(height: 14),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.auto_awesome,
                   size: 13,
                   color: AppTheme.primaryLight,
@@ -1553,8 +1682,8 @@ class _AddItemScreenState extends State<AddItemScreen>
             ),
             child: Row(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 12, right: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 8),
                   child: Icon(
                     Icons.local_offer_outlined,
                     size: 18,
@@ -1564,7 +1693,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 Expanded(
                   child: TextField(
                     controller: _customTagController,
-                    style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                    style: GoogleFonts.inter(fontSize: 13, color: AppTheme.darkTextPrimary),
                     textInputAction: TextInputAction.done,
                     onSubmitted: (val) => _addCustomTag(val),
                     decoration: InputDecoration(
@@ -1573,7 +1702,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                           'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
                       hintStyle: GoogleFonts.inter(
                         fontSize: 12,
-                        color: AppTheme.darkTextSecondary.withOpacity(0.6),
+                        color: AppTheme.darkTextSecondary,
                       ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -1622,7 +1751,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               color: AppTheme.primaryColor.withOpacity(0.3),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.psychology_rounded,
+            child: Icon(Icons.psychology_rounded,
                 color: AppTheme.primaryLight, size: 28),
           ),
           const SizedBox(width: 14),
@@ -1635,7 +1764,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   style: GoogleFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: AppTheme.darkTextPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -1663,7 +1792,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   }) {
     return TextFormField(
       controller: controller,
-      style: GoogleFonts.inter(color: Colors.white),
+      style: GoogleFonts.inter(color: AppTheme.darkTextPrimary),
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
@@ -1681,7 +1810,7 @@ class _AddItemScreenState extends State<AddItemScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppTheme.primaryLight),
+          borderSide: BorderSide(color: AppTheme.primaryLight),
         ),
       ),
     );
@@ -1835,7 +1964,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                             border: Border.all(color: Colors.white, width: 4),
                           ),
                           child: Container(
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               gradient: AppTheme.primaryGradient,
                               shape: BoxShape.circle,
                             ),

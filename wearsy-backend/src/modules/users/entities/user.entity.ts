@@ -36,6 +36,9 @@ export class UserEntity {
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
+  @Column({ type: 'varchar', length: 512, nullable: true })
+  avatar_url: string | null;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
 

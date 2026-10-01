@@ -63,7 +63,7 @@ class SmartFitAiService {
     required String occasion,
     required String stylePreference,
   }) async {
-    final systemInstruction = '''
+    const systemInstruction = '''
 [SYSTEM ROLE]
 Bạn là Trợ lý AI Thời trang & Styling Cá nhân hóa cho ứng dụng WEARSY.
 Nhiệm vụ của bạn là chọn các món đồ từ tủ đồ kỹ thuật số của người dùng để tạo thành một bộ trang phục (Outfit) hoàn chỉnh, đồng thời phân tích sự tương thích về thẩm mỹ và đưa ra lời khuyên về độ vừa vặn/tôn dáng dựa trên số liệu thể trạng thực tế (Chiều cao & Cân nặng).

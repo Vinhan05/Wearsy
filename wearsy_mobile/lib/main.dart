@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 import 'core/services/email_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
-import 'features/auth/screens/login_screen.dart';
+import 'features/auth/screens/welcome_screen.dart';
 import 'features/home/screens/main_navigation_screen.dart';
 import 'features/outfits/providers/outfit_provider.dart';
 import 'features/wardrobe/providers/wardrobe_provider.dart';
+
+import 'core/theme/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,17 +25,22 @@ class WearsyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WardrobeProvider()),
         ChangeNotifierProvider(create: (_) => OutfitProvider()),
       ],
-      child: MaterialApp(
-        title: 'WEARSY - Smart Wardrobe',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.dark,
-        home: const AuthWrapperScreen(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'WEARSY - Smart Wardrobe',
+            debugShowCheckedModeBanner: false,
+            theme: themeProvider.currentThemeData,
+            darkTheme: themeProvider.currentThemeData,
+            themeMode: ThemeMode.light,
+            home: const AuthWrapperScreen(),
+          );
+        },
       ),
     );
   }
@@ -95,7 +102,7 @@ class AuthWrapperScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const SpinKitThreeBounce(
+                    SpinKitThreeBounce(
                       color: AppTheme.primaryLight,
                       size: 24,
                     ),
@@ -110,7 +117,7 @@ class AuthWrapperScreen extends StatelessWidget {
           return const MainNavigationScreen();
         }
 
-        return const LoginScreen();
+        return const WelcomeScreen();
       },
     );
   }

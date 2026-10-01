@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { WardrobeModule } from './modules/wardrobe/wardrobe.module';
 import { UsersModule } from './modules/users/users.module';
+import { ShoppingModule } from './modules/shopping/shopping.module';
+import { GamificationModule } from './modules/gamification/gamification.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -34,6 +36,8 @@ import { AppController } from './app.controller';
     CloudinaryModule,
     WardrobeModule,
     UsersModule,
+    ShoppingModule,
+    GamificationModule,
   ],
   providers: [
     {

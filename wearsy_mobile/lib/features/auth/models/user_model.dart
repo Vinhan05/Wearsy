@@ -2,6 +2,7 @@ class UserModel {
   final String id;
   final String email;
   final String fullName;
+  final String? avatarUrl;
   final List<String> preferredStyles;
   final Map<String, dynamic>? colorPreferences;
   final Map<String, dynamic>? budgetRange;
@@ -13,6 +14,7 @@ class UserModel {
     required this.id,
     required this.email,
     required this.fullName,
+    this.avatarUrl,
     this.preferredStyles = const [],
     this.colorPreferences,
     this.budgetRange,
@@ -53,6 +55,7 @@ class UserModel {
       email: json['email']?.toString() ?? '',
       fullName:
           json['full_name']?.toString() ?? json['fullName']?.toString() ?? '',
+      avatarUrl: json['avatar_url']?.toString() ?? json['avatarUrl']?.toString(),
       preferredStyles: (json['preferred_styles'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
@@ -76,6 +79,7 @@ class UserModel {
       'id': id,
       'email': email,
       'full_name': fullName,
+      'avatar_url': avatarUrl,
       'preferred_styles': preferredStyles,
       'color_preferences': colorPreferences,
       'budget_range': budgetRange,
@@ -89,6 +93,7 @@ class UserModel {
     String? id,
     String? email,
     String? fullName,
+    String? avatarUrl,
     List<String>? preferredStyles,
     Map<String, dynamic>? colorPreferences,
     Map<String, dynamic>? budgetRange,
@@ -100,6 +105,7 @@ class UserModel {
       id: id ?? this.id,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       preferredStyles: preferredStyles ?? this.preferredStyles,
       colorPreferences: colorPreferences ?? this.colorPreferences,
       budgetRange: budgetRange ?? this.budgetRange,

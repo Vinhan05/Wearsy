@@ -5,7 +5,6 @@ import 'package:wearsy_mobile/core/mock/mock_data_service.dart';
 import '../../../core/services/smart_fit_ai_service.dart';
 import '../../../core/storage/token_storage.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
-import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../models/outfit_model.dart';
 
 class OutfitProvider with ChangeNotifier {
@@ -43,20 +42,12 @@ class OutfitProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    List<OutfitModel> baseOutfits = [];
     List<OutfitModel> customOutfits = [];
 
     try {
       final prefs = await SharedPreferences.getInstance();
       final email =
           (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
-      final isDemo = WardrobeProvider.isPreSeededDemoAccount(email, prefs);
-
-      if (isDemo) {
-        baseOutfits = MockDataService.getMockOutfits();
-      } else {
-        baseOutfits = []; // Tài khoản tạo mới: ban đầu chưa có outfit
-      }
 
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
@@ -66,7 +57,7 @@ class OutfitProvider with ChangeNotifier {
           .toList();
     } catch (_) {}
 
-    _outfits = [...customOutfits, ...baseOutfits];
+    _outfits = customOutfits;
     _isLoading = false;
     notifyListeners();
   }
@@ -96,9 +87,7 @@ class OutfitProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final itemsToUse = (availableItems != null && availableItems.isNotEmpty)
-          ? availableItems
-          : MockDataService.getMockWardrobeItems();
+      final itemsToUse = availableItems ?? [];
 
       final occasionText =
           occasionPrompt ?? _selectedOccasion?.displayName ?? 'Công sở';
@@ -156,27 +145,46 @@ class OutfitProvider with ChangeNotifier {
     } catch (_) {}
   }
 
-  /// Lấy danh sách các món đồ cho một outfit (Tìm cả trong tủ đồ mẫu lẫn tủ đồ cá nhân người dùng)
+  /// Thêm outfit được tạo từ màn hình chat AI Stylist
+  Future<void> addOutfitFromChat(OutfitModel outfit) async {
+    // Tránh trùng lặp
+    if (_outfits.any((o) => o.id == outfit.id)) return;
+    _outfits = [outfit, ..._outfits];
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final storageKey = _getStorageKey(email);
+      final customJson = prefs.getStringList(storageKey) ?? [];
+      final updatedJson = [jsonEncode(outfit.toJson()), ...customJson];
+      await prefs.setStringList(storageKey, updatedJson);
+    } catch (e) {
+      debugPrint('[OutfitProvider] addOutfitFromChat error: $e');
+    }
+  }
+
+  /// Lấy danh sách các món đồ cho một outfit từ tủ đồ người dùng
   List<WardrobeItemModel> getItemsForOutfit(OutfitModel outfit,
       [List<WardrobeItemModel>? userWardrobeItems]) {
-    final allBase = MockDataService.getMockWardrobeItems();
-    final combined = [
-      if (userWardrobeItems != null) ...userWardrobeItems,
-      ...allBase,
-    ];
+    final available = userWardrobeItems ?? [];
+    final mockItems = MockDataService.getMockWardrobeItems();
 
     final matched = <WardrobeItemModel>[];
     for (final id in outfit.itemIds) {
-      final found = combined.firstWhere(
+      final found = available.firstWhere(
         (i) => i.id == id,
-        orElse: () => WardrobeItemModel(
-          id: id,
-          name: 'Món đồ phối #$id',
-          category: WardrobeCategory.tops,
-          color: 'Đen',
-          brand: 'WEARSY',
-          imageUrl:
-              'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=600&auto=format&fit=crop',
+        orElse: () => mockItems.firstWhere(
+          (m) => m.id == id,
+          orElse: () => WardrobeItemModel(
+            id: id,
+            name: 'Trang phục #$id',
+            category: WardrobeCategory.tops,
+            color: 'Đen',
+            brand: 'WEARSY',
+            imageUrl:
+                'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=600&auto=format&fit=crop',
+          ),
         ),
       );
       if (!matched.any((m) => m.id == found.id)) {

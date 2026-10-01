@@ -9,8 +9,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  // Security Headers (Helmet)
-  app.use(helmet());
+  // ── Security Headers (Helmet + HSTS) ──────────────────────────────────────
+  // HSTS: Buộc browser dùng HTTPS trong 1 năm khi deploy production
+  const isProduction = configService.get<string>('NODE_ENV') === 'production';
+  app.use(
+    helmet({
+      hsts: isProduction
+        ? { maxAge: 31536000, includeSubDomains: true, preload: true }
+        : false,
+      contentSecurityPolicy: isProduction ? undefined : false,
+    }),
+  );
 
   // CORS Security: Giới hạn domain truy cập
   const allowedOrigins = configService
@@ -23,7 +32,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  const prefix = configService.get<string>('API_PREFIX') || 'api/v1';
+  const prefix = configService.get<string>('API_PREFIX') || 'v1';
   app.setGlobalPrefix(prefix);
 
   // Validation Pipe Toàn Cục
@@ -32,8 +41,10 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
+      stopAtFirstError: false,
     }),
   );
+
 
   // Tự Động Sinh Tài Liệu Swagger API
   const swaggerConfig = new DocumentBuilder()

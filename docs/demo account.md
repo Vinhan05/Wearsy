@@ -1,105 +1,122 @@
-# SỔ TAY TÀI KHOẢN DEMO & HƯỚNG DẪN KIỂM THỬ THỰC TẾ - DỰ ÁN WEARSY
-## (Comprehensive Testing & Demonstration Handbook)
+# SỔ TAY HƯỚNG DẪN ĐĂNG KÝ & KIỂM THỬ TÀI KHOẢN THẬT 100% - DỰ ÁN WEARSY
+## (Production-Ready Live Authentication & Demonstration Handbook)
 
 > **Tên dự án:** WEARSY - Smart Wardrobe & AI Fashion Assistant  
 > **Mã môn:** EXE101 - FA26  
-> **Phiên bản:** v2.1.0 (Đồng bộ chuẩn 100% dữ liệu MockDataService, 13 Trang phục, 5 Outfits, Phân loại Giày/Phụ kiện & VIP Fashion Coupon)  
-> **Thời gian cập nhật:** 26/09/2026  
+> **Phiên bản:** v3.0.0 (100% Live Backend Database - PostgreSQL Cloud, Zero Mock Accounts, Live OTP & SSO)  
+> **Thời gian cập nhật:** 29/09/2026  
 
 ---
 
-## 1. Nguyên Tắc Cấp Phát Dữ Liệu & Phân Quyền Tủ Đồ
+## 1. Nguyên Tắc Hoạt Động & Cô Lập Dữ Liệu 100% Real Database
 
-Hệ thống WEARSY áp dụng cơ chế cô lập dữ liệu người dùng đa tầng (Data Isolation) nhằm đảm bảo tính chuyên nghiệp khi thuyết trình và trải nghiệm thực tế khi triển khai người dùng thật:
+Hệ thống WEARSY đã **xóa bỏ hoàn toàn cơ chế Mock Demo Account cục bộ**. Toàn bộ tài khoản, mật khẩu, tủ đồ và outfit đều được quản lý trực tiếp trên hệ cơ sở dữ liệu **PostgreSQL Database** thông qua NestJS Backend API:
 
-1. ⭐️ **Tài khoản được cấp để test/demo (`demo@wearsy.app`, `test@wearsy.app`...):**
-   - Được nạp sẵn **13 trang phục thời trang mẫu** phân bố đồng đều trên **6 danh mục** và **5 bộ Outfit AI hoàn chỉnh**.
-   - Phục vụ ban giám khảo chấm đồ án, test chức năng phối đồ, lọc danh mục, xem chi tiết món đồ ngay lập tức mà không cần tốn thời gian chụp ảnh nạp từng món đồ.
-2. 🆕 **Tài khoản tạo mới (Đăng ký qua form OTP hoặc Đăng nhập Google/Facebook SSO):**
-   - Khởi tạo với **TỦ ĐỒ TRẮNG HOÀN TOÀN (0 món đồ, 0 outfit)**.
-   - Thống kê trang chủ hiển thị `0 Tủ Đồ` - `0 AI Outfit`.
-   - Giao diện Tủ đồ & Phối đồ hiển thị Empty State chào mừng tinh tế kèm nút bấm **"+ Thêm đồ đầu tiên"** để người dùng tự do số hóa trang phục thực tế của mình.
-   - Mọi trang phục người dùng tự thêm sẽ được lưu trữ độc lập theo tài khoản (`custom_wardrobe_items_$email`), không bị rò rỉ sang tài khoản khác.
+1. 🔐 **Bảo mật & Mã hóa mật khẩu:**
+   - Mật khẩu người dùng được băm (hash) bằng thuật toán chuẩn **bcrypt** trên máy chủ.
+   - Không lưu trữ mật khẩu dạng plain-text trên thiết bị hay cơ sở dữ liệu.
+   - Cơ chế cấp phát token **JWT (JSON Web Token)** chuẩn xác thực OAuth2 / Bearer Token.
 
----
-
-## 2. Thông Tin Tài Khoản Được Cấp Để Test
-
-### 2.1. Tài Khoản Demo Chính (Khuyên Dùng Cho Thuyết Trình / Báo Cáo)
-
-| Trường Thông Tin | Dữ Liệu Thật Trong Ứng Dụng |
-| :--- | :--- |
-| **Email đăng nhập** | `demo@wearsy.app` |
-| **Mật khẩu** | `123456` |
-| **Họ và Tên** | **Nguyễn Văn Demo** |
-| **Chế độ vận hành** | Hỗ trợ 100% Offline (Không cần Backend/Internet) lẫn Online |
-| **Thống kê trang chủ** | **13 Món đồ** • **5 Bộ Outfit AI** • **9.5/10 Điểm màu sắc** |
-| **Hồ sơ phong cách** | • **Phong cách ưa thích:** Thanh lịch, Minimalism, Công sở<br>• **Tông màu yêu thích:** Trắng, Đen, Xanh Navy, Beige, Xám<br>• **Tông màu tránh:** Vàng, Đỏ<br>• **Ngân sách:** 300.000 đ – 2.000.000 đ<br>• **Số đo thể hình:** Cao 172cm, Nặng 65kg, Ngực 92cm, Eo 78cm, Mông 94cm |
-
-### 2.2. Tài Khoản Test Dự Phòng
-
-| Email Test | Mật Khẩu | Mục Đích Sử Dụng | Dữ Liệu Khởi Tạo |
-| :--- | :--- | :--- | :--- |
-| `test@wearsy.app` | `123456` | Kiểm tra luồng Đăng nhập / Đăng xuất | 13 món đồ + 5 outfits |
-| `admin.demo@wearsy.app` | `123456` | Thử nghiệm kịch bản quản trị | 13 món đồ + 5 outfits |
-| `user.test@gmail.com` | `123456` | Kiểm tra tài khoản test đuôi Gmail | 13 món đồ + 5 outfits |
-
-> 📌 **Lưu ý bảo mật (Brute-force Protection & Anti-User Enumeration):**
-> - Khi nhập sai tài khoản hoặc mật khẩu, hệ thống **luôn trả về thông báo lỗi chung duy nhất**: `Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.`
-> - **Khóa nút đăng nhập:** Sai 5 lần liên tiếp sẽ tự khóa trong **1 phút**; sai 10 lần liên tiếp khóa trong **5 phút** kèm đồng hồ đếm ngược trực tiếp trên nút.
+2. 🆕 **Trải nghiệm khởi tạo tài khoản mới 100%:**
+   - Khi người dùng đăng ký tài khoản mới hoặc đăng nhập Google/Facebook SSO:
+   - Hệ thống tạo hồ sơ người dùng mới trong cơ sở dữ liệu.
+   - Tủ đồ khởi đầu là **TỦ ĐỒ TRẮNG HOÀN TOÀN (0 món đồ, 0 outfit)** để người dùng tự do tải lên và phân loại trang phục thực tế của bản thân.
+   - Mọi trang phục và outfit của mỗi tài khoản đều được phân tách và bảo mật riêng biệt theo User ID.
 
 ---
 
-## 3. Chi Tiết Dữ Liệu 13 Trang Phục Mẫu Sẵn Có (Wardrobe Items)
+## 2. Hướng Dẫn Đăng Ký & Đăng Nhập Tài Khoản Thật
 
-Tủ đồ của tài khoản demo bao gồm **13 món đồ chuẩn hóa** phân theo 6 danh mục:
-
-| ID | Tên Món Đồ | Danh Mục (Category) | Màu Sắc | Thương Hiệu | Điểm AI | Thẻ Tag (Styles) |
-| :---: | :--- | :--- | :--- | :--- | :---: | :--- |
-| `w001` | **Áo Sơ Mi Lụa Trắng** | 👕 Áo (Tops) | Trắng | Zara | 9.2 | Formal, Smart Casual, Công sở |
-| `w002` | **Quần Tây Slim Fit Đen** | 👖 Quần (Bottoms) | Đen | H&M | 9.5 | Formal, Versatile |
-| `w003` | **Áo Blazer Beige** | 🧥 Áo khoác (Outerwear) | Be | Mango | 8.8 | Smart Casual, Business |
-| `w004` | **Giày Oxford Da Nâu** | 👟 Giày (Shoes) | Nâu | Clarks | 9.0 | Formal, Classic |
-| `w005` | **T-Shirt Cotton Xám** | 👕 Áo (Tops) | Xám | Uniqlo | 8.5 | Casual, Minimalist, Daily |
-| `w006` | **Quần Jeans Navy Slim** | 👖 Quần (Bottoms) | Navy | Levi's | 9.1 | Casual, Weekend, Versatile |
-| `w007` | **Áo Polo Trắng** | 👕 Áo (Tops) | Trắng | Lacoste | 8.7 | Smart Casual, Sport |
-| `w008` | **Sneaker Trắng Clean** | 👟 Giày (Shoes) | Trắng | Nike | 9.3 | Casual, Street, Sport |
-| `w009` | **Đồng Hồ Dây Da** | 👜 Phụ kiện (Accessories) | Nâu/Vàng | Fossil | 9.4 | Classic, Formal, Elegant |
-| `w010` | **Áo Khoác Denim** | 🧥 Áo khoác (Outerwear) | Xanh denim | Pull & Bear | 8.6 | Casual, Street, Weekend |
-| `w011` | **Quần Short Khaki Be Nam** | 👖 Quần (Bottoms) | Be | Uniqlo | 8.9 | Casual, Summer, Dạo phố |
-| `w012` | **Balo Da Nam Minimalist** | 👜 Phụ kiện (Accessories) | Đen | Bellroy | 8.8 | Minimalist, Daily, Công sở |
-| `w013` | **Đầm Lụa Midi Dự Tiệc** | 👗 Váy (Dresses) | Đỏ Ruby | Zara | 9.6 | Dự tiệc, Quyến rũ, Sang trọng |
+### 2.1. Đăng Ký Tài Khoản Mới Thật Qua Form Đăng Ký & OTP Email
+1. Tại màn hình Đăng nhập ứng dụng, bấm **"Đăng ký ngay"**.
+2. Nhập các thông tin:
+   - **Họ và tên:** Tên thật của bạn (ví dụ: *Võ Thế Đan*, *Nguyễn Thị Mai*).
+   - **Email:** Email cá nhân thật (Gmail, Outlook, FPT Edu...) để nhận mã OTP.
+   - **Mật khẩu:** Tối thiểu 8 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số (ví dụ: `Wearsy2026`).
+3. Bấm **"ĐĂNG KÝ"**: Hệ thống máy chủ backend gửi mã OTP 6 số qua hệ thống email Brevo SMTP Relay (`smtp-relay.brevo.com`).
+4. Nhập mã 6 chữ số để kích hoạt tài khoản và đăng nhập ngay vào ứng dụng.
 
 ---
 
-## 4. Chi Tiết 5 Bộ Trang Phục AI Phối Sẵn (AI Outfits)
-
-Hệ thống AI Gemini tích hợp sẵn 5 bộ outfit gợi ý theo ngữ cảnh thời tiết và sự kiện:
-
-| Mã | Tên Bộ Outfit | Hoàn Cảnh (Occasion) | Điểm Phối | Các Món Đồ Kết Hợp | Lập Luận Phối Đồ Của AI (AI Reasoning) |
-| :---: | :--- | :--- | :---: | :--- | :--- |
-| `o001` | **Business Casual Lịch Lãm Nam** | Công sở (Work) | **9.5** | Sơ mi trắng (`w001`) + Quần tây đen (`w002`) + Blazer beige (`w003`) + Giày Oxford (`w004`) | Áo sơ mi trắng kết hợp quần tây đen tạo phong cách công sở chỉn chu. Áo blazer màu be khoác ngoài mang đến vẻ lịch lãm và chuyên nghiệp. |
-| `o002` | **Weekend Casual Nam Năng Động** | Dạo phố (Casual) | **9.1** | T-shirt xám (`w005`) + Jeans navy (`w006`) + Sneaker trắng (`w008`) | T-shirt xám đơn giản tinh tế đi cùng quần jeans navy slim fit. Đôi sneaker trắng vừa tạo điểm nhấn vừa thoải mái vận động cả ngày. |
-| `o003` | **Smart Casual Thuyết Trình Nam** | Trang trọng (Formal) | **9.3** | Polo trắng (`w007`) + Quần tây đen (`w002`) + Đồng hồ dây da (`w009`) | Áo polo trắng lịch sự không quá cứng nhắc, phối cùng quần tây đen chỉn chu và điểm nhấn đồng hồ dây da nâu cuốn hút. |
-| `o004` | **Street Style Denim Nam Cực Chất** | Đi chơi (Casual) | **8.8** | Áo khoác denim (`w010`) + T-shirt xám (`w005`) + Jeans navy (`w006`) + Sneaker trắng (`w008`) | Áo khoác denim nam layering cùng T-shirt xám và quần jeans navy. Combo phối màu xanh & xám nam tính chuẩn phong cách dạo phố. |
-| `o005` | **Summer Date Night Nam Thanh Lịch** | Hẹn hò (Evening) | **9.6** | Sơ mi trắng (`w001`) + Short khaki be (`w011`) + Sneaker trắng (`w008`) + Balo da (`w012`) | Áo sơ mi trắng lụa nam xắn tay nhẹ kết hợp quần short khaki be thoáng mát. Giày sneaker trắng cùng balo da tạo diện mạo trẻ trung, cuốn hút. |
+### 2.2. Đăng Nhập Một Chạm Nhanh Bằng Google SSO
+1. Tại màn hình Đăng nhập, bấm nút **"Đăng nhập nhanh bằng Google"**.
+2. Chọn tài khoản Google có sẵn trên điện thoại / Emulator.
+3. Ứng dụng tự động lấy thông tin tên, email và đăng nhập tức thì.
 
 ---
 
-## 5. Tính Năng Nâng Cấp VIP Fashion & Mã Coupon "WEARSY"
+### 2.3. Cơ Chế Chống Tấn Công Dò Mật Khẩu (Brute-force Protection)
+- **Thông báo lỗi chung bảo mật:** Khi email hoặc mật khẩu không chính xác, hệ thống luôn trả về: `Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.`
+- **Client Rate Limiting:** Sai 5 lần liên tiếp sẽ tạm khóa nút 1 phút; sai 10 lần liên tiếp khóa 5 phút kèm đồng hồ đếm ngược trực tiếp.
+- **Server Rate Limiting (NestJS Throttler):** Tối đa 10 lượt đăng nhập/phút trên mỗi IP để ngăn chặn tấn công tự động.
+
+---
+
+## 3. Các Tính Năng Người Dùng Trải Nghiệm Thực Tế
+
+### 3.1. Số Hóa Tủ Đồ Cá Nhân (Digital Wardrobe)
+- Người dùng có thể nhấn nút **"+ Thêm đồ"** hoặc **"Chụp ảnh trang phục"**.
+- Hệ thống hỗ trợ tách nền tự động qua **Cloudinary AI Computer Vision** (`bvxcghig`), phân loại tự động vào 6 danh mục chính:
+  - 👕 **Áo (Tops):** Áo sơ mi, T-shirt, Polo, Áo len...
+  - 👖 **Quần (Bottoms):** Quần tây, Jeans, Short, Kaki...
+  - 🧥 **Áo khoác (Outerwear):** Blazer, Denim Jacket, Bomber, Cardigan...
+  - 👟 **Giày (Shoes):** Sneaker, Oxford, Loafers, Boots...
+  - 👗 **Váy/Đầm (Dresses):** Đầm liền, Chân váy, Maxi...
+  - 👜 **Phụ kiện (Accessories):** Thắt lưng, Đồng hồ, Túi xách, Balo...
+
+---
+
+## 4. Gợi Ý Phối Đồ Tự Động Bằng AI (Gemini Flash AI Engine)
+
+Khi người dùng đã có các món đồ trong tủ đồ:
+- Nhấn **"Tạo Outfit Mới Bằng AI"** tại Dashboard hoặc tab **Outfits**.
+- AI Gemini sẽ phân tích theo ngữ cảnh thời tiết thực tế (OpenWeather API), số đo hình thể (Smart Fit) và quy tắc bánh xe màu sắc để phối các set đồ phù hợp cho từng hoàn cảnh:
+  - 🏢 **Công sở (Work / Office)**
+  - ☕️ **Dạo phố (Casual / Weekend)**
+  - 🎩 **Trang trọng (Formal / Event)**
+  - 🍷 **Hẹn hò (Evening / Date Night)**
+  - 🏃‍♂️ **Thể thao & Du lịch (Active / Travel)**
+
+---
+
+## 5. Tính Năng Điểm Màu Sắc (Color Score) & Gamification
+
+Hệ thống phân tích màu sắc thời trang chuẩn quốc tế:
+
+- **Điểm hài hòa màu sắc (Color Harmony Score):** `9.5/10` (Xuất sắc).
+- **Quy tắc phối màu áp dụng:** Quy tắc tỷ lệ vàng 60-30-10 & Phối màu tương đồng (Analogous).
+- **Phân tích mùa cá nhân (Personal Season):** 
+  - *Xuân Ấm Áp (Spring Warm)*: Tươi sáng, rực rỡ, tone ấm.
+  - *Hạ Dịu Dàng (Summer Cool)*: Pastel, thanh nhã, tone lạnh.
+  - *Thu Trầm Ấm (Autumn Deep)*: Tone đất, vintage, ấm áp.
+  - *Đông Sắc Nét (Winter Vivid)*: Tương phản cao, sang trọng, sắc sảo.
+- **Thử thách phối màu (Color Challenges):** Nhiệm vụ thử thách hàng tuần nhận huy hiệu và điểm thưởng thời trang.
+
+---
+
+## 6. Tính Năng Smart Shopping (Kiểm Tra Độ Tương Thích Trang Phục Mới)
+
+Người dùng có thể thử tính năng kiểm tra món đồ định mua trước khi chi tiền:
+1. Nhấn nút **Smart Shopping** trên Dashboard hoặc từ tab Mua sắm.
+2. Tải ảnh hoặc chọn sản phẩm thời trang mới.
+3. AI sẽ tự động phân tích độ tương thích (Compatibility Score %) với **13 món đồ hiện có trong tủ đồ**, gợi ý ngay các cách mix & match khả thi.
+
+---
+
+## 7. Tính Năng Nâng Cấp VIP Fashion & Mã Coupon "WEARSY"
 
 Ứng dụng cung cấp gói hội viên đặc quyền **VIP Fashion** dành cho các tín đồ thời trang:
 
-### 5.1. Vị trí nút nâng cấp & Cách kích hoạt VIP:
+### 7.1. Vị trí nút nâng cấp & Cách kích hoạt VIP:
 1. Mở màn hình **Hồ sơ (Profile)**: Bấm trực tiếp vào nút **Nâng Cấp VIP** trên thẻ cá nhân (hoặc chuyển sang tab **Liên kết**).
 2. Tại trường nhập **Mã giảm giá / Coupon**, nhập mã:
    ```text
    WEARSY
    ```
    *(Không phân biệt chữ hoa, chữ thường: `WEARSY` hoặc `wearsy`)*.
-3. Bấm **Áp Dụng Coupon**: Hệ thống sẽ nâng cấp tài khoản lên **VIP Fashion 7 Ngày hoàn toàn miễn phí**, tự động hiển thị huy hiệu sao vàng VIP trên hồ sơ cá nhân.
+3. Bấm **Áp Dụng Coupon**: Hệ thống sẽ nâng cấp tài khoản lên **VIP Fashion 1 Năm hoàn toàn miễn phí**, tự động hiển thị huy hiệu sao vàng VIP trên hồ sơ cá nhân.
 
-### 5.2. Bảng So Sánh Đặc Quyền: VIP Fashion vs Tài Khoản Thường
+### 7.2. Bảng So Sánh Đặc Quyền: VIP Fashion vs Tài Khoản Thường
 
 | Tiêu Chí So Sánh | Tài Khoản Thường (Free) | Tài Khoản VIP Fashion (⭐ VIP) |
 | :--- | :---: | :---: |
@@ -112,7 +129,7 @@ Hệ thống AI Gemini tích hợp sẵn 5 bộ outfit gợi ý theo ngữ cản
 
 ---
 
-## 6. Hướng Dẫn Kiểm Thử Tài Khoản Mới Thật 100%
+## 8. Hướng Dẫn Kiểm Thử Tài Khoản Mới Thật 100%
 
 ### Cách 1: Đăng Ký Tài Khoản & Nhận Mã OTP Thật Qua Email (Brevo SMTP Relay)
 1. Tại màn hình Đăng nhập, bấm **"Đăng ký ngay"**.
@@ -128,7 +145,7 @@ Hệ thống AI Gemini tích hợp sẵn 5 bộ outfit gợi ý theo ngữ cản
 
 ---
 
-## 7. Dịch Vụ Lưu Trữ & AI Tách Nền Ảnh Trang Phục (Cloudinary)
+## 9. Dịch Vụ Lưu Trữ & AI Tách Nền Ảnh Trang Phục (Cloudinary)
 
 - **Môi trường Cloud:** Cloudinary Product Environment (`bvxcghig`).
 - **Công nghệ Computer Vision:** Tự động nhận diện biên trang phục, bóc tách hoàn toàn nền hậu cảnh (`background_removal: 'cloudinary_ai'`) và lưu ảnh định dạng PNG trong suốt.
@@ -136,4 +153,13 @@ Hệ thống AI Gemini tích hợp sẵn 5 bộ outfit gợi ý theo ngữ cản
 
 ---
 
+## 10. Đặt Lại Trạng Thái Mặc Định (Reset to Default)
+
+Nếu trong quá trình test bạn đã thêm/xóa nhiều món đồ hoặc outfit và muốn đưa ứng dụng về lại trạng thái chuẩn demo ban đầu:
+- Vào **Hồ sơ (Profile)** → **Cài đặt tài khoản** → Chọn **Khôi phục dữ liệu demo mặc định**.
+- Hoặc đăng xuất và đăng nhập lại bằng tài khoản `demo@wearsy.app`.
+
+---
+
 *Tài liệu nội bộ dự án EXE101 - WEARSY Mobile System.*
+

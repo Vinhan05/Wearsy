@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/services/smart_fit_engine.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/outfit_model.dart';
+import '../../color_score/screens/color_score_screen.dart';
 
 class SmartFitCard extends StatelessWidget {
   final OutfitModel outfit;
@@ -68,7 +69,7 @@ class SmartFitCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [AppTheme.primaryColor, AppTheme.accentColor],
                   ),
                   borderRadius: BorderRadius.circular(12),
@@ -143,6 +144,16 @@ class SmartFitCard extends StatelessWidget {
                   score: outfit.colorScore,
                   icon: Icons.palette_rounded,
                   color: AppTheme.accentColor,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ColorScoreScreen(
+                          initialTitle: 'Phối Màu: ${outfit.name}',
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -195,38 +206,46 @@ class SmartFitCard extends StatelessWidget {
     required double score,
     required IconData icon,
     required Color color,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 16),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.inter(color: Colors.white54, fontSize: 10),
-                ),
-                Text(
-                  '${score.toStringAsFixed(1)} / 10',
-                  style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.withOpacity(0.2)),
           ),
-        ],
+          child: Row(
+            children: [
+              Icon(icon, color: color, size: 16),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: GoogleFonts.inter(color: Colors.white54, fontSize: 10),
+                    ),
+                    Text(
+                      '${score.toStringAsFixed(1)} / 10',
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

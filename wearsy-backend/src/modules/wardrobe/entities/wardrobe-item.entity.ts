@@ -36,6 +36,18 @@ export class WardrobeItemEntity {
   @Column({ type: 'jsonb', default: [] })
   style_tags: string[];
 
+  @Column({ type: 'varchar', length: 100, default: '' })
+  brand: string;
+
+  @Column({ type: 'varchar', length: 100, default: 'default' })
+  wardrobe_id: string;
+
+  @Column({ type: 'decimal', precision: 4, scale: 1, default: 9.0 })
+  ai_match_score: number;
+
+  @Column({ type: 'int', default: 1 })
+  layer_order: number;
+
   @Column({ type: 'varchar', length: 30, default: 'ALL' })
   season: string;
 

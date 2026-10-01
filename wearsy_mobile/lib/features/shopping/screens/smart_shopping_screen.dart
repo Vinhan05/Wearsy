@@ -276,7 +276,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                     hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
                     filled: true,
                     fillColor: AppTheme.darkSurface,
-                    prefixIcon: const Icon(Icons.link_rounded,
+                    prefixIcon: Icon(Icons.link_rounded,
                         color: AppTheme.primaryLight, size: 20),
                     suffixIcon: _urlController.text.isNotEmpty
                         ? IconButton(
@@ -317,7 +317,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.content_paste_rounded,
+                      Icon(Icons.content_paste_rounded,
                           color: AppTheme.primaryLight, size: 18),
                       const SizedBox(width: 6),
                       Text(
@@ -381,7 +381,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               color: AppTheme.primaryColor.withOpacity(0.12),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.shopping_bag_outlined,
               size: 38,
               color: AppTheme.primaryLight,
@@ -406,62 +406,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               height: 1.45,
             ),
           ),
-          const SizedBox(height: 20),
-          Text(
-            'Hoặc thử nhanh sản phẩm mẫu:',
-            style: GoogleFonts.inter(
-              color: Colors.white70,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            alignment: WrapAlignment.center,
-            children: [
-              _buildSampleChip(
-                label: 'Quạt cầm tay M2',
-                icon: Icons.mode_fan_off_outlined,
-                url:
-                    'https://shopee.vn/Qu%E1%BA%A1t-c%E1%BA%A7m-tay-M2-N68-5000mAh-di-%C4%91%E1%BB%99ng-c%C3%B3-th%E1%BB%83-s%E1%BA%A1c-gi%C3%B3-m%E1%BA%A1nh-100-t%E1%BB%91c-%C4%91%E1%BB%99-turbo-ph%E1%BA%A3n-l%E1%BB%B1c-m%C3%A0n-h%C3%ACnh-hi%E1%BB%83n-th%E1%BB%8B-pin-T%E1%BA%B7ng-d%C3%A2y-%C4%91eo-i.1025928968.24143959658?extraParams=%7B%22display_model_id%22%3A258164864058%2C%22model_selection_logic%22%3A3%7D',
-              ),
-              _buildSampleChip(
-                label: 'Sweater Shark',
-                icon: Icons.checkroom,
-                url:
-                    'https://shopee.vn/%C3%81o-Sweater-Frozen-Shark-N%E1%BB%89-N%E1%BB%89-B%C3%B4ng-Cotton-100-Unisex-Local-Brand-i.564687320.26261149077?extraParams=%7B%22display_modACel_id%22%3A217850061955%2C%22model_selection_logic%22%3A3%7D',
-              ),
-              _buildSampleChip(
-                label: 'Áo 3 lỗ Cotton',
-                icon: Icons.dry_cleaning,
-                url:
-                    'https://shopee.vn/%C3%81o-3-l%E1%BB%97-nam-Cotton-tr%E1%BA%AFng-tr%C6%A1n-m%E1%BA%B7c-l%C3%B3t-trong-s%C6%A1-mi-trung-ni%C3%AAn-LEDATEX-%C4%91%C3%B4ng-xu%C3%A2n-cao-c%E1%BA%A5p-LOTNAM-i.317269974.7756281788?extraParams=%7B%22display_model_id%22%3A73305385054%2C%22model_selection_logic%22%3A3%7D',
-              ),
-            ],
-          ),
         ],
-      ),
-    );
-  }
 
-  Widget _buildSampleChip({
-    required String label,
-    required IconData icon,
-    required String url,
-  }) {
-    return ActionChip(
-      avatar: Icon(icon, size: 14, color: AppTheme.primaryLight),
-      label: Text(label,
-          style: const TextStyle(fontSize: 12, color: Colors.white)),
-      backgroundColor: Colors.white.withOpacity(0.06),
-      side: BorderSide(color: Colors.white.withOpacity(0.12)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      onPressed: () {
-        _urlController.text = url;
-        _runAnalysis(url);
-      },
+      ),
     );
   }
 
@@ -476,7 +423,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
       ),
       child: Column(
         children: [
-          const SizedBox(
+          SizedBox(
             width: 45,
             height: 45,
             child: CircularProgressIndicator(
@@ -523,101 +470,132 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: SizedBox(
-                  width: 90,
-                  height: 100,
-                  child: CachedNetworkImage(
-                    imageUrl: prod.imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(
-                      color: AppTheme.darkSurface,
-                      child: const Center(
-                        child: SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppTheme.primaryLight,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: SizedBox(
+                      width: 90,
+                      height: 100,
+                      child: CachedNetworkImage(
+                        imageUrl: prod.imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(
+                          color: AppTheme.darkSurface,
+                          child: Center(
+                            child: SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppTheme.primaryLight,
+                              ),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (_, __, ___) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppTheme.primaryColor.withOpacity(0.35),
+                                const Color(0xFFFF6B6B).withOpacity(0.25),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              _getCategoryIcon(prod.category, prod.title),
+                              color: AppTheme.primaryLight,
+                              size: 38,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    errorWidget: (_, __, ___) => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppTheme.primaryColor.withOpacity(0.35),
-                            const Color(0xFFFF6B6B).withOpacity(0.25),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF6B6B).withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            prod.platform,
+                            style: GoogleFonts.inter(
+                              color: const Color(0xFFFF6B6B),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          _getCategoryIcon(prod.category, prod.title),
-                          color: AppTheme.primaryLight,
-                          size: 38,
+                        const SizedBox(height: 6),
+                        Text(
+                          prod.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 4),
+                        Text(
+                          currencyFormatter.format(prod.price),
+                          style: GoogleFonts.outfit(
+                            color: const Color(0xFF10AC84),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Màu: ${prod.color} • ${prod.category.displayName}',
+                          style: GoogleFonts.inter(
+                            color: AppTheme.darkTextSecondary,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFF6B6B).withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        prod.platform,
-                        style: GoogleFonts.inter(
-                          color: const Color(0xFFFF6B6B),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                        ),
-                      ),
+              const SizedBox(height: 12),
+              // ── Edit button ──
+              SizedBox(
+                width: double.infinity,
+                height: 36,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.primaryLight,
+                    side: BorderSide(
+                        color: AppTheme.primaryLight.withOpacity(0.5)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  icon: const Icon(Icons.edit_rounded, size: 15),
+                  label: Text(
+                    'Sửa thông tin sản phẩm',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      prod.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      currencyFormatter.format(prod.price),
-                      style: GoogleFonts.outfit(
-                        color: const Color(0xFF10AC84),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Màu: ${prod.color} • ${prod.category.displayName}',
-                      style: GoogleFonts.inter(
-                        color: AppTheme.darkTextSecondary,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
+                  ),
+                  onPressed: () => _showEditProductBottomSheet(prod),
                 ),
               ),
             ],
@@ -895,7 +873,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
       children: [
         Row(
           children: [
-            const Icon(Icons.style_rounded, color: AppTheme.primaryLight, size: 20),
+            Icon(Icons.style_rounded, color: AppTheme.primaryLight, size: 20),
             const SizedBox(width: 8),
             Text(
               'Gợi Ý Phối Đồ Ngay Với Tủ Của Bạn',
@@ -1018,7 +996,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                 fit: BoxFit.cover,
                 placeholder: (_, __) => Container(
                   color: AppTheme.darkSurface,
-                  child: const Center(
+                  child: Center(
                     child: SizedBox(
                       width: 16,
                       height: 16,
@@ -1074,6 +1052,300 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
     );
   }
 
+  void _showEditProductBottomSheet(ProspectiveProduct product) {
+    final titleCtrl = TextEditingController(text: product.title);
+    final colorCtrl = TextEditingController(text: product.color);
+    final brandCtrl = TextEditingController(text: product.brand);
+    WardrobeCategory selectedCategory = product.category;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF1A1030),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 4),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.edit_rounded,
+                            color: AppTheme.primaryLight, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Sửa Thông Tin Sản Phẩm',
+                              style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Điều chỉnh để AI phân tích chính xác hơn',
+                              style: GoogleFonts.inter(
+                                color: Colors.white54,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded,
+                            color: Colors.white38),
+                        onPressed: () => Navigator.pop(sheetCtx),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(color: Colors.white12, height: 1),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Tên sản phẩm
+                      _buildEditField(
+                        controller: titleCtrl,
+                        label: 'Tên sản phẩm',
+                        icon: Icons.shopping_bag_outlined,
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 12),
+
+                      Row(
+                        children: [
+                          // Màu sắc
+                          Expanded(
+                            child: _buildEditField(
+                              controller: colorCtrl,
+                              label: 'Màu sắc',
+                              icon: Icons.palette_outlined,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Thương hiệu
+                          Expanded(
+                            child: _buildEditField(
+                              controller: brandCtrl,
+                              label: 'Thương hiệu',
+                              icon: Icons.local_offer_outlined,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Danh mục
+                      Text(
+                        'Danh mục',
+                        style: GoogleFonts.inter(
+                          color: Colors.white70,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: WardrobeCategory.values.map((cat) {
+                          final isSelected = cat == selectedCategory;
+                          return GestureDetector(
+                            onTap: () =>
+                                setSheetState(() => selectedCategory = cat),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppTheme.primaryColor.withOpacity(0.3)
+                                    : Colors.white.withOpacity(0.06),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? AppTheme.primaryLight
+                                      : Colors.white.withOpacity(0.12),
+                                  width: isSelected ? 1.5 : 1,
+                                ),
+                              ),
+                              child: Text(
+                                cat.displayName,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: isSelected
+                                      ? AppTheme.primaryLight
+                                      : Colors.white70,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Action buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.white54,
+                                side: const BorderSide(color: Colors.white24),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              onPressed: () => Navigator.pop(sheetCtx),
+                              child: Text('Huỷ',
+                                  style: GoogleFonts.outfit(
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              icon: const Icon(Icons.auto_awesome,
+                                  size: 16, color: Colors.white),
+                              label: Text(
+                                'Phân tích lại',
+                                style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              onPressed: () {
+                                final updated = ProspectiveProduct(
+                                  title: titleCtrl.text.trim().isNotEmpty
+                                      ? titleCtrl.text.trim()
+                                      : product.title,
+                                  category: selectedCategory,
+                                  color: colorCtrl.text.trim().isNotEmpty
+                                      ? colorCtrl.text.trim()
+                                      : product.color,
+                                  brand: brandCtrl.text.trim().isNotEmpty
+                                      ? brandCtrl.text.trim()
+                                      : product.brand,
+                                  price: product.price,
+                                  platform: product.platform,
+                                  imageUrl: product.imageUrl,
+                                  productUrl: product.productUrl,
+                                  tags: product.tags,
+                                );
+                                Navigator.pop(sheetCtx);
+                                _analyzeProduct(updated);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    int maxLines = 1,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            color: Colors.white70,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          maxLines: maxLines,
+          style: GoogleFonts.inter(
+              color: Colors.white, fontSize: 13),
+          decoration: InputDecoration(
+            prefixIcon:
+                Icon(icon, color: AppTheme.primaryLight, size: 18),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.06),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide:
+                  BorderSide(color: Colors.white.withOpacity(0.15)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide:
+                  BorderSide(color: Colors.white.withOpacity(0.15)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                  color: AppTheme.primaryLight, width: 1.5),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12, vertical: 10),
+          ),
+        ),
+      ],
+    );
+  }
+
   void _showInfoDialog() {
     showDialog(
       context: context,
@@ -1082,7 +1354,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.auto_awesome, color: AppTheme.primaryLight),
+            Icon(Icons.auto_awesome, color: AppTheme.primaryLight),
             const SizedBox(width: 10),
             Text(
               'Smart Shopping là gì?',
