@@ -153,7 +153,10 @@ class OutfitModel {
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      coverImageUrl: json['cover_image_url']?.toString() ?? '',
+      coverImageUrl: json['cover_image_url']?.toString() ??
+          json['image_url']?.toString() ??
+          json['image_base64']?.toString() ??
+          '',
       smartFitAdvice: advice,
       isFavorite: json['is_favorite'] == true,
     );

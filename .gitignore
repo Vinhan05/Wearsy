@@ -30,4 +30,12 @@ Thumbs.db
 *.secret
 *.key
 *.pem
-credentials.json
+# AI & Heavy Models (AI module is independent)
+AI/
+**/models/
+*.gguf
+*.safetensors
+*.bin
+outputs/
+cache/
+

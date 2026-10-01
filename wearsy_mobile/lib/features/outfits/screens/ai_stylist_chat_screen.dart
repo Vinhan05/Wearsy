@@ -1,13 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import '../../auth/providers/auth_provider.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../models/outfit_model.dart';
 import '../providers/outfit_provider.dart';
+import 'outfit_detail_screen.dart';
+import '../../../core/services/smart_fit_ai_service.dart';
 import '../../../core/theme/app_theme.dart';
 
 // Data Models
@@ -33,10 +35,6 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
   final List<_ChatMessage> _messages = [];
   bool _isLoading = false;
 
-  static const String _geminiApiKey =
-      String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
-  static const String _geminiModel = 'gemini-1.5-flash';
-
   @override
   void initState() {
     super.initState();
@@ -45,7 +43,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
         _messages.add(_ChatMessage(
           sender: _ChatSender.ai,
           text:
-              'Xin chào! Tôi là WEARSY AI Stylist ✨\nHôm nay bạn muốn đi đâu? Hãy cho tôi biết dịp hay hoàn cảnh của bạn — tôi sẽ gợi ý bộ outfit hoàn hảo từ tủ đồ của bạn nhé!',
+              'Xin chào! Tôi là WEARSY AI Stylist ✨\nHôm nay bạn muốn đi đâu? Hãy cho tôi biết dịp hay hoàn cảnh của bạn (ví dụ: "đi đám cưới", "đi làm công sở", "hẹn hò tối nay") — tôi sẽ phân tích toàn bộ tủ đồ và phối ngay bộ trang phục hoàn hảo nhất nhé!',
         ));
       });
     });
@@ -63,7 +61,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
       if (_scrollCtrl.hasClients) {
         _scrollCtrl.animateTo(
           _scrollCtrl.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 350),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeOut,
         );
       }
@@ -84,98 +82,43 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     _scrollToBottom();
 
     try {
-      final result = await _callGeminiStylist(
-        userPrompt: userText,
+      final heightCm = (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 170.0;
+      final weightKg = (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 62.0;
+      final userName = auth.user?.fullName ?? 'bạn';
+
+      final outfitResult = await SmartFitAiService.generateSmartFitOutfit(
         wardrobeItems: wardrobe.allItems,
-        userName: auth.user?.fullName ?? 'bạn',
-        heightCm: (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 172.0,
-        weightKg: (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 65.0,
+        heightCm: heightCm,
+        weightKg: weightKg,
+        occasion: userText,
+        userName: userName,
       );
+
       if (!mounted) return;
       setState(() {
         _isLoading = false;
         _messages.add(_ChatMessage(
           sender: _ChatSender.ai,
-          text: result.reply,
-          outfit: result.outfit,
+          text: outfitResult.aiReason.isNotEmpty
+              ? outfitResult.aiReason
+              : 'Dưới đây là gợi ý phối đồ AI tối ưu nhất từ tủ đồ của bạn:',
+          outfit: outfitResult,
         ));
       });
-      if (result.outfit != null) {
-        final outfitProvider = Provider.of<OutfitProvider>(context, listen: false);
-        await outfitProvider.addOutfitFromChat(result.outfit!);
-      }
+
+      final outfitProvider = Provider.of<OutfitProvider>(context, listen: false);
+      await outfitProvider.addOutfitFromChat(outfitResult);
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
         _messages.add(_ChatMessage(
           sender: _ChatSender.ai,
-          text: '😔 Có lỗi xảy ra khi kết nối AI. Vui lòng thử lại nhé!',
+          text: '😔 Có lỗi xảy ra khi kết nối AI Stylist. Vui lòng kiểm tra lại kết nối hoặc thử lại nhé!',
         ));
       });
     }
     _scrollToBottom();
-  }
-
-  Future<_StylistResult> _callGeminiStylist({
-    required String userPrompt,
-    required List<WardrobeItemModel> wardrobeItems,
-    required String userName,
-    required double heightCm,
-    required double weightKg,
-  }) async {
-    final wardrobeJson = wardrobeItems.map((item) => {
-          'id': item.id,
-          'name': item.name,
-          'category': item.category.displayName,
-          'color': item.color,
-          'tags': item.tags,
-        }).toList();
-
-    final systemPrompt = '''
-Bạn là WEARSY AI Stylist - Trợ lý thời trang cá nhân cho ứng dụng WEARSY.
-Người dùng: $userName
-
-TỦ ĐỒ HIỆN TẠI (${wardrobeItems.length} món):
-${jsonEncode(wardrobeJson)}
-
-YÊU CẦU CỦA NGƯỜI DÙNG: "$userPrompt"
-
-PHẢN HỒI (JSON THUẦN TÚY):
-{
-  "reply": "Lời gợi ý ngắn gọn bằng tiếng Việt",
-  "has_outfit": false,
-  "outfit": null
-}
-''';
-
-    final uri = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/$_geminiModel:generateContent?key=$_geminiApiKey');
-    final response = await http.post(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [
-          {
-            'parts': [
-              {'text': systemPrompt}
-            ]
-          }
-        ],
-        'generationConfig': {
-          'temperature': 0.7,
-          'responseMimeType': 'application/json',
-        },
-      }),
-    ).timeout(const Duration(seconds: 20));
-
-    if (response.statusCode != 200) throw Exception('HTTP ${response.statusCode}');
-    final jsonResponse = jsonDecode(response.body);
-    final text = jsonResponse['candidates']?[0]?['content']?['parts']?[0]?['text'];
-    if (text == null) throw Exception('Không có phản hồi');
-    final parsed = jsonDecode(text.trim()) as Map<String, dynamic>;
-    final reply = parsed['reply']?.toString() ?? 'Xin lỗi, tôi chưa hiểu rõ yêu cầu.';
-    return _StylistResult(reply: reply, outfit: null);
   }
 
   @override
@@ -185,13 +128,9 @@ PHẢN HỒI (JSON THUẦN TÚY):
       body: SafeArea(
         child: Column(
           children: [
-            // Top Header Banner matching tủ đồ (3).png
             _buildHeaderBanner(),
-
-            // Chat Message List
             Expanded(child: _buildMessageList()),
-
-            // Suggestion pills + Prompt Input Bar
+            if (_isLoading) _buildLoadingIndicator(),
             _buildBottomSection(),
           ],
         ),
@@ -238,7 +177,7 @@ PHẢN HỒI (JSON THUẦN TÚY):
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Wearsy AI Chat',
+                'Wearsy AI Stylist',
                 style: GoogleFonts.outfit(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -247,13 +186,37 @@ PHẢN HỒI (JSON THUẦN TÚY):
               ),
               const SizedBox(height: 2),
               Text(
-                'Trợ lý phối đồ cá nhân',
+                'Trợ lý phối đồ & Thử đồ thông minh',
                 style: GoogleFonts.inter(
-                  fontSize: 13,
+                  fontSize: 12.5,
                   color: Colors.white70,
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2.2),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'WEARSY AI đang quan sát tủ đồ & phối trang phục...',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+              color: AppTheme.darkTextSecondary,
+            ),
           ),
         ],
       ),
@@ -301,7 +264,7 @@ PHẢN HỒI (JSON THUẦN TÚY):
       );
     }
 
-    // Bot message bubble matching tủ đồ (3).png
+    // Bot message bubble
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -333,20 +296,36 @@ PHẢN HỒI (JSON THUẦN TÚY):
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Text(
-                msg.text,
-                style: GoogleFonts.inter(
-                  fontSize: 13.5,
-                  color: AppTheme.darkTextPrimary,
-                  height: 1.45,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
+                  ),
+                  child: Text(
+                    msg.text,
+                    style: GoogleFonts.inter(
+                      fontSize: 13.5,
+                      color: AppTheme.darkTextPrimary,
+                      height: 1.45,
+                    ),
+                  ),
                 ),
-              ),
+                if (msg.outfit != null) ...[
+                  const SizedBox(height: 12),
+                  _buildOutfitCard(msg.outfit!),
+                ],
+              ],
             ),
           ),
         ],
@@ -354,15 +333,245 @@ PHẢN HỒI (JSON THUẦN TÚY):
     );
   }
 
+  Widget _buildOutfitCard(OutfitModel outfit) {
+    final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
+    final selectedItems = wardrobe.allItems
+        .where((item) => outfit.itemIds.contains(item.id))
+        .toList();
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withOpacity(0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Rendered Image Header if available
+          if (outfit.coverImageUrl.isNotEmpty)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+              child: Container(
+                height: 220,
+                width: double.infinity,
+                color: const Color(0xFFF1F5F9),
+                child: _buildCoverImage(outfit.coverImageUrl),
+              ),
+            ),
+
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title & Scores
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        outfit.name,
+                        style: GoogleFonts.outfit(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.darkTextPrimary,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF3C7),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.star_rounded, size: 16, color: Color(0xFFD97706)),
+                          const SizedBox(width: 4),
+                          Text(
+                            outfit.eleganceScore.toStringAsFixed(1),
+                            style: GoogleFonts.inter(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFFB45309),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Selected Items Thumbnails
+                Text(
+                  'Các món đồ được chọn (${selectedItems.length} món):',
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.darkTextSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 64,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: selectedItems.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (ctx, idx) {
+                      final item = selectedItems[idx];
+                      return Container(
+                        width: 160,
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.lightBackground,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: _buildItemThumbnail(item),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.darkTextPrimary,
+                                    ),
+                                  ),
+                                  Text(
+                                    item.category.displayName,
+                                    maxLines: 1,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: AppTheme.darkTextSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Action button: View Detail
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    icon: const Icon(Icons.visibility_outlined, size: 18),
+                    label: Text(
+                      'Xem Chi Tiết & Thử Đồ 2D',
+                      style: GoogleFonts.inter(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => OutfitDetailScreen(outfit: outfit),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCoverImage(String imageSrc) {
+    if (imageSrc.startsWith('data:image/')) {
+      final base64Content = imageSrc.split(',').last;
+      return Image.memory(
+        base64Decode(base64Content),
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Center(
+          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
+        ),
+      );
+    } else if (imageSrc.startsWith('http://') || imageSrc.startsWith('https://')) {
+      return Image.network(
+        imageSrc,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Center(
+          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
+        ),
+      );
+    } else if (File(imageSrc).existsSync()) {
+      return Image.file(
+        File(imageSrc),
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Center(
+          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
+        ),
+      );
+    }
+    return const Center(
+      child: Icon(Icons.checkroom_rounded, size: 40, color: Colors.grey),
+    );
+  }
+
+  Widget _buildItemThumbnail(WardrobeItemModel item) {
+    final path = item.imageUrl;
+    if (path.startsWith('http')) {
+      return Image.network(path, fit: BoxFit.contain);
+    } else if (File(path).existsSync()) {
+      return Image.file(File(path), fit: BoxFit.contain);
+    }
+    return const Icon(Icons.checkroom, color: Colors.grey, size: 24);
+  }
+
   Widget _buildBottomSection() {
-    final suggestions = ['Dự tiệc', 'Cafe với bạn', 'Đi làm'];
+    final suggestions = ['Đi dự đám cưới', 'Hẹn hò cafe cuối tuần', 'Đi làm công sở'];
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 3 Suggestion Pills matching tủ đồ (3).png
           Row(
             children: suggestions.map((s) {
               return Expanded(
@@ -379,8 +588,10 @@ PHẢN HỒI (JSON THUẦN TÚY):
                       child: Center(
                         child: Text(
                           s,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.inter(
-                            fontSize: 13,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.darkTextPrimary,
                           ),
@@ -392,42 +603,43 @@ PHẢN HỒI (JSON THUẦN TÚY):
               );
             }).toList(),
           ),
-
           const SizedBox(height: 12),
-
-          // Prompt Input Bar matching tủ đồ (3).png
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
             decoration: BoxDecoration(
               color: AppTheme.lavenderCard,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: TextField(
-              controller: _promptCtrl,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: AppTheme.darkTextPrimary,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Bạn muốn phối đồ như thế nào ....',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 13.5,
-                  color: AppTheme.darkTextSecondary,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _promptCtrl,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppTheme.darkTextPrimary,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Nhập dịp đi chơi, đi làm, dự tiệc...',
+                      hintStyle: GoogleFonts.inter(
+                        fontSize: 13.5,
+                        color: AppTheme.darkTextSecondary,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: (_) => _sendPrompt(),
+                  ),
                 ),
-                border: InputBorder.none,
-              ),
-              onSubmitted: (_) => _sendPrompt(),
+                IconButton(
+                  icon: Icon(Icons.send_rounded, color: AppTheme.primaryColor),
+                  onPressed: () => _sendPrompt(),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
-}
-
-class _StylistResult {
-  final String reply;
-  final OutfitModel? outfit;
-  _StylistResult({required this.reply, this.outfit});
 }

@@ -33,6 +33,9 @@ export class OutfitEntity {
   @Column({ type: 'text', nullable: true })
   ai_reasoning: string;
 
+  @Column({ type: 'varchar', length: 512, nullable: true })
+  image_url: string;
+
   @Column({ type: 'boolean', default: false })
   @Index()
   is_favorite: boolean;
