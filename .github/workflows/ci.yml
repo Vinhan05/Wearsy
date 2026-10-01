@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: wearsy-backend
+        working-directory: apps/api-server
 
     steps:
       - name: 📥 Checkout Source Code
@@ -36,7 +36,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: wearsy-backend/package-lock.json
+          cache-dependency-path: apps/api-server/package-lock.json
 
       # Step 1: Install dependencies
       - name: 1. 📦 Install dependencies (npm ci)
@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-dist
-          path: wearsy-backend/dist/
+          path: apps/api-server/dist/
           retention-days: 7
 
   # =========================================================================
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: wearsy_mobile
+        working-directory: apps/mobile-client
 
     steps:
       - name: 📥 Checkout Source Code

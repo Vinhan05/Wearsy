@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: wearsy_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_postgres_password
+      POSTGRES_DB: wearsy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../scripts/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ../scripts/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+
+volumes:
+  postgres_data:

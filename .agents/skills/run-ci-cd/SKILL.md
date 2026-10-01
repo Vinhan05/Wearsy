@@ -12,7 +12,7 @@ Kỹ năng này chịu trách nhiệm tự động chạy kiểm thử toàn di�
 ## Các bước thực thi chi tiết
 
 ### Bước 1: Backend CI (7 bước tuần tự)
-Chạy trong thư mục `wearsy-backend`:
+Chạy trong thư mục `apps/api-server`:
 1. `npm ci`
 2. `npm run format:check`
 3. `npm run lint`
@@ -22,7 +22,7 @@ Chạy trong thư mục `wearsy-backend`:
 7. `npm run build`
 
 ### Bước 2: Mobile CI (7 bước tuần tự)
-Chạy trong thư mục `wearsy_mobile`:
+Chạy trong thư mục `apps/mobile-client`:
 1. `flutter pub get`
 2. `dart format --output=none --set-exit-if-changed lib test`
 3. `flutter analyze --no-fatal-infos`
@@ -34,7 +34,7 @@ Chạy trong thư mục `wearsy_mobile`:
 ### Bước 3: Kiểm tra Cơ sở Dữ liệu & Safe Migration
 Tại thư mục gốc:
 ```bash
-node database/migrate.js --dry-run
+node infrastructure/scripts/migrate.js --dry-run
 ```
 
 ### Bước 4: Tổng hợp & Đánh giá Cổng PR Gate

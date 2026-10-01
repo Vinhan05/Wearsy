@@ -73,8 +73,8 @@ jobs:
       - name: 📦 Build & Push Backend Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: ./wearsy-backend
-          file: ./wearsy-backend/Dockerfile
+          context: ./apps/api-server
+          file: ./apps/api-server/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/backend:${{ steps.meta.outputs.image_tag }}
@@ -97,7 +97,7 @@ jobs:
           cache: true
 
       - name: 📱 Build Mobile Release APKs
-        working-directory: wearsy_mobile
+        working-directory: apps/mobile-client
         run: |
           flutter pub get
           flutter build apk --release --split-per-abi
@@ -107,7 +107,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wearsy-release-apks
-          path: wearsy_mobile/build/app/outputs/flutter-apk/*.apk
+          path: apps/mobile-client/build/app/outputs/flutter-apk/*.apk
           retention-days: 14
 
   # =========================================================================
@@ -139,9 +139,9 @@ jobs:
           DB_DATABASE: ${{ secrets.STAGING_DB_DATABASE }}
         run: |
           echo "Thực hiện kiểm tra và chạy Safe Database Migration trên Staging..."
-          node database/migrate.js --dry-run
+          node infrastructure/scripts/migrate.js --dry-run
           if [ -n "$DB_HOST" ]; then
-            node database/migrate.js
+            node infrastructure/scripts/migrate.js
           fi
 
       - name: 🚀 Deploy Staging Container
@@ -239,9 +239,9 @@ jobs:
           DB_DATABASE: ${{ secrets.PROD_DB_DATABASE }}
         run: |
           echo "Thực hiện Safe Database Migration trên Production với Transaction Safety..."
-          node database/migrate.js --dry-run
+          node infrastructure/scripts/migrate.js --dry-run
           if [ -n "$DB_HOST" ]; then
-            node database/migrate.js
+            node infrastructure/scripts/migrate.js
           fi
 
       - name: 🚀 Deploy Production Container (Zero Rebuild)
