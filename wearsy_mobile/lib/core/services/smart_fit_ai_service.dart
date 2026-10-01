@@ -7,7 +7,7 @@ import 'smart_fit_engine.dart';
 
 class SmartFitAiService {
   static const String _geminiApiKey =
-      'YOUR_GEMINI_API_KEY';
+      String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
   static const String _geminiModel = 'gemini-1.5-flash';
 
   /// Sinh gợi ý Outfit kết hợp giữa 2D Layering và Smart Fit (Chiều cao & Cân nặng)

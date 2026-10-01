@@ -8,10 +8,18 @@ class EmailService {
   static const String _prefKeySmtpPassword = 'smtp_sender_password';
 
   // Default credentials (Brevo Relay)
-  static String senderEmail = 'baee6e001@smtp-brevo.com';
-  static String senderAppPassword =
-      'YOUR_BREVO_SMTP_KEY';
-  static String senderFrom = 'vo.thedan@outlook.com';
+  static String senderEmail = const String.fromEnvironment(
+    'SMTP_USER',
+    defaultValue: 'baee6e001@smtp-brevo.com',
+  );
+  static String senderAppPassword = const String.fromEnvironment(
+    'SMTP_PASSWORD',
+    defaultValue: '',
+  );
+  static String senderFrom = const String.fromEnvironment(
+    'SMTP_FROM',
+    defaultValue: 'vo.thedan@outlook.com',
+  );
   static String senderFromName = 'WEARSY Support';
 
   /// Khởi tạo và nạp cấu hình SMTP từ bộ nhớ máy (nếu có)

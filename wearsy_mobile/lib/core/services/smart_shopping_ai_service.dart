@@ -97,7 +97,7 @@ class ShoppingCompatibilityResult {
 
 class SmartShoppingAiService {
   static const String _geminiApiKey =
-      'YOUR_GEMINI_API_KEY';
+      String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
   static const List<String> _geminiModels = [
     'gemini-3.8-flash',
     'gemini-flash-lite-latest',

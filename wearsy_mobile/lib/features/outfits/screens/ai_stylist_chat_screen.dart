@@ -34,7 +34,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
   bool _isLoading = false;
 
   static const String _geminiApiKey =
-      'YOUR_GEMINI_API_KEY';
+      String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
   static const String _geminiModel = 'gemini-1.5-flash';
 
   @override

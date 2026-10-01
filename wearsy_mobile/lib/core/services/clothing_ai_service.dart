@@ -28,7 +28,7 @@ class ClothingAnalysisResult {
 
 class ClothingAiService {
   static const String _geminiApiKey =
-      'YOUR_GEMINI_API_KEY';
+      String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
   static const String _geminiModel = 'gemini-flash-lite-latest';
   static const String _geminiModelFallback = 'gemini-3.8-flash';
 
