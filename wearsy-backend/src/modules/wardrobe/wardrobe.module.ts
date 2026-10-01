@@ -4,6 +4,7 @@ import { WardrobeController } from './wardrobe.controller';
 import { WardrobeItemEntity } from './entities/wardrobe-item.entity';
 import { CategoryEntity } from './entities/category.entity';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { WardrobeScannerService } from './services/wardrobe-scanner.service';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { CloudinaryModule } from '../cloudinary/cloudinary.module';
     CloudinaryModule,
   ],
   controllers: [WardrobeController],
-  exports: [TypeOrmModule],
+  providers: [WardrobeScannerService],
+  exports: [TypeOrmModule, WardrobeScannerService],
 })
 export class WardrobeModule {}

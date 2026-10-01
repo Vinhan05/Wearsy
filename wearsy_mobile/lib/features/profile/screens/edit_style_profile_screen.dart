@@ -61,7 +61,9 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
   void initState() {
     super.initState();
     final user = Provider.of<AuthProvider>(context, listen: false).user;
-    final styleModel = user != null ? StyleProfileModel.fromJson(user.toJson()) : StyleProfileModel();
+    final styleModel = user != null
+        ? StyleProfileModel.fromJson(user.toJson())
+        : StyleProfileModel();
 
     _selectedStyles = List.from(styleModel.preferredStyles);
     _selectedColors = List.from(styleModel.favoriteColors);
@@ -99,7 +101,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
       bodyShape: _selectedBodyShape,
     );
 
-    final success = await authProvider.updateStyleProfile(updatedModel.toJson());
+    final success =
+        await authProvider.updateStyleProfile(updatedModel.toJson());
 
     if (!mounted) return;
 
@@ -124,12 +127,14 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final currencyFormatter = NumberFormat.compactSimpleCurrency(locale: 'vi_VN');
+    final currencyFormatter =
+        NumberFormat.compactSimpleCurrency(locale: 'vi_VN');
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -141,7 +146,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
         color: AppTheme.darkBackground,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -174,13 +180,18 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                       selectedColor: AppTheme.primaryColor,
                       backgroundColor: AppTheme.darkSurface,
                       labelStyle: GoogleFonts.inter(
-                        color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? Colors.white
+                            : AppTheme.darkTextSecondary,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
-                          color: isSelected ? AppTheme.primaryLight : Colors.transparent,
+                          color: isSelected
+                              ? AppTheme.primaryLight
+                              : Colors.transparent,
                         ),
                       ),
                       onSelected: (selected) {
@@ -219,8 +230,11 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                       selectedColor: AppTheme.secondaryColor.withOpacity(0.8),
                       backgroundColor: AppTheme.darkSurface,
                       labelStyle: GoogleFonts.inter(
-                        color: isSelected ? Colors.black : AppTheme.darkTextSecondary,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? Colors.black
+                            : AppTheme.darkTextSecondary,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
@@ -297,7 +311,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                         children: [
                           Text(
                             'Chiều cao (cm)',
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                            style: GoogleFonts.inter(
+                                color: Colors.white, fontSize: 13),
                           ),
                           const SizedBox(height: 6),
                           TextFormField(
@@ -319,7 +334,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                         children: [
                           Text(
                             'Cân nặng (kg)',
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                            style: GoogleFonts.inter(
+                                color: Colors.white, fontSize: 13),
                           ),
                           const SizedBox(height: 6),
                           TextFormField(
@@ -388,9 +404,11 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      onPressed: authProvider.isLoading ? null : _saveStyleProfile,
+                      onPressed:
+                          authProvider.isLoading ? null : _saveStyleProfile,
                       child: authProvider.isLoading
-                          ? const SpinKitThreeBounce(color: Colors.white, size: 24)
+                          ? const SpinKitThreeBounce(
+                              color: Colors.white, size: 24)
                           : Text(
                               'LƯU HỒ SƠ PHONG CÁCH',
                               style: GoogleFonts.outfit(

@@ -59,10 +59,14 @@ class SmartFitAdvice {
 
   factory SmartFitAdvice.fromJson(Map<String, dynamic> json) {
     return SmartFitAdvice(
-      sizeRecommendation: json['size_recommendation']?.toString() ?? 'Phù hợp với Size tiêu chuẩn',
+      sizeRecommendation: json['size_recommendation']?.toString() ??
+          'Phù hợp với Size tiêu chuẩn',
       bodyProportionTip: json['body_proportion_tip']?.toString() ??
           'Sơ vin áo gọn gàng trong quần để tỷ lệ thân trên và thân dưới hài hòa hơn.',
-      fitWarnings: (json['fit_warnings'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      fitWarnings: (json['fit_warnings'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
       bmi: (json['bmi'] as num?)?.toDouble(),
       bodyFrame: json['body_frame']?.toString(),
       userHeight: (json['user_height'] as num?)?.toDouble(),
@@ -116,11 +120,13 @@ class OutfitModel {
   factory OutfitModel.fromJson(Map<String, dynamic> json) {
     final rawAiScore = (json['ai_score'] as num?)?.toDouble() ?? 9.0;
     final elegance = (json['elegance_score'] as num?)?.toDouble() ?? rawAiScore;
-    final color = (json['color_score'] as num?)?.toDouble() ?? (rawAiScore * 0.95);
+    final color =
+        (json['color_score'] as num?)?.toDouble() ?? (rawAiScore * 0.95);
 
     SmartFitAdvice? advice;
     if (json['smart_fit_advice'] is Map<String, dynamic>) {
-      advice = SmartFitAdvice.fromJson(json['smart_fit_advice'] as Map<String, dynamic>);
+      advice = SmartFitAdvice.fromJson(
+          json['smart_fit_advice'] as Map<String, dynamic>);
     }
 
     return OutfitModel(
@@ -137,9 +143,15 @@ class OutfitModel {
       aiScore: rawAiScore,
       eleganceScore: double.parse(elegance.toStringAsFixed(1)),
       colorScore: double.parse(color.toStringAsFixed(1)),
-      aiReason: json['ai_reason']?.toString() ?? json['stylist_reasoning']?.toString() ?? '',
-      itemIds: (json['item_ids'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
-          (json['selected_item_ids'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+      aiReason: json['ai_reason']?.toString() ??
+          json['stylist_reasoning']?.toString() ??
+          '',
+      itemIds: (json['item_ids'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          (json['selected_item_ids'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
           [],
       coverImageUrl: json['cover_image_url']?.toString() ?? '',
       smartFitAdvice: advice,
@@ -194,4 +206,3 @@ class OutfitModel {
     };
   }
 }
-

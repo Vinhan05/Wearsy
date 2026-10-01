@@ -38,7 +38,9 @@ async function bootstrap() {
   // Tự Động Sinh Tài Liệu Swagger API
   const swaggerConfig = new DocumentBuilder()
     .setTitle('WEARSY Mobile App Backend API')
-    .setDescription('RESTful API Specifications for WEARSY Smart Wardrobe & AI Engine')
+    .setDescription(
+      'RESTful API Specifications for WEARSY Smart Wardrobe & AI Engine',
+    )
     .setVersion('1.0.0')
     .addBearerAuth()
     .build();
@@ -48,7 +50,11 @@ async function bootstrap() {
 
   const port = configService.get<number>('PORT') || 3000;
   await app.listen(port);
-  console.log(`🚀 WEARSY Backend is running on: http://localhost:${port}/${prefix}`);
-  console.log(`📚 Swagger Docs available at: http://localhost:${port}/${prefix}/docs`);
+  console.log(
+    `🚀 WEARSY Backend is running on: http://localhost:${port}/${prefix}`,
+  );
+  console.log(
+    `📚 Swagger Docs available at: http://localhost:${port}/${prefix}/docs`,
+  );
 }
 bootstrap();

@@ -71,8 +71,7 @@ class _OutfitBody extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.bolt_rounded,
-                    color: Colors.white, size: 16),
+                const Icon(Icons.bolt_rounded, color: Colors.white, size: 16),
                 const SizedBox(width: 4),
                 Text(
                   'Gemini AI',
@@ -111,8 +110,7 @@ class _OutfitBody extends StatelessWidget {
             onTap: () => provider.setOccasion(occ),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 gradient: isSelected ? AppTheme.primaryGradient : null,
                 color: isSelected ? null : AppTheme.darkCard,
@@ -186,7 +184,8 @@ class _OutfitBody extends StatelessWidget {
 
     final outfits = provider.filteredOutfits;
     if (outfits.isEmpty) {
-      final isWardrobeEmpty = Provider.of<WardrobeProvider>(context).allItems.isEmpty;
+      final isWardrobeEmpty =
+          Provider.of<WardrobeProvider>(context).allItems.isEmpty;
       return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -199,16 +198,21 @@ class _OutfitBody extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.secondaryColor.withOpacity(0.12),
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppTheme.secondaryColor.withOpacity(0.25)),
+                  border: Border.all(
+                      color: AppTheme.secondaryColor.withOpacity(0.25)),
                 ),
                 child: const Icon(Icons.auto_awesome_outlined,
                     color: AppTheme.secondaryColor, size: 40),
               ),
               const SizedBox(height: 18),
               Text(
-                isWardrobeEmpty ? 'Chưa có outfit AI nào' : 'Chưa có outfit cho dịp này',
+                isWardrobeEmpty
+                    ? 'Chưa có outfit AI nào'
+                    : 'Chưa có outfit cho dịp này',
                 style: GoogleFonts.outfit(
-                    color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -217,7 +221,9 @@ class _OutfitBody extends StatelessWidget {
                     ? 'Tài khoản mới bắt đầu từ tủ đồ trống. Hãy thêm các món đồ yêu thích để AI tự động phối outfit!'
                     : 'Nhấn "Tạo Outfit Mới" để AI phân tích và đề xuất set đồ phù hợp ngay!',
                 style: GoogleFonts.inter(
-                    color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.5),
+                    color: AppTheme.darkTextSecondary,
+                    fontSize: 13,
+                    height: 1.5),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -229,8 +235,7 @@ class _OutfitBody extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
       itemCount: outfits.length,
-      itemBuilder: (context, index) =>
-          _OutfitCard(outfit: outfits[index]),
+      itemBuilder: (context, index) => _OutfitCard(outfit: outfits[index]),
     );
   }
 
@@ -241,7 +246,8 @@ class _OutfitBody extends StatelessWidget {
       onPressed: provider.isGenerating
           ? null
           : () {
-              final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
+              final wardrobe =
+                  Provider.of<WardrobeProvider>(context, listen: false);
               if (wardrobe.allItems.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -251,7 +257,8 @@ class _OutfitBody extends StatelessWidget {
                     ),
                     backgroundColor: AppTheme.warningColor,
                     behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 );
                 return;
@@ -266,7 +273,9 @@ class _OutfitBody extends StatelessWidget {
                 availableItems: wardrobe.allItems,
                 heightCm: h,
                 weightKg: w,
-                gender: auth.user?.fullName.toLowerCase().contains('nữ') == true ? 'Nữ' : 'Nam',
+                gender: auth.user?.fullName.toLowerCase().contains('nữ') == true
+                    ? 'Nữ'
+                    : 'Nam',
               );
             },
       backgroundColor: provider.isGenerating ? AppTheme.darkSurface : null,
@@ -274,12 +283,16 @@ class _OutfitBody extends StatelessWidget {
           ? const SizedBox(
               width: 20,
               height: 20,
-              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              child: CircularProgressIndicator(
+                  color: Colors.white, strokeWidth: 2),
             )
           : const Icon(Icons.auto_fix_high_rounded, color: Colors.white),
       label: Text(
-        provider.isGenerating ? 'Đang phân tích Smart Fit...' : 'Tạo Outfit Smart Fit',
-        style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+        provider.isGenerating
+            ? 'Đang phân tích Smart Fit...'
+            : 'Tạo Outfit Smart Fit',
+        style: GoogleFonts.outfit(
+            color: Colors.white, fontWeight: FontWeight.bold),
       ),
       extendedIconLabelSpacing: 8,
     );
@@ -394,14 +407,18 @@ class _OutfitCard extends StatelessWidget {
                               horizontal: 8, vertical: 5),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [AppTheme.primaryColor, AppTheme.accentColor],
+                              colors: [
+                                AppTheme.primaryColor,
+                                AppTheme.accentColor
+                              ],
                             ),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.layers_rounded, color: Colors.white, size: 12),
+                              const Icon(Icons.layers_rounded,
+                                  color: Colors.white, size: 12),
                               const SizedBox(width: 3),
                               Text(
                                 '2D Canvas',
@@ -439,9 +456,8 @@ class _OutfitCard extends StatelessWidget {
                               isFav
                                   ? Icons.favorite_rounded
                                   : Icons.favorite_border_rounded,
-                              color: isFav
-                                  ? AppTheme.accentColor
-                                  : Colors.white,
+                              color:
+                                  isFav ? AppTheme.accentColor : Colors.white,
                               size: 18,
                             ),
                           ),
@@ -498,12 +514,14 @@ class _OutfitCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   if (outfit.smartFitAdvice != null) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       margin: const EdgeInsets.only(bottom: 6),
                       decoration: BoxDecoration(
                         color: AppTheme.primaryLight.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppTheme.primaryLight.withOpacity(0.3)),
+                        border: Border.all(
+                            color: AppTheme.primaryLight.withOpacity(0.3)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,

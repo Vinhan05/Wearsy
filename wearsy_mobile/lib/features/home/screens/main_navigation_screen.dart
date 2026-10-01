@@ -29,8 +29,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     });
   }
 
-  final List<Widget> _screens = [
-    const DashboardScreen(),
+  void _switchTab(int index) {
+    if (index >= 0 && index < 4 && mounted) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
+  }
+
+  late final List<Widget> _screens = [
+    DashboardScreen(onSwitchTab: _switchTab),
     const WardrobeScreen(),
     const OutfitScreen(),
     const ProfileScreen(),
@@ -46,8 +54,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppTheme.darkCard,
-          border: Border(
-              top: BorderSide(color: Colors.white.withOpacity(0.08))),
+          border:
+              Border(top: BorderSide(color: Colors.white.withOpacity(0.08))),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.3),

@@ -1,4 +1,8 @@
-import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
 
@@ -101,7 +105,10 @@ Nhiệm vụ của bạn là chọn các món đồ từ tủ đồ kỹ thuật
     };
 
     try {
-      const model = this.configService.get<string>('GEMINI_MODEL', 'gemini-1.5-flash');
+      const model = this.configService.get<string>(
+        'GEMINI_MODEL',
+        'gemini-1.5-flash',
+      );
       const response = await this.aiClient.models.generateContent({
         model,
         contents: [
@@ -124,7 +131,9 @@ Nhiệm vụ của bạn là chọn các món đồ từ tủ đồ kỹ thuật
       const validatedOutfits: RecommendedOutfitDto[] = rawOutfits
         .map((outfit: any) => {
           const selected = outfit.selected_item_ids || outfit.item_ids || [];
-          const validItemIds = selected.filter((id: string) => availableItemIds.has(id));
+          const validItemIds = selected.filter((id: string) =>
+            availableItemIds.has(id),
+          );
           return {
             outfit_id: outfit.outfit_id || `outfit_${Date.now()}`,
             title: outfit.title || 'Bộ trang phục Smart Fit',
@@ -132,15 +141,20 @@ Nhiệm vụ của bạn là chọn các món đồ từ tủ đồ kỹ thuật
             color_score: outfit.color_score || 9.0,
             selected_item_ids: validItemIds,
             item_ids: validItemIds,
-            stylist_reasoning: outfit.stylist_reasoning || outfit.ai_reasoning || '',
+            stylist_reasoning:
+              outfit.stylist_reasoning || outfit.ai_reasoning || '',
             smart_fit_advice: outfit.smart_fit_advice || {
               size_recommendation: `Size chuẩn ${userPayload.user_body_summary.estimated_size}`,
-              body_proportion_tip: 'Sơ vin áo gọn gàng để nâng cao tỷ lệ eo và chân.',
+              body_proportion_tip:
+                'Sơ vin áo gọn gàng để nâng cao tỷ lệ eo và chân.',
               fit_warnings: [],
             },
           };
         })
-        .filter((outfit: RecommendedOutfitDto) => outfit.selected_item_ids.length >= 2);
+        .filter(
+          (outfit: RecommendedOutfitDto) =>
+            outfit.selected_item_ids.length >= 2,
+        );
 
       return validatedOutfits;
     } catch (error) {

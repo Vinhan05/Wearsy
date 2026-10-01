@@ -3,7 +3,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../core/services/email_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 
@@ -51,7 +50,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.errorMessage ?? 'Không thể gửi mã OTP tới email.'),
+          content:
+              Text(result.errorMessage ?? 'Không thể gửi mã OTP tới email.'),
           backgroundColor: AppTheme.accentColor,
         ),
       );
@@ -85,13 +85,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 otpError = null;
               });
 
-              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              final authProvider =
+                  Provider.of<AuthProvider>(context, listen: false);
               final isOtpValid = await authProvider.verifyOtp(email, otpCode);
 
               if (!isOtpValid) {
                 setModalState(() {
                   isVerifying = false;
-                  otpError = 'Mã OTP không chính xác hoặc đã hết hạn. Vui lòng kiểm tra lại email.';
+                  otpError =
+                      'Mã OTP không chính xác hoặc đã hết hạn. Vui lòng kiểm tra lại email.';
                 });
                 return;
               }
@@ -110,7 +112,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Xác thực OTP & Đăng ký tài khoản thành công!'),
+                    content:
+                        Text('Xác thực OTP & Đăng ký tài khoản thành công!'),
                     backgroundColor: AppTheme.primaryColor,
                   ),
                 );
@@ -158,7 +161,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             gradient: AppTheme.primaryGradient,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.mark_email_read_rounded, color: Colors.white, size: 24),
+                          child: const Icon(Icons.mark_email_read_rounded,
+                              color: Colors.white, size: 24),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -189,11 +193,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 10),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         color: AppTheme.primaryColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.3)),
+                        border: Border.all(
+                            color:
+                                AppTheme.primaryLight.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         email,
@@ -210,11 +217,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: BoxDecoration(
                         color: AppTheme.primaryColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.25)),
+                        border: Border.all(
+                            color:
+                                AppTheme.primaryLight.withValues(alpha: 0.25)),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.mark_email_unread_rounded, color: AppTheme.primaryLight, size: 20),
+                          const Icon(Icons.mark_email_unread_rounded,
+                              color: AppTheme.primaryLight, size: 20),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -230,7 +240,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(6, (index) {
@@ -253,11 +262,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               contentPadding: EdgeInsets.zero,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppTheme.primaryLight, width: 2),
+                                borderSide: const BorderSide(
+                                    color: AppTheme.primaryLight, width: 2),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Colors.white24),
+                                borderSide:
+                                    const BorderSide(color: Colors.white24),
                               ),
                             ),
                             onChanged: (value) {
@@ -266,7 +277,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               } else if (value.isEmpty && index > 0) {
                                 focusNodes[index - 1].requestFocus();
                               }
-                              if (otpControllers.every((c) => c.text.isNotEmpty)) {
+                              if (otpControllers
+                                  .every((c) => c.text.isNotEmpty)) {
                                 verifyAndRegister();
                               }
                             },
@@ -274,17 +286,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         );
                       }),
                     ),
-
                     if (otpError != null) ...[
                       const SizedBox(height: 12),
                       Text(
                         otpError!,
-                        style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 13),
+                        style: GoogleFonts.inter(
+                            color: Colors.redAccent, fontSize: 13),
                       ),
                     ],
-
                     const SizedBox(height: 20),
-
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -303,7 +313,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           onPressed: isVerifying ? null : verifyAndRegister,
                           child: isVerifying
-                              ? const SpinKitThreeBounce(color: Colors.white, size: 20)
+                              ? const SpinKitThreeBounce(
+                                  color: Colors.white, size: 20)
                               : Text(
                                   'XÁC NHẬN OTP & ĐĂNG KÝ',
                                   style: GoogleFonts.outfit(
@@ -319,25 +330,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Center(
                       child: TextButton.icon(
                         onPressed: () async {
-                          final ap = Provider.of<AuthProvider>(context, listen: false);
-                          final res = await ap.sendOtpEmail(email, fullName: _nameController.text.trim());
+                          final ap =
+                              Provider.of<AuthProvider>(context, listen: false);
+                          final res = await ap.sendOtpEmail(email,
+                              fullName: _nameController.text.trim());
                           if (res.success) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Đã gửi lại mã OTP mới tới email của bạn!'),
+                                content: Text(
+                                    'Đã gửi lại mã OTP mới tới email của bạn!'),
                                 backgroundColor: AppTheme.primaryColor,
                               ),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(res.errorMessage ?? 'Gửi lại thất bại.'),
+                                content: Text(
+                                    res.errorMessage ?? 'Gửi lại thất bại.'),
                                 backgroundColor: AppTheme.accentColor,
                               ),
                             );
                           }
                         },
-                        icon: const Icon(Icons.refresh_rounded, size: 16, color: AppTheme.primaryLight),
+                        icon: const Icon(Icons.refresh_rounded,
+                            size: 16, color: AppTheme.primaryLight),
                         label: Text(
                           'Chưa nhận được? Gửi lại mã OTP',
                           style: GoogleFonts.inter(
@@ -374,21 +390,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  void _handleFacebookLogin() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final success = await authProvider.loginWithFacebook();
-    if (!mounted) return;
-    if (success) {
-      Navigator.pop(context); // return to main screen
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Đăng ký / Đăng nhập thành công bằng Facebook!'),
-          backgroundColor: AppTheme.primaryColor,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -396,7 +397,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -410,7 +412,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -460,7 +463,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
                             hintText: 'Nguyễn Văn A',
-                            prefixIcon: Icon(Icons.person_outline_rounded, color: AppTheme.primaryLight),
+                            prefixIcon: Icon(Icons.person_outline_rounded,
+                                color: AppTheme.primaryLight),
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
@@ -487,7 +491,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
                             hintText: 'user@example.com',
-                            prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryLight),
+                            prefixIcon: Icon(Icons.email_outlined,
+                                color: AppTheme.primaryLight),
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
@@ -517,10 +522,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             hintText: 'Tối thiểu 6 ký tự',
-                            prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppTheme.primaryLight),
+                            prefixIcon: const Icon(Icons.lock_outline_rounded,
+                                color: AppTheme.primaryLight),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: AppTheme.darkTextSecondary,
                               ),
                               onPressed: () {
@@ -537,7 +545,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (value.length < 6) {
                               return 'Mật khẩu phải có ít nhất 6 ký tự';
                             }
-                            if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)').hasMatch(value)) {
+                            if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)')
+                                .hasMatch(value)) {
                               return 'Mật khẩu phải chứa cả chữ cái và chữ số';
                             }
                             return null;
@@ -561,15 +570,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             hintText: 'Nhập lại mật khẩu',
-                            prefixIcon: const Icon(Icons.lock_reset_rounded, color: AppTheme.primaryLight),
+                            prefixIcon: const Icon(Icons.lock_reset_rounded,
+                                color: AppTheme.primaryLight),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: AppTheme.darkTextSecondary,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword;
                                 });
                               },
                             ),
@@ -592,7 +605,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           decoration: BoxDecoration(
                             color: AppTheme.darkSurface,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                            border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.08)),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -616,21 +630,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       showCheckmark: isSelected,
                                       checkmarkColor: Colors.white,
                                       selectedColor: AppTheme.primaryColor,
-                                      backgroundColor: Colors.white.withValues(alpha: 0.05),
+                                      backgroundColor:
+                                          Colors.white.withValues(alpha: 0.05),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         side: BorderSide(
                                           color: isSelected
                                               ? Colors.transparent
-                                              : Colors.white.withValues(alpha: 0.2),
+                                              : Colors.white
+                                                  .withValues(alpha: 0.2),
                                         ),
                                       ),
                                       labelStyle: TextStyle(
-                                        color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppTheme.darkTextSecondary,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                       ),
                                       onSelected: (val) {
-                                        if (val) setState(() => _selectedGender = g);
+                                        if (val)
+                                          setState(() => _selectedGender = g);
                                       },
                                     ),
                                   );
@@ -646,7 +667,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onTap: () async {
                             final date = await showDatePicker(
                               context: context,
-                              initialDate: _selectedBirthDate ?? DateTime(2002, 5, 20),
+                              initialDate:
+                                  _selectedBirthDate ?? DateTime(2002, 5, 20),
                               firstDate: DateTime(1960),
                               lastDate: DateTime.now(),
                             );
@@ -656,19 +678,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
                             decoration: BoxDecoration(
                               color: AppTheme.darkSurface,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                              border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.08)),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.cake_rounded, color: AppTheme.primaryLight, size: 22),
+                                const Icon(Icons.cake_rounded,
+                                    color: AppTheme.primaryLight, size: 22),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Ngày sinh',
@@ -679,7 +705,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                       Text(
                                         _selectedBirthDate != null
-                                            ? DateFormat('dd/MM/yyyy').format(_selectedBirthDate!)
+                                            ? DateFormat('dd/MM/yyyy')
+                                                .format(_selectedBirthDate!)
                                             : 'Chưa thiết lập',
                                         style: GoogleFonts.inter(
                                           fontSize: 14,
@@ -690,7 +717,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ],
                                   ),
                                 ),
-                                const Icon(Icons.calendar_today_rounded, color: Colors.white54, size: 18),
+                                const Icon(Icons.calendar_today_rounded,
+                                    color: Colors.white54, size: 18),
                               ],
                             ),
                           ),
@@ -721,14 +749,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              onPressed: authProvider.isLoading ? null : _handleRegister,
+                              onPressed: authProvider.isLoading
+                                  ? null
+                                  : _handleRegister,
                               child: authProvider.isLoading
                                   ? const SpinKitThreeBounce(
                                       color: Colors.white,
                                       size: 24,
                                     )
                                   : Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'ĐĂNG KÝ TÀI KHOẢN',
@@ -739,7 +770,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        const Icon(Icons.check_circle_outline_rounded, size: 20),
+                                        const Icon(
+                                            Icons.check_circle_outline_rounded,
+                                            size: 20),
                                       ],
                                     ),
                             ),
@@ -751,9 +784,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Divider
                         Row(
                           children: [
-                            const Expanded(child: Divider(color: Colors.white24, height: 1)),
+                            const Expanded(
+                                child:
+                                    Divider(color: Colors.white24, height: 1)),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               child: Text(
                                 'Hoặc nhanh hơn với',
                                 style: GoogleFonts.inter(
@@ -762,7 +798,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                             ),
-                            const Expanded(child: Divider(color: Colors.white24, height: 1)),
+                            const Expanded(
+                                child:
+                                    Divider(color: Colors.white24, height: 1)),
                           ],
                         ),
 
@@ -772,14 +810,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: InkWell(
-                            onTap: authProvider.isLoading ? null : _handleGoogleLogin,
+                            onTap: authProvider.isLoading
+                                ? null
+                                : _handleGoogleLogin,
                             borderRadius: BorderRadius.circular(14),
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
                                 color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                                border: Border.all(
+                                    color:
+                                        Colors.white.withValues(alpha: 0.15)),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,

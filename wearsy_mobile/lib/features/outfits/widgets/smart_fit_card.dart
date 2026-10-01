@@ -32,10 +32,12 @@ class SmartFitCard extends StatelessWidget {
 
     final displaySize = advice?.sizeRecommendation ??
         'Phù hợp nhất với ${fallbackAnalysis.estimatedSize} chuẩn';
-    final displayTip = advice?.bodyProportionTip ?? fallbackAnalysis.defaultProportionTip;
-    final displayWarnings = (advice?.fitWarnings != null && advice!.fitWarnings.isNotEmpty)
-        ? advice.fitWarnings
-        : fallbackAnalysis.fitWarnings;
+    final displayTip =
+        advice?.bodyProportionTip ?? fallbackAnalysis.defaultProportionTip;
+    final displayWarnings =
+        (advice?.fitWarnings != null && advice!.fitWarnings.isNotEmpty)
+            ? advice.fitWarnings
+            : fallbackAnalysis.fitWarnings;
     final displayBmi = advice?.bmi ?? fallbackAnalysis.bmi;
     final displayFrame = advice?.bodyFrame ?? fallbackAnalysis.bodyFrame;
 
@@ -71,7 +73,8 @@ class SmartFitCard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.accessibility_new_rounded, color: Colors.white, size: 20),
+                child: const Icon(Icons.accessibility_new_rounded,
+                    color: Colors.white, size: 20),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -101,13 +104,17 @@ class SmartFitCard extends StatelessWidget {
                 TextButton.icon(
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.white.withOpacity(0.06),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
-                  icon: const Icon(Icons.tune_rounded, color: Colors.white70, size: 14),
+                  icon: const Icon(Icons.tune_rounded,
+                      color: Colors.white70, size: 14),
                   label: Text(
                     'Đổi số đo',
-                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 11),
+                    style:
+                        GoogleFonts.inter(color: Colors.white70, fontSize: 11),
                   ),
                   onPressed: () => _showQuickAdjustDialog(context),
                 ),
@@ -318,14 +325,16 @@ class SmartFitCard extends StatelessWidget {
                   ),
                   Text(
                     'Thử nghiệm xem Layering Canvas và Smart Fit tự động thích ứng với thể trạng:',
-                    style: GoogleFonts.inter(color: Colors.white60, fontSize: 12),
+                    style:
+                        GoogleFonts.inter(color: Colors.white60, fontSize: 12),
                   ),
                   const SizedBox(height: 16),
                   // Slider Chiều cao
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Chiều cao:', style: GoogleFonts.inter(color: Colors.white)),
+                      Text('Chiều cao:',
+                          style: GoogleFonts.inter(color: Colors.white)),
                       Text(
                         '${h.toInt()} cm',
                         style: GoogleFonts.outfit(
@@ -348,7 +357,8 @@ class SmartFitCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Cân nặng:', style: GoogleFonts.inter(color: Colors.white)),
+                      Text('Cân nặng:',
+                          style: GoogleFonts.inter(color: Colors.white)),
                       Text(
                         '${w.toInt()} kg (BMI: ${bmi.toStringAsFixed(1)})',
                         style: GoogleFonts.outfit(
@@ -372,7 +382,8 @@ class SmartFitCard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       minimumSize: const Size.fromHeight(48),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
                     ),
                     onPressed: () {
                       Navigator.pop(ctx);
@@ -380,7 +391,8 @@ class SmartFitCard extends StatelessWidget {
                     },
                     child: Text(
                       'Áp Dụng Thể Trạng Mới',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
+                      style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
                 ],

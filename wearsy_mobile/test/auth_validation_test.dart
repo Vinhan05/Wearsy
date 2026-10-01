@@ -32,7 +32,8 @@ void main() {
       expect(emailRegex.hasMatch('customer@wearsy.app'), isTrue);
     });
 
-    test('Demo account logs in successfully with correct password 123456', () async {
+    test('Demo account logs in successfully with correct password 123456',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final authService = AuthService();
       final result = await authService.login(
@@ -43,7 +44,8 @@ void main() {
       expect(result.token, isNotEmpty);
     });
 
-    test('Demo account throws 401 ApiException when password is wrong', () async {
+    test('Demo account throws 401 ApiException when password is wrong',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final authService = AuthService();
 
@@ -55,12 +57,14 @@ void main() {
         throwsA(
           isA<ApiException>()
               .having((e) => e.statusCode, 'statusCode', 401)
-              .having((e) => e.message, 'message', contains('Email hoặc mật khẩu không chính xác')),
+              .having((e) => e.message, 'message',
+                  contains('Email hoặc mật khẩu không chính xác')),
         ),
       );
     });
 
-    test('Test account throws 401 ApiException when password is wrong', () async {
+    test('Test account throws 401 ApiException when password is wrong',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final authService = AuthService();
 
@@ -72,7 +76,8 @@ void main() {
         throwsA(
           isA<ApiException>()
               .having((e) => e.statusCode, 'statusCode', 401)
-              .having((e) => e.message, 'message', contains('Email hoặc mật khẩu không chính xác')),
+              .having((e) => e.message, 'message',
+                  contains('Email hoặc mật khẩu không chính xác')),
         ),
       );
     });
@@ -90,7 +95,8 @@ void main() {
       );
     });
 
-    test('Style profile updates and persists properly in local storage', () async {
+    test('Style profile updates and persists properly in local storage',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final authService = AuthService();
       await authService.login(
@@ -115,20 +121,25 @@ void main() {
         },
       });
 
-      expect(updated.preferredStyles, containsAll(['Thanh lịch', 'Năng động', 'Công sở']));
-      expect(updated.colorPreferences?['favorites'], containsAll(['Trắng', 'Đen', 'Xanh Navy']));
+      expect(updated.preferredStyles,
+          containsAll(['Thanh lịch', 'Năng động', 'Công sở']));
+      expect(updated.colorPreferences?['favorites'],
+          containsAll(['Trắng', 'Đen', 'Xanh Navy']));
       expect(updated.budgetRange?['max'], 3200000.0);
       expect(updated.bodyMeasurements?['height'], 175);
 
       // Verify getProfile returns the updated saved profile
       final retrieved = await authService.getProfile();
-      expect(retrieved.preferredStyles, containsAll(['Thanh lịch', 'Năng động', 'Công sở']));
-      expect(retrieved.colorPreferences?['favorites'], containsAll(['Trắng', 'Đen', 'Xanh Navy']));
+      expect(retrieved.preferredStyles,
+          containsAll(['Thanh lịch', 'Năng động', 'Công sở']));
+      expect(retrieved.colorPreferences?['favorites'],
+          containsAll(['Trắng', 'Đen', 'Xanh Navy']));
       expect(retrieved.budgetRange?['max'], 3200000.0);
       expect(retrieved.bodyMeasurements?['height'], 175);
     });
 
-    test('Change password flow works correctly and updates login credentials', () async {
+    test('Change password flow works correctly and updates login credentials',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final authService = AuthService();
 
@@ -144,7 +155,8 @@ void main() {
           oldPassword: 'wrongoldpass',
           newPassword: 'newPassword123',
         ),
-        throwsA(isA<ApiException>().having((e) => e.message, 'message', contains('Mật khẩu hiện tại không chính xác'))),
+        throwsA(isA<ApiException>().having((e) => e.message, 'message',
+            contains('Mật khẩu hiện tại không chính xác'))),
       );
 
       // Changing password with CORRECT old password succeeds
@@ -159,7 +171,8 @@ void main() {
           email: 'demo@wearsy.app',
           password: '123456',
         ),
-        throwsA(isA<ApiException>().having((e) => e.statusCode, 'statusCode', 401)),
+        throwsA(
+            isA<ApiException>().having((e) => e.statusCode, 'statusCode', 401)),
       );
 
       // Logging in with NEW password 'newPassword123' must SUCCEED
@@ -171,7 +184,8 @@ void main() {
       expect(loginResult.token, isNotEmpty);
     });
 
-    test('deleteAccount removes all user credentials and session data', () async {
+    test('deleteAccount removes all user credentials and session data',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final authService = AuthService();
 

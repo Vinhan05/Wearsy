@@ -11,9 +11,12 @@ import '../../outfits/providers/outfit_provider.dart';
 import '../../outfits/screens/outfit_detail_screen.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../../wardrobe/screens/add_item_screen.dart';
+import '../../wardrobe/screens/wardrobe_screen.dart';
+import '../../shopping/screens/smart_shopping_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final void Function(int index)? onSwitchTab;
+  const DashboardScreen({super.key, this.onSwitchTab});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -56,7 +59,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           content: Text('📍 Đã định vị: ${detected.name} (${detected.region})'),
           backgroundColor: AppTheme.primaryColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     }
@@ -108,10 +112,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ? const SizedBox(
                             width: 14,
                             height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryLight),
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: AppTheme.primaryLight),
                           )
                         : const Icon(Icons.my_location_rounded, size: 16),
-                    label: const Text('Định vị tự động', style: TextStyle(fontSize: 12)),
+                    label: const Text('Định vị tự động',
+                        style: TextStyle(fontSize: 12)),
                     onPressed: _isDetectingLocation
                         ? null
                         : () {
@@ -129,27 +135,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: WeatherService.popularCities.length,
-                  separatorBuilder: (_, __) => const Divider(color: Colors.white12, height: 1),
+                  separatorBuilder: (_, __) =>
+                      const Divider(color: Colors.white12, height: 1),
                   itemBuilder: (context, index) {
                     final city = WeatherService.popularCities[index];
                     final isSelected = city.name == _selectedCity.name;
                     return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      leading: Text(city.icon, style: const TextStyle(fontSize: 24)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      leading:
+                          Text(city.icon, style: const TextStyle(fontSize: 24)),
                       title: Text(
                         city.name,
                         style: GoogleFonts.outfit(
                           fontSize: 16,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                          color: isSelected ? AppTheme.primaryLight : Colors.white,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
+                          color:
+                              isSelected ? AppTheme.primaryLight : Colors.white,
                         ),
                       ),
                       subtitle: Text(
                         city.region,
-                        style: GoogleFonts.inter(fontSize: 12, color: AppTheme.darkTextSecondary),
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: AppTheme.darkTextSecondary),
                       ),
                       trailing: isSelected
-                          ? const Icon(Icons.check_circle_rounded, color: AppTheme.primaryLight, size: 20)
+                          ? const Icon(Icons.check_circle_rounded,
+                              color: AppTheme.primaryLight, size: 20)
                           : null,
                       onTap: () {
                         Navigator.pop(ctx);
@@ -273,8 +286,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildAIBanner(
-      BuildContext context, Map<String, dynamic> weather) {
+  Widget _buildAIBanner(BuildContext context, Map<String, dynamic> weather) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -296,7 +308,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(12),
@@ -325,7 +338,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onTap: _showCityPickerBottomSheet,
                   borderRadius: BorderRadius.circular(14),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(14),
@@ -356,7 +370,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                         const SizedBox(width: 2),
-                        const Icon(Icons.arrow_drop_down_rounded, color: Colors.white70, size: 18),
+                        const Icon(Icons.arrow_drop_down_rounded,
+                            color: Colors.white70, size: 18),
                       ],
                     ),
                   ),
@@ -397,7 +412,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.auto_awesome_rounded, color: Colors.amber, size: 14),
+                      const Icon(Icons.auto_awesome_rounded,
+                          color: Colors.amber, size: 14),
                       const SizedBox(width: 6),
                       Text(
                         'Công thức phối đồ AI:',
@@ -419,21 +435,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       height: 1.4,
                     ),
                   ),
-                  if (weather['suggestedItems'] != null && (weather['suggestedItems'] as List).isNotEmpty) ...[
+                  if (weather['suggestedItems'] != null &&
+                      (weather['suggestedItems'] as List).isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 6,
                       runSpacing: 4,
-                      children: (weather['suggestedItems'] as List).map<Widget>((item) {
+                      children: (weather['suggestedItems'] as List)
+                          .map<Widget>((item) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             item.toString(),
-                            style: GoogleFonts.inter(fontSize: 10, color: Colors.white),
+                            style: GoogleFonts.inter(
+                                fontSize: 10, color: Colors.white),
                           ),
                         );
                       }).toList(),
@@ -458,20 +478,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
             ),
             onPressed: () {
-              // Navigate to AI Outfit tab (index 2)
-              // We use a SnackBar here since we can't access the navigator to switch tabs easily
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '✨ Chuyển sang tab AI Outfit để tạo outfit mới!',
-                    style: GoogleFonts.inter(),
-                  ),
-                  backgroundColor: AppTheme.primaryColor,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-              );
+              widget.onSwitchTab?.call(2);
             },
           ),
         ],
@@ -491,6 +498,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             count: wardrobeProvider.allItems.length.toString(),
             label: 'Tủ Đồ',
             color: AppTheme.primaryColor,
+            onTap: () => widget.onSwitchTab?.call(1),
           ),
         ),
         const SizedBox(width: 10),
@@ -500,6 +508,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             count: outfitProvider.outfits.length.toString(),
             label: 'AI Outfit',
             color: AppTheme.secondaryColor,
+            onTap: () => widget.onSwitchTab?.call(2),
           ),
         ),
         const SizedBox(width: 10),
@@ -525,13 +534,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             subtitle: 'AI Tự Động Phân Loại',
             color: AppTheme.secondaryColor,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('📸 Chuyển sang tab Tủ đồ để thêm đồ!',
-                      style: GoogleFonts.inter()),
-                  backgroundColor: AppTheme.secondaryColor,
-                  behavior: SnackBarBehavior.floating,
-                ),
+              WardrobeScreen.showAddOptionsModal(
+                context,
+                onSelect: () => widget.onSwitchTab?.call(1),
               );
             },
           ),
@@ -542,14 +547,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icons.shopping_bag_rounded,
             title: 'Smart Shopping',
             subtitle: 'Check Độ Tương Thích',
-            color: AppTheme.primaryLight,
+            color: const Color(0xFFFF6B6B),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('🛍️ Tính năng Smart Shopping đang phát triển!',
-                      style: GoogleFonts.inter()),
-                  backgroundColor: AppTheme.primaryColor,
-                  behavior: SnackBarBehavior.floating,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SmartShoppingScreen(),
                 ),
               );
             },
@@ -577,12 +580,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: Colors.white,
               ),
             ),
-            Text(
-              'Xem tất cả (${provider.allItems.length})',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: AppTheme.primaryLight,
-                fontWeight: FontWeight.bold,
+            InkWell(
+              onTap: () => widget.onSwitchTab?.call(1),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Text(
+                  'Xem tất cả (${provider.allItems.length})',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: AppTheme.primaryLight,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
@@ -643,15 +653,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (_) => const AddItemScreen()),
+                      MaterialPageRoute(builder: (_) => const AddItemScreen()),
                     );
                   },
                   child: Text('Thêm đồ',
@@ -694,12 +704,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: Colors.white,
               ),
             ),
-            Text(
-              'Xem tất cả',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: AppTheme.primaryLight,
-                fontWeight: FontWeight.bold,
+            InkWell(
+              onTap: () => widget.onSwitchTab?.call(2),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Text(
+                  'Xem tất cả',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: AppTheme.primaryLight,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
@@ -790,45 +807,51 @@ class _StatCard extends StatelessWidget {
   final String count;
   final String label;
   final Color color;
+  final VoidCallback? onTap;
 
   const _StatCard({
     required this.icon,
     required this.count,
     required this.label,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-      decoration: BoxDecoration(
-        color: AppTheme.darkCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 26),
-          const SizedBox(height: 8),
-          Text(
-            count,
-            style: GoogleFonts.outfit(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+        decoration: BoxDecoration(
+          color: AppTheme.darkCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.06)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 26),
+            const SizedBox(height: 8),
+            Text(
+              count,
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 10,
-              color: AppTheme.darkTextSecondary,
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: AppTheme.darkTextSecondary,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -860,8 +883,8 @@ class _WardrobePreviewCard extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   color: AppTheme.darkSurface,
-                  child: const Icon(Icons.checkroom,
-                      color: AppTheme.primaryLight),
+                  child:
+                      const Icon(Icons.checkroom, color: AppTheme.primaryLight),
                 ),
               ),
             ),

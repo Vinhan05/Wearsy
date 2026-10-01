@@ -101,8 +101,12 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              currentOutfit.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: currentOutfit.isFavorite ? AppTheme.accentColor : Colors.white,
+              currentOutfit.isFavorite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+              color: currentOutfit.isFavorite
+                  ? AppTheme.accentColor
+                  : Colors.white,
             ),
             onPressed: () => provider.toggleFavorite(currentOutfit.id),
           ),
@@ -235,7 +239,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppTheme.primaryColor.withOpacity(0.25)),
+                  border: Border.all(
+                      color: AppTheme.primaryColor.withOpacity(0.25)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,7 +277,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         const SizedBox(width: 6),
                         Text(
                           'Thời tiết phù hợp: ',
-                          style: GoogleFonts.inter(color: Colors.white60, fontSize: 12),
+                          style: GoogleFonts.inter(
+                              color: Colors.white60, fontSize: 12),
                         ),
                         Text(
                           currentOutfit.weatherSuitable.join(' · '),
@@ -344,11 +350,13 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                     elevation: 6,
                     shadowColor: AppTheme.primaryColor.withOpacity(0.5),
                   ),
-                  icon: const Icon(Icons.check_circle_rounded, color: Colors.white),
+                  icon: const Icon(Icons.check_circle_rounded,
+                      color: Colors.white),
                   label: Text(
                     'Mặc Outfit Này Hôm Nay',
                     style: GoogleFonts.outfit(
@@ -362,12 +370,14 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                       SnackBar(
                         content: Row(
                           children: [
-                            const Icon(Icons.auto_awesome, color: Colors.amber, size: 20),
+                            const Icon(Icons.auto_awesome,
+                                color: Colors.amber, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 '✨ Tuyệt vời! Bạn đã chọn mặc "${currentOutfit.name}" cho hôm nay!',
-                                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                                style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w600),
                               ),
                             ),
                           ],
@@ -392,17 +402,20 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                   foregroundColor: Colors.white70,
                   side: BorderSide(color: Colors.white.withOpacity(0.15)),
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                 ),
                 icon: const Icon(Icons.share_rounded, size: 18),
                 label: Text(
                   'Chia Sẻ Phong Cách Này',
-                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                      fontSize: 13, fontWeight: FontWeight.w600),
                 ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('🔗 Đã sao chép liên kết chia sẻ bộ phối đồ!'),
+                      content:
+                          Text('🔗 Đã sao chép liên kết chia sẻ bộ phối đồ!'),
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -448,7 +461,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
       children: itemIds
           .map((id) => Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: AppTheme.darkCard,
                   borderRadius: BorderRadius.circular(12),
@@ -458,7 +472,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                     const Icon(Icons.checkroom_rounded,
                         color: AppTheme.primaryLight, size: 20),
                     const SizedBox(width: 12),
-                    Text('Món đồ #$id', style: GoogleFonts.inter(color: Colors.white)),
+                    Text('Món đồ #$id',
+                        style: GoogleFonts.inter(color: Colors.white)),
                   ],
                 ),
               ))
@@ -522,7 +537,9 @@ class _DetailedItemRow extends StatelessWidget {
           color: AppTheme.darkCard,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isHighlighted ? AppTheme.primaryLight : Colors.white.withOpacity(0.06),
+            color: isHighlighted
+                ? AppTheme.primaryLight
+                : Colors.white.withOpacity(0.06),
             width: isHighlighted ? 1.8 : 1.0,
           ),
           boxShadow: isHighlighted
@@ -548,7 +565,8 @@ class _DetailedItemRow extends StatelessWidget {
                   height: 60,
                   color: AppTheme.darkSurface,
                   child: Center(
-                    child: Text(item.category.icon, style: const TextStyle(fontSize: 24)),
+                    child: Text(item.category.icon,
+                        style: const TextStyle(fontSize: 24)),
                   ),
                 ),
               ),
@@ -561,11 +579,13 @@ class _DetailedItemRow extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: layerColor.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: layerColor.withOpacity(0.3)),
+                          border:
+                              Border.all(color: layerColor.withOpacity(0.3)),
                         ),
                         child: Text(
                           _getLayerBadge(item.layerOrder),
@@ -579,7 +599,8 @@ class _DetailedItemRow extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         '• ${item.color}',
-                        style: GoogleFonts.inter(color: Colors.white54, fontSize: 11),
+                        style: GoogleFonts.inter(
+                            color: Colors.white54, fontSize: 11),
                       ),
                     ],
                   ),
@@ -595,12 +616,14 @@ class _DetailedItemRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '${item.brand} • ${item.category.displayName}',
-                    style: GoogleFonts.inter(color: Colors.white60, fontSize: 12),
+                    style:
+                        GoogleFonts.inter(color: Colors.white60, fontSize: 12),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white24, size: 14),
+            const Icon(Icons.arrow_forward_ios_rounded,
+                color: Colors.white24, size: 14),
           ],
         ),
       ),

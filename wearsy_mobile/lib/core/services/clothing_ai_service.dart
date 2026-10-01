@@ -27,8 +27,35 @@ class ClothingAnalysisResult {
 }
 
 class ClothingAiService {
-  static const String _geminiApiKey = 'YOUR_GEMINI_API_KEY';
-  static const String _geminiModel = 'gemini-3.6-flash';
+  static const String _geminiApiKey =
+      'YOUR_GEMINI_API_KEY';
+  static const String _geminiModel = 'gemini-flash-lite-latest';
+  static const String _geminiModelFallback = 'gemini-3.8-flash';
+
+  /// Ensure image payload size is compact (< 250KB) to minimize mobile network upload latency
+  static Future<List<int>> _optimizeImageBytes(List<int> bytes) async {
+    if (bytes.length <= 250 * 1024) {
+      return bytes;
+    }
+    try {
+      final codec = await ui.instantiateImageCodec(
+        Uint8List.fromList(bytes),
+        targetWidth: 720,
+      );
+      final frame = await codec.getNextFrame();
+      final byteData =
+          await frame.image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData != null) {
+        final resized = byteData.buffer.asUint8List();
+        debugPrint(
+            '[ClothingAiService] Downscaled payload: ${bytes.length}B -> ${resized.length}B');
+        return resized;
+      }
+    } catch (e) {
+      debugPrint('[ClothingAiService] Downscaling skipped: $e');
+    }
+    return bytes;
+  }
 
   /// Known presets for instantaneous matching
   static final Map<String, ClothingAnalysisResult> _knownPresets = {
@@ -40,7 +67,8 @@ class ClothingAiService {
       brand: 'Zara',
       tags: ['Smart Casual', 'Thanh lịch', 'Tối giản'],
       aiMatchScore: 9.6,
-      aiReason: 'Chất liệu dệt kim tông be thanh lịch, tối ưu phối cùng quần âu hoặc jean.',
+      aiReason:
+          'Chất liệu dệt kim tông be thanh lịch, tối ưu phối cùng quần âu hoặc jean.',
     ),
     'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=800&auto=format&fit=crop':
         const ClothingAnalysisResult(
@@ -50,7 +78,8 @@ class ClothingAiService {
       brand: 'Zara',
       tags: ['Dự tiệc', 'Quyến rũ', 'Sang trọng'],
       aiMatchScore: 9.6,
-      aiReason: 'Chất lụa mềm rủ tông đỏ ruby quý phái, thiết kế tôn dáng chuẩn các buổi tiệc tối.',
+      aiReason:
+          'Chất lụa mềm rủ tông đỏ ruby quý phái, thiết kế tôn dáng chuẩn các buổi tiệc tối.',
     ),
     'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800&auto=format&fit=crop':
         const ClothingAnalysisResult(
@@ -60,7 +89,8 @@ class ClothingAiService {
       brand: 'Mango',
       tags: ['Công sở', 'Thanh lịch', 'Dự tiệc'],
       aiMatchScore: 9.3,
-      aiReason: 'Dáng dạ dài tông nâu đất sang trọng, giữ ấm và tôn dáng chuẩn mùa thu đông.',
+      aiReason:
+          'Dáng dạ dài tông nâu đất sang trọng, giữ ấm và tôn dáng chuẩn mùa thu đông.',
     ),
     'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop':
         const ClothingAnalysisResult(
@@ -70,7 +100,8 @@ class ClothingAiService {
       brand: 'Levi\'s',
       tags: ['Streetwear', 'Năng động', 'Vintage'],
       aiMatchScore: 9.5,
-      aiReason: 'Chất jean rách wash nhẹ retro, form ống suông dễ phối với nhiều dáng áo streetwear.',
+      aiReason:
+          'Chất jean rách wash nhẹ retro, form ống suông dễ phối với nhiều dáng áo streetwear.',
     ),
     'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop':
         const ClothingAnalysisResult(
@@ -80,7 +111,8 @@ class ClothingAiService {
       brand: 'Nike',
       tags: ['Năng động', 'Tối giản', 'Smart Casual'],
       aiMatchScore: 9.7,
-      aiReason: 'Giày sneaker trắng basic năng động, là item quốc dân cân mọi phong cách đồ.',
+      aiReason:
+          'Giày sneaker trắng basic năng động, là item quốc dân cân mọi phong cách đồ.',
     ),
     'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop':
         const ClothingAnalysisResult(
@@ -90,17 +122,20 @@ class ClothingAiService {
       brand: 'Charles & Keith',
       tags: ['Phụ kiện', 'Túi xách', 'Trendy'],
       aiMatchScore: 9.5,
-      aiReason: 'Túi kẹp nách da bóng thanh lịch, phụ kiện hoàn hảo làm điểm nhấn mọi set đồ.',
+      aiReason:
+          'Túi kẹp nách da bóng thanh lịch, phụ kiện hoàn hảo làm điểm nhấn mọi set đồ.',
     ),
   };
 
   /// Main recognition entry point: analyzes an image from local file path or remote URL
-  static Future<ClothingAnalysisResult> analyzeImage(String imagePathOrUrl) async {
+  static Future<ClothingAnalysisResult> analyzeImage(
+      String imagePathOrUrl) async {
     debugPrint('[ClothingAiService] Starting analysis for: $imagePathOrUrl');
 
     // 1. Check if matching any known preset
     for (final entry in _knownPresets.entries) {
-      if (imagePathOrUrl.contains(entry.key) || entry.key.contains(imagePathOrUrl)) {
+      if (imagePathOrUrl.contains(entry.key) ||
+          entry.key.contains(imagePathOrUrl)) {
         debugPrint('[ClothingAiService] Matched preset: ${entry.value.name}');
         return entry.value;
       }
@@ -108,8 +143,11 @@ class ClothingAiService {
 
     List<int>? imageBytes;
     try {
-      if (imagePathOrUrl.startsWith('http://') || imagePathOrUrl.startsWith('https://')) {
-        final res = await http.get(Uri.parse(imagePathOrUrl)).timeout(const Duration(seconds: 8));
+      if (imagePathOrUrl.startsWith('http://') ||
+          imagePathOrUrl.startsWith('https://')) {
+        final res = await http
+            .get(Uri.parse(imagePathOrUrl))
+            .timeout(const Duration(seconds: 8));
         if (res.statusCode == 200) {
           imageBytes = res.bodyBytes;
         }
@@ -126,9 +164,11 @@ class ClothingAiService {
     // 2. Try Gemini Multimodal Vision API with auto-retry
     if (imageBytes != null && imageBytes.isNotEmpty) {
       try {
-        final geminiResult = await _analyzeWithGeminiVision(imagePathOrUrl, imageBytes);
+        final geminiResult =
+            await _analyzeWithGeminiVision(imagePathOrUrl, imageBytes);
         if (geminiResult != null) {
-          debugPrint('[ClothingAiService] Gemini Vision SUCCESS: ${geminiResult.name} • ${geminiResult.color} • ${geminiResult.category}');
+          debugPrint(
+              '[ClothingAiService] Gemini Vision SUCCESS: ${geminiResult.name} • ${geminiResult.color} • ${geminiResult.category}');
           return geminiResult;
         }
       } catch (e, stack) {
@@ -137,11 +177,12 @@ class ClothingAiService {
     }
 
     // 3. Smart Local Vision & Heuristic Fallback
-    debugPrint('[ClothingAiService] Falling back to local smart vision analyzer');
+    debugPrint(
+        '[ClothingAiService] Falling back to local smart vision analyzer');
     return await _smartLocalVisionFallback(imagePathOrUrl, imageBytes);
   }
 
-  /// Send image bytes to Gemini 3.6 Flash Multimodal Vision with retry on 503/429
+  /// Send image bytes to Gemini Multimodal Vision with optimized payload & fallback
   static Future<ClothingAnalysisResult?> _analyzeWithGeminiVision(
     String imagePathOrUrl,
     List<int> imageBytes,
@@ -156,9 +197,12 @@ class ClothingAiService {
       mimeType = 'image/gif';
     }
 
-    final base64String = base64Encode(imageBytes);
+    // Tối ưu hóa kích thước ảnh payload (< 250KB) trước khi gửi qua API
+    final optimizedBytes = await _optimizeImageBytes(imageBytes);
+    final base64String = base64Encode(optimizedBytes);
 
-    const promptText = '''Bạn là chuyên gia thẩm định và stylist thời trang AI cao cấp của WEARSY.
+    const promptText =
+        '''Bạn là chuyên gia thẩm định và stylist thời trang AI cao cấp của WEARSY.
 Nhiệm vụ: Phân tích kỹ bức ảnh trang phục/phụ kiện này để điền form tủ đồ.
 
 QUY TẮC PHÂN LOẠI CHI TIẾT:
@@ -169,39 +213,39 @@ QUY TẮC PHÂN LOẠI CHI TIẾT:
    - "shoes": Giày thể thao, sneakers, giày tây, boots, sandal, dép.
    - "accessories": Túi xách, balo, thắt lưng, nón/mũ, mắt kính, đồng hồ, trang sức.
 
-2. MÀU SẮC CHỦ ĐẠO (color) - CỦA CHÍNH MÓN ĐỒ:
-   - BẮT BUỘC bỏ qua màu nền trắng/xám phía sau, chỉ lấy màu thực tế của trang phục.
-   - Ví dụ: Áo khoác đen trên nền trắng thì màu sắc chính BẮT BUỘC là 'Đen'.
-   - Chọn 1 trong: ['Đen', 'Trắng', 'Xanh Navy', 'Be', 'Xám', 'Nâu', 'Đỏ', 'Vàng', 'Pastel'].
+2. MÀU SẮC CHỦ ĐẠO (color) - CỦA CHÍNH MÓN ĐỒ (CỰC KỲ QUAN TRỌNG):
+   - Bỏ qua màu nền xung quanh, màu người mẫu, phụ kiện (nón, túi) và BỎ QUA màu của họa tiết/chữ in nhỏ trên áo. CHỈ xác định màu nền vải chính của món đồ.
+   - PHÂN BIỆT RÕ RÀNG GIỮA "Trắng" VÀ "Be":
+     + "Be": Dành cho các tông màu Be, Kem (Cream), Trắng ngà (Ivory), Trắng kem, Off-white, Nude, Cát, Vanilla. Nếu chất vải có ánh vàng ấm, ngà ngà hoặc hơi đục ấm (như áo thun màu kem/be) -> BẮT BUỘC chọn "Be", TUYỆT ĐỐI KHÔNG chọn "Trắng".
+     + "Trắng": CHỈ áp dụng khi màu vải là Trắng tinh, Trắng sáng thuần khiết (Pure White / Optic White / Stark White), hoàn toàn không có ánh ngà hay ánh kem.
+     + "Xanh Navy": Tông xanh than, xanh biển đậm, xanh đen. Nếu có ánh xanh đậm thì chọn "Xanh Navy", tránh nhầm sang "Đen".
+   - Chọn chính xác 1 trong: ['Be', 'Trắng', 'Đen', 'Xanh Navy', 'Xám', 'Nâu', 'Đỏ', 'Vàng', 'Pastel'].
 
 3. TÊN TRANG PHỤC (name):
-   - Tiếng Việt ngắn gọn, chuyên nghiệp, mô tả đúng phom dáng (ví dụ: "Áo Khoác Gió Nam Có Mũ", "Áo Khoác Dù Phối Khóa Zip", "Quần Jean Ống Suông Retro", "Áo Thun Cotton Oversize").
+   - Tiếng Việt ngắn gọn, chuyên nghiệp, mô tả đúng phom dáng và màu sắc (ví dụ: "Áo Thun Cotton Oversize Màu Be In Hình", "Áo Khoác Gió Nam Có Mũ", "Quần Jean Ống Suông Retro").
 
 4. THƯƠNG HIỆU GỢI Ý (brand):
-   - Đọc logo nếu có (như Nike, The North Face, Zara, Levi's, Adidas, Uniqlo) hoặc gợi ý thương hiệu phù hợp (The North Face, Zara, Uniqlo, Local Brand).
+   - Đọc logo / chữ in thương hiệu trên áo nếu có (ví dụ: Traffy, Nike, The North Face, Zara, Levi's, Adidas, Uniqlo, Local Brand).
 
 5. THẺ PHONG CÁCH (tags):
-   - Chọn 2 đến 3 thẻ từ: ['Smart Casual', 'Công sở', 'Streetwear', 'Tối giản', 'Năng động', 'Dự tiệc', 'Vintage'].
+   - Nhận diện chính xác 2 đến 3 phong cách thời trang phù hợp nhất với trang phục: 'Streetwear', 'Hàn Quốc', 'Năng động', 'Smart Casual', 'Công sở', 'Tối giản', 'Dự tiệc', 'Vintage', 'Y2K'...
 
 6. ĐIỂM AI MATCH (aiMatchScore):
    - Số thập phân từ 9.2 đến 9.8.
 
 7. LÝ DO NHẬN DIỆN (aiReason):
-   - 1 câu giải thích ngắn gọn, chuyên nghiệp về đặc điểm thiết kế và cách phối đồ.
+   - 1 câu giải thích ngắn gọn, chuyên nghiệp về đặc điểm thiết kế, chất liệu và phối màu chuẩn xác.
 
 TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢN NÀO NGOÀI JSON):
 {
-  "name": "Áo Khoác Gió Nam Có Mũ",
-  "category": "outerwear",
-  "color": "Đen",
-  "brand": "The North Face",
-  "tags": ["Streetwear", "Năng động"],
+  "name": "Áo Thun Cotton Oversize Màu Be In Hình",
+  "category": "tops",
+  "color": "Be",
+  "brand": "Traffy",
+  "tags": ["Streetwear", "Hàn Quốc", "Năng động"],
   "aiMatchScore": 9.6,
-  "aiReason": "Thiết kế áo khoác gió chất liệu chống thấm có mũ trùm năng động, form đứng dễ phối trang phục hằng ngày."
+  "aiReason": "Thiết kế áo thun form rộng màu be kem trẻ trung phối hình in lưng phong cách streetwear năng động."
 }''';
-
-    final uri = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/$_geminiModel:generateContent?key=$_geminiApiKey');
 
     final payload = {
       'contents': [
@@ -220,22 +264,30 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
       'generationConfig': {
         'temperature': 0.1,
         'topP': 0.8,
+        'responseMimeType': 'application/json',
+        'maxOutputTokens': 250,
       }
     };
 
-    // Retry loop for 503 / 429
-    for (int attempt = 1; attempt <= 3; attempt++) {
+    // Danh sách model theo thứ tự ưu tiên tốc độ
+    final modelsToTry = [_geminiModel, _geminiModelFallback];
+
+    for (final model in modelsToTry) {
+      final uri = Uri.parse(
+          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_geminiApiKey');
+
       try {
-        debugPrint('[ClothingAiService] Calling Gemini API (attempt $attempt)...');
+        debugPrint('[ClothingAiService] Calling Gemini ($model)...');
         final response = await http
             .post(
               uri,
               headers: {'Content-Type': 'application/json'},
               body: jsonEncode(payload),
             )
-            .timeout(const Duration(seconds: 22));
+            .timeout(const Duration(seconds: 7));
 
-        debugPrint('[ClothingAiService] Gemini response status: ${response.statusCode}');
+        debugPrint(
+            '[ClothingAiService] $model response status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
@@ -255,17 +307,12 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
             }
           }
         } else if (response.statusCode == 503 || response.statusCode == 429) {
-          debugPrint('[ClothingAiService] Gemini busy (${response.statusCode}), waiting to retry...');
-          if (attempt < 3) {
-            await Future.delayed(Duration(milliseconds: 1000 * attempt));
-            continue;
-          }
+          debugPrint('[ClothingAiService] $model busy, trying next model...');
+          await Future.delayed(const Duration(milliseconds: 300));
+          continue;
         }
       } catch (e) {
-        debugPrint('[ClothingAiService] Attempt $attempt error: $e');
-        if (attempt < 3) {
-          await Future.delayed(Duration(milliseconds: 800 * attempt));
-        }
+        debugPrint('[ClothingAiService] $model request error: $e');
       }
     }
 
@@ -337,7 +384,8 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
 
       double score = 9.5;
       if (data['aiMatchScore'] != null) {
-        score = (double.tryParse(data['aiMatchScore'].toString()) ?? 9.5).clamp(8.5, 9.9);
+        score = (double.tryParse(data['aiMatchScore'].toString()) ?? 9.5)
+            .clamp(8.5, 9.9);
       }
 
       return ClothingAnalysisResult(
@@ -347,7 +395,8 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
         brand: data['brand']?.toString() ?? 'The North Face',
         tags: tagsList,
         aiMatchScore: score,
-        aiReason: data['aiReason']?.toString() ?? 'AI đã phân tích cấu trúc, chất liệu và phối màu chuẩn xác.',
+        aiReason: data['aiReason']?.toString() ??
+            'AI đã phân tích cấu trúc, chất liệu và phối màu chuẩn xác.',
       );
     } catch (e) {
       debugPrint('[ClothingAiService] _extractJson error: $e');
@@ -375,6 +424,28 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
     }
 
     final lower = path.toLowerCase();
+    final extraStyleTags = <String>[];
+    if (lower.contains('y2k')) extraStyleTags.add('Y2K');
+    if (lower.contains('gym') ||
+        lower.contains('sport') ||
+        lower.contains('fitness')) {
+      extraStyleTags.add('Gym/Sporty');
+    }
+    if (lower.contains('school') ||
+        lower.contains('dihoc') ||
+        lower.contains('preppy')) {
+      extraStyleTags.add('Đi học');
+    }
+    if (lower.contains('oldmoney') || lower.contains('luxury')) {
+      extraStyleTags.add('Old Money');
+    }
+    if (lower.contains('gorpcore')) extraStyleTags.add('Gorpcore');
+    if (lower.contains('boho') || lower.contains('bohemian')) {
+      extraStyleTags.add('Bohemian');
+    }
+    if (lower.contains('beach') || lower.contains('bien')) {
+      extraStyleTags.add('Đi biển');
+    }
 
     // Bottoms
     if (lower.contains('jean') ||
@@ -389,7 +460,12 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
         category: WardrobeCategory.bottoms,
         color: detectedColor == 'Đen' ? 'Xanh Navy' : detectedColor,
         brand: 'Levi\'s',
-        tags: ['Streetwear', 'Năng động', 'Vintage'],
+        tags: {
+          'Streetwear',
+          'Năng động',
+          'Vintage',
+          ...extraStyleTags,
+        }.toList(),
         aiMatchScore: (9.2 + Random().nextDouble() * 0.4).clamp(9.0, 9.8),
         aiReason: 'AI phát hiện dáng quần, phối chỉ may và màu sắc năng động.',
       );
@@ -405,9 +481,15 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
         category: WardrobeCategory.dresses,
         color: detectedColor,
         brand: 'Zara',
-        tags: ['Thanh lịch', 'Dự tiệc', 'Nữ tính'],
+        tags: {
+          'Thanh lịch',
+          'Dự tiệc',
+          'Nữ tính',
+          ...extraStyleTags,
+        }.toList(),
         aiMatchScore: (9.3 + Random().nextDouble() * 0.4).clamp(9.0, 9.8),
-        aiReason: 'AI nhận diện thiết kế đầm liền dáng đẹp, tông $detectedColor thanh lịch.',
+        aiReason:
+            'AI nhận diện thiết kế đầm liền dáng đẹp, tông $detectedColor thanh lịch.',
       );
     }
 
@@ -424,9 +506,15 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
         category: WardrobeCategory.outerwear,
         color: detectedColor,
         brand: 'The North Face',
-        tags: ['Streetwear', 'Năng động', 'Tối giản'],
+        tags: {
+          'Streetwear',
+          'Năng động',
+          'Tối giản',
+          ...extraStyleTags,
+        }.toList(),
         aiMatchScore: (9.3 + Random().nextDouble() * 0.4).clamp(9.0, 9.8),
-        aiReason: 'AI nhận diện áo khoác có mũ trùm & khóa kéo, tông màu $detectedColor hiện đại chuẩn streetwear.',
+        aiReason:
+            'AI nhận diện áo khoác có mũ trùm & khóa kéo, tông màu $detectedColor hiện đại chuẩn streetwear.',
       );
     }
 
@@ -441,9 +529,15 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
         category: WardrobeCategory.shoes,
         color: detectedColor,
         brand: 'Nike',
-        tags: ['Năng động', 'Tối giản', 'Streetwear'],
+        tags: {
+          'Năng động',
+          'Tối giản',
+          'Streetwear',
+          ...extraStyleTags,
+        }.toList(),
         aiMatchScore: 9.6,
-        aiReason: 'Giày thể thao êm ái, tông $detectedColor dễ kết hợp với trang phục.',
+        aiReason:
+            'Giày thể thao êm ái, tông $detectedColor dễ kết hợp với trang phục.',
       );
     }
 
@@ -459,7 +553,11 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
         category: WardrobeCategory.accessories,
         color: detectedColor,
         brand: 'Local Brand',
-        tags: ['Tối giản', 'Smart Casual'],
+        tags: {
+          'Tối giản',
+          'Smart Casual',
+          ...extraStyleTags,
+        }.toList(),
         aiMatchScore: 9.2,
         aiReason: 'Phụ kiện tôn vẻ ngoài sành điệu và hoàn thiện phong cách.',
       );
@@ -471,9 +569,15 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
       category: WardrobeCategory.tops,
       color: detectedColor,
       brand: 'Zara',
-      tags: ['Smart Casual', 'Tối giản', 'Thanh lịch'],
+      tags: {
+        'Smart Casual',
+        'Tối giản',
+        'Thanh lịch',
+        ...extraStyleTags,
+      }.toList(),
       aiMatchScore: (9.1 + Random().nextDouble() * 0.5).clamp(9.0, 9.8),
-      aiReason: 'Áo thời trang phong cách linh hoạt, tông $detectedColor dễ phối đồ.',
+      aiReason:
+          'Áo thời trang phong cách linh hoạt, tông $detectedColor dễ phối đồ.',
     );
   }
 
@@ -487,7 +591,8 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
       );
       final frame = await codec.getNextFrame();
       final image = frame.image;
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final byteData =
+          await image.toByteData(format: ui.ImageByteFormat.rawRgba);
       if (byteData == null) return null;
 
       final data = byteData.buffer.asUint8List();
@@ -527,15 +632,20 @@ TRẢ VỀ DUY NHẤT CHUỖI JSON HỢP LỆ (KHÔNG THÊM BẤT KỲ VĂN BẢ
       final avgB = totalB / validPixelCount;
       final brightness = (0.299 * avgR + 0.587 * avgG + 0.114 * avgB);
 
-      debugPrint('[ClothingAiService] Sampled Garment Colors: R=$avgR, G=$avgG, B=$avgB, Brightness=$brightness');
+      debugPrint(
+          '[ClothingAiService] Sampled Garment Colors: R=$avgR, G=$avgG, B=$avgB, Brightness=$brightness');
 
       if (brightness < 70) {
         return 'Đen';
       } else if (brightness > 200) {
+        // Tông ấm / trắng ngà / kem (R và G cao hơn B): phân loại là Be
+        if (avgR > avgB + 10 && avgG > avgB + 5) {
+          return 'Be';
+        }
         return 'Trắng';
       } else if (avgB > avgR + 25 && avgB > avgG + 15) {
         return 'Xanh Navy';
-      } else if (avgR > 130 && avgG > 115 && avgB < 100) {
+      } else if (avgR > 130 && avgG > 115 && avgB < 150) {
         return 'Be';
       } else if (avgR > avgG + 30 && avgR > avgB + 30) {
         return 'Đỏ';

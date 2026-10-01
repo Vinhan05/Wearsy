@@ -21,9 +21,12 @@ class ProfileScreen extends StatelessWidget {
     final user = authProvider.user;
     final wardrobeCount = wardrobeProvider.allItems.length;
     final outfitCount = outfitProvider.outfits.length;
-    final currencyFormatter = NumberFormat.compactSimpleCurrency(locale: 'vi_VN');
+    final currencyFormatter =
+        NumberFormat.compactSimpleCurrency(locale: 'vi_VN');
 
-    final styleProfile = user != null ? StyleProfileModel.fromJson(user.toJson()) : StyleProfileModel();
+    final styleProfile = user != null
+        ? StyleProfileModel.fromJson(user.toJson())
+        : StyleProfileModel();
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +37,8 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Hồ sơ phong cách',
-            icon: const Icon(Icons.tune_rounded, color: AppTheme.primaryLight, size: 26),
+            icon: const Icon(Icons.tune_rounded,
+                color: AppTheme.primaryLight, size: 26),
             onPressed: () {
               Navigator.push(
                 context,
@@ -118,9 +122,11 @@ class ProfileScreen extends StatelessWidget {
                               const SizedBox(height: 8),
                               user?.hasActiveVip == true
                                   ? Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: Colors.white.withValues(alpha: 0.2),
+                                        color:
+                                            Colors.white.withValues(alpha: 0.2),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
@@ -137,22 +143,31 @@ class ProfileScreen extends StatelessWidget {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => const AccountSettingsScreen(initialIndex: 2),
+                                            builder: (context) =>
+                                                const AccountSettingsScreen(
+                                                    initialIndex: 2),
                                           ),
                                         );
                                       },
                                       borderRadius: BorderRadius.circular(12),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.15),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.25)),
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Icon(Icons.stars_rounded, color: Colors.amberAccent, size: 13),
+                                            const Icon(Icons.stars_rounded,
+                                                color: Colors.amberAccent,
+                                                size: 13),
                                             const SizedBox(width: 4),
                                             Text(
                                               'Nâng Cấp VIP',
@@ -229,7 +244,8 @@ class ProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.darkCard,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: 0.08)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +266,8 @@ class ProfileScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const EditStyleProfileScreen(),
+                                builder: (context) =>
+                                    const EditStyleProfileScreen(),
                               ),
                             );
                           },
@@ -270,7 +287,8 @@ class ProfileScreen extends StatelessWidget {
                     // Preferred Styles
                     Text(
                       'Phong cách ưa thích:',
-                      style: GoogleFonts.inter(color: AppTheme.darkTextSecondary, fontSize: 13),
+                      style: GoogleFonts.inter(
+                          color: AppTheme.darkTextSecondary, fontSize: 13),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -278,11 +296,14 @@ class ProfileScreen extends StatelessWidget {
                       runSpacing: 8,
                       children: styleProfile.preferredStyles.map((s) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: AppTheme.primaryColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.4)),
+                            border: Border.all(
+                                color: AppTheme.primaryColor
+                                    .withValues(alpha: 0.4)),
                           ),
                           child: Text(
                             s,
@@ -301,7 +322,8 @@ class ProfileScreen extends StatelessWidget {
                     // Favorite Colors
                     Text(
                       'Tông màu ưa thích:',
-                      style: GoogleFonts.inter(color: AppTheme.darkTextSecondary, fontSize: 13),
+                      style: GoogleFonts.inter(
+                          color: AppTheme.darkTextSecondary, fontSize: 13),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -309,14 +331,16 @@ class ProfileScreen extends StatelessWidget {
                       runSpacing: 8,
                       children: styleProfile.favoriteColors.map((c) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: AppTheme.darkSurface,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             c,
-                            style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                            style: GoogleFonts.inter(
+                                color: Colors.white, fontSize: 13),
                           ),
                         );
                       }).toList(),
@@ -330,7 +354,8 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Ngân sách mua sắm:',
-                          style: GoogleFonts.inter(color: AppTheme.darkTextSecondary, fontSize: 13),
+                          style: GoogleFonts.inter(
+                              color: AppTheme.darkTextSecondary, fontSize: 13),
                         ),
                         Text(
                           '${currencyFormatter.format(styleProfile.minBudget)} - ${currencyFormatter.format(styleProfile.maxBudget)}',
@@ -355,7 +380,8 @@ class ProfileScreen extends StatelessWidget {
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppTheme.accentColor,
-                    side: const BorderSide(color: AppTheme.accentColor, width: 1.5),
+                    side: const BorderSide(
+                        color: AppTheme.accentColor, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -369,7 +395,8 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    Provider.of<WardrobeProvider>(context, listen: false).reset();
+                    Provider.of<WardrobeProvider>(context, listen: false)
+                        .reset();
                     Provider.of<OutfitProvider>(context, listen: false).reset();
                     authProvider.logout();
                   },

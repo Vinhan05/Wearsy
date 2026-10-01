@@ -20,7 +20,8 @@ class _PendingOtp {
 class AuthService {
   final ApiClient _apiClient = ApiClient();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId: '542169574265-god0pmi4siobijlobf42ooiggc41d0cr.apps.googleusercontent.com',
+    serverClientId:
+        '542169574265-god0pmi4siobijlobf42ooiggc41d0cr.apps.googleusercontent.com',
     scopes: ['email', 'profile'],
   );
 
@@ -34,13 +35,15 @@ class AuthService {
     // 1. Kiểm tra tài khoản Demo (Bao gồm admin.demo, demo@wearsy.app, user.test,...)
     if (_isDemoEmail(cleanEmail)) {
       final prefs = await SharedPreferences.getInstance();
-      final customPwd = prefs.getString('user_pwd_$cleanEmail') ?? prefs.getString('reg_pwd_$cleanEmail');
-      final expectedPwd = customPwd ?? (cleanEmail == 'nguyenvana@example.com' ? '12345678' : '123456');
-
-      if (password != expectedPwd && password != '123456' && password != '12345678') {
+      final customPwd = prefs.getString('user_pwd_$cleanEmail') ??
+          prefs.getString('reg_pwd_$cleanEmail');
+      final expectedPwd = customPwd ??
+          (cleanEmail == 'nguyenvana@example.com' ? '12345678' : '123456');
+      if (password != expectedPwd) {
         throw ApiException(
           statusCode: 401,
-          message: 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
+          message:
+              'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
         );
       }
       final defaultName = cleanEmail == 'demo@wearsy.app'
@@ -85,7 +88,8 @@ class AuthService {
       if (e.statusCode == 401 || e.statusCode == 400 || e.statusCode == 403) {
         throw ApiException(
           statusCode: 401,
-          message: 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
+          message:
+              'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
         );
       }
     } catch (_) {
@@ -94,15 +98,18 @@ class AuthService {
 
     // 3. Fallback: Kiểm tra tài khoản đã đăng ký cục bộ trên thiết bị (Offline Mode)
     final prefs = await SharedPreferences.getInstance();
-    final savedPwd = prefs.getString('user_pwd_$cleanEmail') ?? prefs.getString('reg_pwd_$cleanEmail');
+    final savedPwd = prefs.getString('user_pwd_$cleanEmail') ??
+        prefs.getString('reg_pwd_$cleanEmail');
     if (savedPwd != null) {
       if (savedPwd != password) {
         throw ApiException(
           statusCode: 401,
-          message: 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
+          message:
+              'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.',
         );
       }
-      final savedName = prefs.getString('reg_name_$cleanEmail') ?? _deriveNameFromEmail(cleanEmail);
+      final savedName = prefs.getString('reg_name_$cleanEmail') ??
+          _deriveNameFromEmail(cleanEmail);
       final mockData = MockDataService.getMockAuthData(
         email: cleanEmail,
         fullName: savedName,
@@ -140,7 +147,8 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser != null) {
         realEmail = googleUser.email;
-        realName = (googleUser.displayName != null && googleUser.displayName!.isNotEmpty)
+        realName = (googleUser.displayName != null &&
+                googleUser.displayName!.isNotEmpty)
             ? googleUser.displayName
             : _deriveNameFromEmail(googleUser.email);
 
@@ -159,17 +167,20 @@ class AuthService {
     } catch (e) {
       // 2. Silent Sign In fallback
       try {
-        final GoogleSignInAccount? silentUser = await _googleSignIn.signInSilently();
+        final GoogleSignInAccount? silentUser =
+            await _googleSignIn.signInSilently();
         if (silentUser != null) {
           realEmail = silentUser.email;
-          realName = silentUser.displayName ?? _deriveNameFromEmail(silentUser.email);
+          realName =
+              silentUser.displayName ?? _deriveNameFromEmail(silentUser.email);
         }
       } catch (_) {}
 
       // 3. Active Current User fallback
       if (realEmail == null && _googleSignIn.currentUser != null) {
         realEmail = _googleSignIn.currentUser!.email;
-        realName = _googleSignIn.currentUser!.displayName ?? _deriveNameFromEmail(realEmail);
+        realName = _googleSignIn.currentUser!.displayName ??
+            _deriveNameFromEmail(realEmail);
       }
 
       // 4. Regex extraction if exception text contains email
@@ -251,8 +262,11 @@ class AuthService {
       await prefs.setString('reg_pwd_$cleanEmail', password);
       await prefs.setString('reg_name_$cleanEmail', fullName);
       await prefs.setBool('is_new_account_$cleanEmail', true);
-      if (gender != null) await prefs.setString('user_gender_$cleanEmail', gender);
-      if (birthDate != null) await prefs.setString('user_birthdate_$cleanEmail', birthDate.toIso8601String());
+      if (gender != null)
+        await prefs.setString('user_gender_$cleanEmail', gender);
+      if (birthDate != null)
+        await prefs.setString(
+            'user_birthdate_$cleanEmail', birthDate.toIso8601String());
     } catch (_) {}
 
     if (_isDemoEmail(cleanEmail)) {
@@ -323,7 +337,8 @@ class AuthService {
       if (err.contains('SMTP_USER') || err.contains('SMTP_PASS')) {
         return EmailSendResult(
           success: false,
-          errorMessage: 'Server chưa được cấu hình thông tin SMTP_USER & SMTP_PASS trong file .env.',
+          errorMessage:
+              'Server chưa được cấu hình thông tin SMTP_USER & SMTP_PASS trong file .env.',
           isConfigMissing: true,
         );
       }
@@ -379,7 +394,8 @@ class AuthService {
     return isValid;
   }
 
-  Future<UserModel> _getSavedOrMockUser(String cleanEmail, String fullName) async {
+  Future<UserModel> _getSavedOrMockUser(
+      String cleanEmail, String fullName) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       var savedJson = prefs.getString('saved_user_profile_$cleanEmail');
@@ -417,7 +433,8 @@ class AuthService {
     } catch (_) {}
 
     final token = await TokenStorage.getToken();
-    if (token != null && (token.startsWith('mock_token') || token.contains('_sso_'))) {
+    if (token != null &&
+        (token.startsWith('mock_token') || token.contains('_sso_'))) {
       return await _getSavedOrMockUser(cleanEmail, fullName);
     }
 
@@ -466,7 +483,9 @@ class AuthService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final storedEmail = await TokenStorage.getUserEmail();
-      final emailToUse = user.email.isNotEmpty ? user.email : (storedEmail ?? 'demo@wearsy.app');
+      final emailToUse = user.email.isNotEmpty
+          ? user.email
+          : (storedEmail ?? 'demo@wearsy.app');
       final cleanEmail = emailToUse.trim().toLowerCase();
       final jsonStr = jsonEncode(user.toJson());
       await prefs.setString('saved_user_profile_$cleanEmail', jsonStr);
@@ -492,8 +511,10 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
 
     // 1. Kiểm tra mật khẩu cũ hiện tại
-    final savedPwd = prefs.getString('user_pwd_$cleanEmail') ?? prefs.getString('reg_pwd_$cleanEmail');
-    final currentExpectedPwd = savedPwd ?? (_isDemoEmail(cleanEmail) ? '123456' : null);
+    final savedPwd = prefs.getString('user_pwd_$cleanEmail') ??
+        prefs.getString('reg_pwd_$cleanEmail');
+    final currentExpectedPwd =
+        savedPwd ?? (_isDemoEmail(cleanEmail) ? '123456' : null);
 
     if (currentExpectedPwd != null && currentExpectedPwd != oldPassword) {
       throw ApiException(
@@ -555,7 +576,8 @@ class AuthService {
     if (cleanCoupon != 'WEARSY') {
       throw ApiException(
         statusCode: 400,
-        message: 'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 7 ngày VIP!',
+        message:
+            'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 7 ngày VIP!',
       );
     }
 
@@ -572,7 +594,8 @@ class AuthService {
         },
       );
       if (response is Map<String, dynamic> && response['user'] != null) {
-        final serverUser = UserModel.fromJson(response['user'] as Map<String, dynamic>);
+        final serverUser =
+            UserModel.fromJson(response['user'] as Map<String, dynamic>);
         await _persistUserProfile(serverUser);
         return serverUser;
       }
@@ -586,7 +609,8 @@ class AuthService {
 
     // Nếu người dùng đã có VIP và còn hạn thì cộng dồn thêm 7 ngày
     DateTime baseTime = now;
-    if (currentUser.vipExpiresAt != null && currentUser.vipExpiresAt!.isAfter(now)) {
+    if (currentUser.vipExpiresAt != null &&
+        currentUser.vipExpiresAt!.isAfter(now)) {
       baseTime = currentUser.vipExpiresAt!;
     }
 
@@ -621,8 +645,14 @@ class AuthService {
 
   String _deriveNameFromEmail(String email) {
     if (email.contains('@')) {
-      final parts = email.split('@')[0].replaceAll('.', ' ').replaceAll('_', ' ');
-      return parts.split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '').join(' ').trim();
+      final parts =
+          email.split('@')[0].replaceAll('.', ' ').replaceAll('_', ' ');
+      return parts
+          .split(' ')
+          .map((w) =>
+              w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '')
+          .join(' ')
+          .trim();
     }
     return email;
   }

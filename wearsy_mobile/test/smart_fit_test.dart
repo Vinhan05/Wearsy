@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wearsy_mobile/core/services/smart_fit_engine.dart';
 import 'package:wearsy_mobile/features/wardrobe/models/wardrobe_item_model.dart';
-import 'package:wearsy_mobile/features/outfits/models/outfit_model.dart';
 
 void main() {
   group('SmartFitEngine Tests', () {

@@ -13,7 +13,10 @@ export class AuthService {
 
   constructor(private readonly mailService: MailService) {}
 
-  async sendOtp(email: string, fullName?: string): Promise<{ success: boolean; message: string }> {
+  async sendOtp(
+    email: string,
+    fullName?: string,
+  ): Promise<{ success: boolean; message: string }> {
     if (!email || !email.includes('@')) {
       throw new BadRequestException('Email không hợp lệ.');
     }
@@ -25,9 +28,15 @@ export class AuthService {
 
     this.pendingOtps.set(cleanEmail, { code: otp, expiresAt, fullName });
 
-    const result = await this.mailService.sendOtpEmail(cleanEmail, otp, fullName);
+    const result = await this.mailService.sendOtpEmail(
+      cleanEmail,
+      otp,
+      fullName,
+    );
     if (!result.success) {
-      throw new BadRequestException(result.message || 'Không thể gửi mã OTP tới email.');
+      throw new BadRequestException(
+        result.message || 'Không thể gửi mã OTP tới email.',
+      );
     }
 
     return {
@@ -36,20 +45,31 @@ export class AuthService {
     };
   }
 
-  async verifyOtp(email: string, otp: string): Promise<{ success: boolean; message: string }> {
+  async verifyOtp(
+    email: string,
+    otp: string,
+  ): Promise<{ success: boolean; message: string }> {
+    if (!email || !otp) {
+      throw new BadRequestException('Email và mã OTP là bắt buộc.');
+    }
     const cleanEmail = email.trim().toLowerCase();
+    const cleanOtp = otp.toString().trim();
     const pending = this.pendingOtps.get(cleanEmail);
 
     if (!pending) {
-      throw new BadRequestException('Không tìm thấy yêu cầu xác thực OTP cho email này.');
+      throw new BadRequestException(
+        'Không tìm thấy yêu cầu xác thực OTP cho email này.',
+      );
     }
 
     if (new Date() > pending.expiresAt) {
       this.pendingOtps.delete(cleanEmail);
-      throw new BadRequestException('Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới.');
+      throw new BadRequestException(
+        'Mã OTP đã hết hạn. Vui lòng yêu cầu mã mới.',
+      );
     }
 
-    if (pending.code !== otp.trim()) {
+    if (pending.code !== cleanOtp) {
       throw new BadRequestException('Mã OTP không chính xác.');
     }
 

@@ -21,7 +21,9 @@ class OutfitProvider with ChangeNotifier {
 
   List<OutfitModel> get filteredOutfits {
     if (_selectedOccasion == null) return _outfits;
-    return _outfits.where((outfit) => outfit.occasion == _selectedOccasion).toList();
+    return _outfits
+        .where((outfit) => outfit.occasion == _selectedOccasion)
+        .toList();
   }
 
   List<OutfitModel> get favoriteOutfits {
@@ -46,7 +48,8 @@ class OutfitProvider with ChangeNotifier {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
       final isDemo = WardrobeProvider.isPreSeededDemoAccount(email, prefs);
 
       if (isDemo) {
@@ -58,7 +61,8 @@ class OutfitProvider with ChangeNotifier {
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
       customOutfits = customJson
-          .map((str) => OutfitModel.fromJson(jsonDecode(str) as Map<String, dynamic>))
+          .map((str) =>
+              OutfitModel.fromJson(jsonDecode(str) as Map<String, dynamic>))
           .toList();
     } catch (_) {}
 
@@ -96,7 +100,8 @@ class OutfitProvider with ChangeNotifier {
           ? availableItems
           : MockDataService.getMockWardrobeItems();
 
-      final occasionText = occasionPrompt ?? _selectedOccasion?.displayName ?? 'Công sở';
+      final occasionText =
+          occasionPrompt ?? _selectedOccasion?.displayName ?? 'Công sở';
 
       final newOutfit = await SmartFitAiService.generateSmartFitOutfit(
         wardrobeItems: itemsToUse,
@@ -109,7 +114,8 @@ class OutfitProvider with ChangeNotifier {
       _outfits = [newOutfit, ..._outfits];
 
       final prefs = await SharedPreferences.getInstance();
-      final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = [jsonEncode(newOutfit.toJson()), ...customJson];
@@ -135,7 +141,8 @@ class OutfitProvider with ChangeNotifier {
   Future<void> _persistFavorites() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = customJson.map((str) {

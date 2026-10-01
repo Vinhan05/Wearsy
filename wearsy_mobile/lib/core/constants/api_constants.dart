@@ -19,6 +19,8 @@ class ApiConstants {
   // Digital Wardrobe Endpoints
   static const String wardrobeItems = '/wardrobe/items';
   static const String analyzeImage = '/wardrobe/analyze-image';
+  static const String scanBulk = '/wardrobe/scan-bulk';
+  static const String bulkCommit = '/wardrobe/bulk-commit';
 
   // AI Outfits Endpoints
   static const String recommendOutfits = '/outfits/recommend';

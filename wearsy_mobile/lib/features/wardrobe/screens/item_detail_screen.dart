@@ -20,7 +20,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   TextEditingController _customTagController = TextEditingController();
 
   final List<String> _popularTags = [
-    'Smart Casual', 'Công sở', 'Streetwear', 'Tối giản', 'Năng động', 'Dự tiệc', 'Vintage'
+    'Smart Casual',
+    'Công sở',
+    'Streetwear',
+    'Tối giản',
+    'Năng động',
+    'Dự tiệc',
+    'Vintage'
   ];
 
   @override
@@ -38,7 +44,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   void _syncTagsToProvider() {
     final updatedItem = widget.item.copyWith(tags: _tags);
-    Provider.of<WardrobeProvider>(context, listen: false).updateItem(updatedItem);
+    Provider.of<WardrobeProvider>(context, listen: false)
+        .updateItem(updatedItem);
   }
 
   void _addCustomTag([String? value]) {
@@ -83,7 +90,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   color: Colors.black.withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                child:
+                    const Icon(Icons.arrow_back_rounded, color: Colors.white),
               ),
               onPressed: () => Navigator.pop(context),
             ),
@@ -254,11 +262,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             ),
                             if (_tags.isNotEmpty)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withOpacity(0.25),
+                                  color:
+                                      AppTheme.primaryColor.withOpacity(0.25),
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: AppTheme.primaryLight.withOpacity(0.4)),
+                                  border: Border.all(
+                                      color: AppTheme.primaryLight
+                                          .withOpacity(0.4)),
                                 ),
                                 child: Text(
                                   '${_tags.length} đã chọn',
@@ -289,12 +301,18 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 side: BorderSide(
-                                  color: isSelected ? Colors.transparent : Colors.white.withOpacity(0.12),
+                                  color: isSelected
+                                      ? Colors.transparent
+                                      : Colors.white.withOpacity(0.12),
                                 ),
                               ),
                               labelStyle: TextStyle(
-                                color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppTheme.darkTextSecondary,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                               onSelected: (val) {
                                 setState(() {
@@ -310,70 +328,104 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           }).toList(),
                         ),
 
-                        // 2. Các thẻ tự nhập (có nút 'X' để xóa)
+                        // 2. Các thẻ phong cách mở rộng (AI nhận diện mới / Tự thêm)
                         Builder(
                           builder: (_) {
-                            final customTags = _tags.where((t) => !_popularTags.contains(t)).toList();
-                            if (customTags.isEmpty) return const SizedBox.shrink();
+                            final customTags = _tags
+                                .where((t) => !_popularTags.contains(t))
+                                .toList();
+                            if (customTags.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
                             return Padding(
-                              padding: const EdgeInsets.only(top: 12),
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: customTags.map((tag) {
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.primaryColor.withOpacity(0.45),
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: AppTheme.primaryLight.withOpacity(0.7),
-                                        width: 1,
+                              padding: const EdgeInsets.only(top: 14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.auto_awesome,
+                                        size: 13,
+                                        color: AppTheme.primaryLight,
                                       ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          Icons.tag_rounded,
-                                          size: 14,
-                                          color: Colors.white70,
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppTheme.primaryLight,
                                         ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          tag,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: customTags.map((tag) {
+                                      return Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.primaryColor
+                                              .withOpacity(0.45),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: AppTheme.primaryLight
+                                                .withOpacity(0.7),
+                                            width: 1,
                                           ),
                                         ),
-                                        const SizedBox(width: 6),
-                                        GestureDetector(
-                                          behavior: HitTestBehavior.opaque,
-                                          onTap: () {
-                                            setState(() {
-                                              _tags.remove(tag);
-                                            });
-                                            _syncTagsToProvider();
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(3),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.2),
-                                              shape: BoxShape.circle,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.tag_rounded,
+                                              size: 14,
+                                              color: Colors.white70,
                                             ),
-                                            child: const Icon(
-                                              Icons.close_rounded,
-                                              size: 13,
-                                              color: Colors.white,
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              tag,
+                                              style: GoogleFonts.inter(
+                                                fontSize: 12,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                             ),
-                                          ),
+                                            const SizedBox(width: 6),
+                                            GestureDetector(
+                                              behavior: HitTestBehavior.opaque,
+                                              onTap: () {
+                                                setState(() {
+                                                  _tags.remove(tag);
+                                                });
+                                                _syncTagsToProvider();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(3),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withOpacity(0.2),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(
+                                                  Icons.close_rounded,
+                                                  size: 13,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
                               ),
                             );
                           },
@@ -386,7 +438,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.04),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.1)),
                           ),
                           child: Row(
                             children: [
@@ -401,18 +454,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               Expanded(
                                 child: TextField(
                                   controller: _customTagController,
-                                  style: GoogleFonts.inter(fontSize: 13, color: Colors.white),
+                                  style: GoogleFonts.inter(
+                                      fontSize: 13, color: Colors.white),
                                   textInputAction: TextInputAction.done,
                                   onSubmitted: (val) => _addCustomTag(val),
                                   decoration: InputDecoration(
                                     isDense: true,
-                                    hintText: 'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
+                                    hintText:
+                                        'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
                                     hintStyle: GoogleFonts.inter(
                                       fontSize: 12,
-                                      color: AppTheme.darkTextSecondary.withOpacity(0.6),
+                                      color: AppTheme.darkTextSecondary
+                                          .withOpacity(0.6),
                                     ),
                                     border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 12),
                                   ),
                                 ),
                               ),
@@ -423,10 +480,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     gradient: AppTheme.primaryGradient,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
+                                  child: const Icon(Icons.add_rounded,
+                                      size: 16, color: Colors.white),
                                 ),
                                 tooltip: 'Thêm phong cách',
-                                onPressed: () => _addCustomTag(_customTagController.text),
+                                onPressed: () =>
+                                    _addCustomTag(_customTagController.text),
                               ),
                             ],
                           ),
@@ -510,7 +569,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
                       ),
                       onPressed: () {
-                        Provider.of<WardrobeProvider>(context, listen: false).removeItem(item.id);
+                        Provider.of<WardrobeProvider>(context, listen: false)
+                            .removeItem(item.id);
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

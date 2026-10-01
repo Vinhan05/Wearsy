@@ -7,9 +7,248 @@ import '../../../core/theme/app_theme.dart';
 import '../providers/wardrobe_provider.dart';
 import 'add_item_screen.dart';
 import 'item_detail_screen.dart';
+import '../../shopping/screens/smart_shopping_screen.dart';
 
 class WardrobeScreen extends StatelessWidget {
   const WardrobeScreen({super.key});
+
+  static void showAddOptionsModal(BuildContext context, {VoidCallback? onSelect}) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.darkCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Chọn Phương Thức Nhập Đồ',
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Option 1: Chụp ảnh từ Camera
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    onSelect?.call();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddItemScreen(initialMode: 'camera'),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.primaryColor.withOpacity(0.25),
+                          const Color(0xFF8B5CF6).withOpacity(0.15),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppTheme.primaryLight.withOpacity(0.35),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.camera_alt_rounded,
+                              color: Colors.white, size: 24),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Chụp ảnh từ Camera',
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Chụp trực tiếp trang phục thật của bạn, AI sẽ tự động phân tích.',
+                                style: GoogleFonts.inter(
+                                  color: AppTheme.darkTextSecondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right_rounded,
+                            color: Colors.white54),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Option 2: Chọn từ Thư viện
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    onSelect?.call();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AddItemScreen(initialMode: 'gallery'),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.photo_library_rounded,
+                              color: AppTheme.primaryLight, size: 24),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Chọn ảnh từ Thư viện',
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Tải ảnh quần áo có sẵn từ bộ sưu tập điện thoại của bạn.',
+                                style: GoogleFonts.inter(
+                                  color: AppTheme.darkTextSecondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right_rounded,
+                            color: Colors.white54),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Option 3: Dán link mua sắm (Smart Shopping)
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    onSelect?.call();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SmartShoppingScreen(),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF6B6B).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.shopping_bag_rounded,
+                              color: Color(0xFFFF6B6B), size: 24),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Dán link mua sắm (Smart Shopping)',
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Dán link Shopee, TikTok, Zara... để AI kiểm tra tương thích trước khi mua.',
+                                style: GoogleFonts.inter(
+                                  color: AppTheme.darkTextSecondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right_rounded,
+                            color: Colors.white54),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,15 +303,43 @@ class _WardrobeBody extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
+          InkWell(
+            onTap: () => WardrobeScreen.showAddOptionsModal(context),
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    AppTheme.primaryColor,
+                    Color(0xFF8B5CF6),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryColor.withOpacity(0.35),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.add_rounded,
+                      color: Colors.white, size: 18),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Thêm Đồ',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: const Icon(Icons.auto_awesome_rounded,
-                color: AppTheme.primaryLight, size: 20),
           ),
         ],
       ),
@@ -105,9 +372,7 @@ class _WardrobeBody extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppTheme.primaryColor
-                    : AppTheme.darkCard,
+                color: isSelected ? AppTheme.primaryColor : AppTheme.darkCard,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
                   color: isSelected
@@ -125,7 +390,9 @@ class _WardrobeBody extends StatelessWidget {
                       fontSize: 13,
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
+                      color: isSelected
+                          ? Colors.white
+                          : AppTheme.darkTextSecondary,
                     ),
                   ),
                 ],
@@ -161,7 +428,8 @@ class _WardrobeBody extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.primaryColor.withOpacity(0.12),
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppTheme.primaryColor.withOpacity(0.25)),
+                  border: Border.all(
+                      color: AppTheme.primaryColor.withOpacity(0.25)),
                 ),
                 child: const Icon(
                   Icons.checkroom_outlined,
@@ -171,7 +439,9 @@ class _WardrobeBody extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                isTotallyEmpty ? 'Tủ đồ của bạn đang trống' : 'Chưa có đồ trong danh mục này',
+                isTotallyEmpty
+                    ? 'Tủ đồ của bạn đang trống'
+                    : 'Chưa có đồ trong danh mục này',
                 style: GoogleFonts.outfit(
                   color: Colors.white,
                   fontSize: 18,
@@ -197,11 +467,15 @@ class _WardrobeBody extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                   ),
-                  icon: const Icon(Icons.add_a_photo_rounded, size: 18),
-                  label: Text('Thêm đồ đầu tiên', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                  icon: const Icon(Icons.add_a_photo_rounded, size: 20),
+                  label: Text('Thêm trang phục ngay',
+                      style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.bold, fontSize: 15)),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -234,156 +508,15 @@ class _WardrobeBody extends StatelessWidget {
   Widget _buildAddFAB(BuildContext context) {
     return FloatingActionButton.extended(
       heroTag: 'wardrobe_add_item_fab',
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AddItemScreen(),
-          ),
-        );
-      },
+      onPressed: () => WardrobeScreen.showAddOptionsModal(context),
       backgroundColor: AppTheme.primaryColor,
-      icon: const Icon(Icons.add_a_photo_rounded, color: Colors.white),
+      icon: const Icon(Icons.add_rounded, color: Colors.white),
       label: Text(
         'Thêm Đồ',
         style: GoogleFonts.outfit(
             color: Colors.white, fontWeight: FontWeight.bold),
       ),
     );
-  }
-
-  void _showAddItemDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppTheme.darkCard,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Thêm Đồ Vào Tủ',
-              style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'AI sẽ tự động nhận diện & phân loại trang phục của bạn',
-              style: GoogleFonts.inter(
-                  color: AppTheme.darkTextSecondary, fontSize: 13),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: _AddOptionButton(
-                    icon: Icons.camera_alt_rounded,
-                    label: 'Chụp Ảnh',
-                    color: AppTheme.secondaryColor,
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AddItemScreen(initialMode: 'camera'),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _AddOptionButton(
-                    icon: Icons.photo_library_rounded,
-                    label: 'Thư Viện',
-                    color: AppTheme.primaryLight,
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AddItemScreen(initialMode: 'gallery'),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _simulateAIAddItem(BuildContext context) {
-    // Show AI analyzing animation
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => Dialog(
-        backgroundColor: AppTheme.darkCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(color: AppTheme.primaryLight),
-              const SizedBox(height: 20),
-              Text(
-                'AI đang phân tích...',
-                style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Nhận diện màu sắc, chất liệu & phong cách',
-                style: GoogleFonts.inter(
-                    color: AppTheme.darkTextSecondary, fontSize: 13),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (context.mounted) {
-        Navigator.pop(context); // close dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '✅ AI đã thêm "Áo Hoodie Xám" vào tủ đồ của bạn!',
-              style: GoogleFonts.inter(),
-            ),
-            backgroundColor: AppTheme.secondaryColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-          ),
-        );
-      }
-    });
   }
 }
 
@@ -536,54 +669,15 @@ class _WardrobeCard extends StatelessWidget {
     final lower = colorName.toLowerCase();
     if (lower.contains('trắng') || lower.contains('white')) return Colors.white;
     if (lower.contains('đen') || lower.contains('black')) return Colors.black;
-    if (lower.contains('navy') || lower.contains('xanh')) return const Color(0xFF1A237E);
-    if (lower.contains('be') || lower.contains('kem')) return const Color(0xFFF5F0E8);
+    if (lower.contains('navy') || lower.contains('xanh'))
+      return const Color(0xFF1A237E);
+    if (lower.contains('be') || lower.contains('kem'))
+      return const Color(0xFFF5F0E8);
     if (lower.contains('xám') || lower.contains('gray')) return Colors.grey;
-    if (lower.contains('nâu') || lower.contains('brown')) return const Color(0xFF795548);
+    if (lower.contains('nâu') || lower.contains('brown'))
+      return const Color(0xFF795548);
     if (lower.contains('đỏ') || lower.contains('red')) return Colors.red;
     if (lower.contains('vàng') || lower.contains('gold')) return Colors.amber;
     return AppTheme.primaryColor;
-  }
-}
-
-class _AddOptionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _AddOptionButton({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -37,7 +37,8 @@ const List<_FashionSample> _defaultFashionPresets = [
     category: WardrobeCategory.tops,
     color: 'Be',
     brand: 'Zara',
-    imageUrl: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=800&auto=format&fit=crop',
+    imageUrl:
+        'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=800&auto=format&fit=crop',
     tags: ['Smart Casual', 'Thanh lịch', 'Xu hướng 2026'],
     aiMatchScore: 9.6,
   ),
@@ -46,7 +47,8 @@ const List<_FashionSample> _defaultFashionPresets = [
     category: WardrobeCategory.dresses,
     color: 'Đỏ Ruby',
     brand: 'Zara',
-    imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=800&auto=format&fit=crop',
+    imageUrl:
+        'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=800&auto=format&fit=crop',
     tags: ['Dự tiệc', 'Quyến rũ', 'Sang trọng'],
     aiMatchScore: 9.6,
   ),
@@ -55,7 +57,8 @@ const List<_FashionSample> _defaultFashionPresets = [
     category: WardrobeCategory.outerwear,
     color: 'Nâu',
     brand: 'Mango',
-    imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800&auto=format&fit=crop',
+    imageUrl:
+        'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=800&auto=format&fit=crop',
     tags: ['Mùa đông', 'Thanh lịch', 'Sang trọng'],
     aiMatchScore: 9.3,
   ),
@@ -64,7 +67,8 @@ const List<_FashionSample> _defaultFashionPresets = [
     category: WardrobeCategory.bottoms,
     color: 'Xanh Navy',
     brand: 'Levi\'s',
-    imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop',
+    imageUrl:
+        'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800&auto=format&fit=crop',
     tags: ['Streetwear', 'Casual', 'Năng động'],
     aiMatchScore: 9.1,
   ),
@@ -73,7 +77,8 @@ const List<_FashionSample> _defaultFashionPresets = [
     category: WardrobeCategory.shoes,
     color: 'Trắng',
     brand: 'Nike',
-    imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop',
+    imageUrl:
+        'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800&auto=format&fit=crop',
     tags: ['Thể thao', 'Dễ phối', 'Basic'],
     aiMatchScore: 9.7,
   ),
@@ -82,7 +87,8 @@ const List<_FashionSample> _defaultFashionPresets = [
     category: WardrobeCategory.accessories,
     color: 'Đen',
     brand: 'Charles & Keith',
-    imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop',
+    imageUrl:
+        'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop',
     tags: ['Phụ kiện', 'Túi xách', 'Trendy'],
     aiMatchScore: 9.5,
   ),
@@ -96,7 +102,8 @@ class AddItemScreen extends StatefulWidget {
   State<AddItemScreen> createState() => _AddItemScreenState();
 }
 
-class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProviderStateMixin {
+class _AddItemScreenState extends State<AddItemScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _nameController;
@@ -118,15 +125,36 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
   late AnimationController _scanAnimController;
 
   final List<String> _availableColors = [
-    'Trắng', 'Đen', 'Xanh Navy', 'Be', 'Xám', 'Nâu', 'Đỏ', 'Vàng', 'Pastel'
+    'Trắng',
+    'Đen',
+    'Xanh Navy',
+    'Be',
+    'Xám',
+    'Nâu',
+    'Đỏ',
+    'Vàng',
+    'Pastel'
   ];
 
   final List<String> _popularTags = [
-    'Smart Casual', 'Công sở', 'Streetwear', 'Tối giản', 'Năng động', 'Dự tiệc', 'Vintage'
+    'Smart Casual',
+    'Công sở',
+    'Streetwear',
+    'Tối giản',
+    'Năng động',
+    'Dự tiệc',
+    'Vintage'
   ];
 
   static const List<String> _allowedExtensions = [
-    '.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif', '.bmp', '.gif'
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.webp',
+    '.heic',
+    '.heif',
+    '.bmp',
+    '.gif'
   ];
 
   @override
@@ -141,7 +169,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
     _selectedCategory = first.category;
     _selectedTags = List.from(first.tags);
     _aiMatchScore = first.aiMatchScore;
-    _aiAnalysisReason = 'Chất liệu dệt kim tông be thanh lịch, tối ưu phối cùng quần âu hoặc jean.';
+    _aiAnalysisReason =
+        'Chất liệu dệt kim tông be thanh lịch, tối ưu phối cùng quần âu hoặc jean.';
 
     _scanAnimController = AnimationController(
       vsync: this,
@@ -219,7 +248,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
       (ext) => lowerPath.endsWith(ext) || lowerName.endsWith(ext),
     );
     final hasFormatParam = _allowedExtensions.any(
-      (ext) => lowerPath.contains('fm=${ext.replaceAll('.', '')}') ||
+      (ext) =>
+          lowerPath.contains('fm=${ext.replaceAll('.', '')}') ||
           lowerPath.contains('format=${ext.replaceAll('.', '')}'),
     );
     return hasValidExt || hasFormatParam;
@@ -233,12 +263,16 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 28),
+            const Icon(Icons.warning_amber_rounded,
+                color: Colors.amber, size: 28),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 'Định Dạng Không Hỗ Trợ',
-                style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
               ),
             ),
           ],
@@ -249,7 +283,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
           children: [
             Text(
               'Tệp bạn vừa chọn không phải định dạng ảnh hợp lệ${filename != null ? ' ("$filename")' : ''}.',
-              style: GoogleFonts.inter(color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.4),
+              style: GoogleFonts.inter(
+                  color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.4),
             ),
             const SizedBox(height: 14),
             Container(
@@ -261,12 +296,14 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.image_rounded, color: Colors.amber, size: 20),
+                  const Icon(Icons.image_rounded,
+                      color: Colors.amber, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Hệ thống hỗ trợ các định dạng ảnh: .jpg, .jpeg, .png, .webp, .heic, .heif, .bmp, .gif',
-                      style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, height: 1.4),
+                      style: GoogleFonts.inter(
+                          color: Colors.white70, fontSize: 12, height: 1.4),
                     ),
                   ),
                 ],
@@ -278,10 +315,13 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Đã Hiểu', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: const Text('Đã Hiểu',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -293,8 +333,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
       final picker = ImagePicker();
       final XFile? image = await picker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1600,
-        maxHeight: 1600,
+        maxWidth: 720,
+        maxHeight: 720,
+        imageQuality: 78,
       );
       if (image == null) return;
 
@@ -328,8 +369,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
       final picker = ImagePicker();
       final XFile? image = await picker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1600,
-        maxHeight: 1600,
+        maxWidth: 720,
+        maxHeight: 720,
+        imageQuality: 78,
       );
       if (image != null) {
         if (!_isAllowedImageFile(image.path, image.name)) {
@@ -368,7 +410,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
     setState(() {
       _galleryImages.remove(path);
       if (_localImagePath == path) {
-        _localImagePath = _galleryImages.isNotEmpty ? _galleryImages.first : null;
+        _localImagePath =
+            _galleryImages.isNotEmpty ? _galleryImages.first : null;
       }
     });
     _saveGalleryToPrefs();
@@ -399,7 +442,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.auto_awesome, color: AppTheme.primaryLight, size: 22),
+                const Icon(Icons.auto_awesome,
+                    color: AppTheme.primaryLight, size: 22),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -408,12 +452,16 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                     children: [
                       Text(
                         '✨ Gemini AI đã nhận diện trang phục!',
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white),
+                        style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Colors.white),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${result.category.icon} ${result.category.displayName} • Màu ${result.color} • ${result.name}',
-                        style: GoogleFonts.inter(fontSize: 12, color: AppTheme.primaryLight),
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: AppTheme.primaryLight),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -448,7 +496,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Dán URL ảnh',
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(
+              color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -460,16 +509,19 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
               decoration: InputDecoration(
                 hintText: 'https://example.com/item.jpg',
                 hintStyle: const TextStyle(color: Colors.white38),
-                prefixIcon: const Icon(Icons.link_rounded, color: AppTheme.primaryLight),
+                prefixIcon: const Icon(Icons.link_rounded,
+                    color: AppTheme.primaryLight),
                 filled: true,
                 fillColor: AppTheme.darkSurface,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               '* Hỗ trợ .jpg, .jpeg, .png, .webp, .heic',
-              style: GoogleFonts.inter(color: AppTheme.darkTextSecondary, fontSize: 11),
+              style: GoogleFonts.inter(
+                  color: AppTheme.darkTextSecondary, fontSize: 11),
             ),
           ],
         ),
@@ -481,7 +533,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () {
               final url = _customUrlController.text.trim();
@@ -502,7 +555,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 _triggerAIScan(targetPath: url);
               }
             },
-            child: const Text('Áp dụng', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: const Text('Áp dụng',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -518,8 +573,12 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
       id: 'w_${DateTime.now().millisecondsSinceEpoch}',
       name: _nameController.text.trim(),
       category: _selectedCategory,
-      color: _colorController.text.trim().isEmpty ? 'Tự do' : _colorController.text.trim(),
-      brand: _brandController.text.trim().isEmpty ? 'Local Brand' : _brandController.text.trim(),
+      color: _colorController.text.trim().isEmpty
+          ? 'Tự do'
+          : _colorController.text.trim(),
+      brand: _brandController.text.trim().isEmpty
+          ? 'Local Brand'
+          : _brandController.text.trim(),
       imageUrl: finalImageUrl,
       tags: _selectedTags.isEmpty ? ['Casual'] : _selectedTags,
       aiMatchScore: double.parse(_aiMatchScore.toStringAsFixed(1)),
@@ -546,7 +605,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
           ),
           backgroundColor: AppTheme.primaryColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       );
     }
@@ -596,13 +656,16 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
               _buildSectionTitle('Thông Tin Trang Phục 🏷️'),
               const SizedBox(height: 14),
 
-              if (_aiAnalysisReason != null && _aiAnalysisReason!.isNotEmpty) ...[
+              if (_aiAnalysisReason != null &&
+                  _aiAnalysisReason!.isNotEmpty) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.primaryLight.withOpacity(0.4)),
+                    border: Border.all(
+                        color: AppTheme.primaryLight.withOpacity(0.4)),
                   ),
                   child: Row(
                     children: [
@@ -612,7 +675,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                           color: AppTheme.primaryColor.withOpacity(0.25),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.auto_awesome, color: AppTheme.primaryLight, size: 20),
+                        child: const Icon(Icons.auto_awesome,
+                            color: AppTheme.primaryLight, size: 20),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -631,14 +695,18 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                                 ),
                                 const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 7, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: Colors.greenAccent.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
                                     '${_selectedCategory.icon} ${_selectedCategory.displayName}',
-                                    style: const TextStyle(fontSize: 11, color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.greenAccent,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],
@@ -666,7 +734,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 controller: _nameController,
                 label: 'Tên món đồ',
                 icon: Icons.checkroom_rounded,
-                validator: (val) => (val == null || val.trim().isEmpty) ? 'Vui lòng nhập tên món đồ' : null,
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'Vui lòng nhập tên món đồ'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -714,9 +784,11 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
                     ),
-                    icon: const Icon(Icons.add_task_rounded, color: Colors.white),
+                    icon:
+                        const Icon(Icons.add_task_rounded, color: Colors.white),
                     label: Text(
                       'LƯU VÀO TỦ ĐỒ',
                       style: GoogleFonts.outfit(
@@ -760,7 +832,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
         decoration: BoxDecoration(
           color: AppTheme.darkCard,
           border: Border.all(
-            color: _isAnalyzing ? AppTheme.primaryLight : Colors.white.withOpacity(0.12),
+            color: _isAnalyzing
+                ? AppTheme.primaryLight
+                : Colors.white.withOpacity(0.12),
             width: _isAnalyzing ? 2 : 1,
           ),
         ),
@@ -772,25 +846,28 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                     File(_localImagePath!),
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => const Center(
-                      child: Icon(Icons.broken_image_rounded, size: 50, color: Colors.white30),
+                      child: Icon(Icons.broken_image_rounded,
+                          size: 50, color: Colors.white30),
                     ),
                   )
                 : CachedNetworkImage(
                     imageUrl: _currentImageUrl,
                     fit: BoxFit.cover,
                     placeholder: (_, __) => const Center(
-                      child: CircularProgressIndicator(color: AppTheme.primaryLight),
+                      child: CircularProgressIndicator(
+                          color: AppTheme.primaryLight),
                     ),
                     errorWidget: (_, __, ___) => const Center(
-                      child: Icon(Icons.broken_image_rounded, size: 50, color: Colors.white30),
+                      child: Icon(Icons.broken_image_rounded,
+                          size: 50, color: Colors.white30),
                     ),
                   ),
-
             Positioned(
               top: 14,
               left: 14,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(20),
@@ -799,7 +876,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.auto_awesome, color: AppTheme.primaryLight, size: 14),
+                    const Icon(Icons.auto_awesome,
+                        color: AppTheme.primaryLight, size: 14),
                     const SizedBox(width: 6),
                     Text(
                       isLocal ? 'Ảnh từ thiết bị' : 'Ảnh mẫu WEARSY',
@@ -813,12 +891,12 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 ),
               ),
             ),
-
             Positioned(
               top: 14,
               right: 14,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   gradient: AppTheme.primaryGradient,
                   borderRadius: BorderRadius.circular(20),
@@ -826,7 +904,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                    const Icon(Icons.star_rounded,
+                        color: Colors.amber, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       'AI Match: ${_aiMatchScore.toStringAsFixed(1)}',
@@ -840,7 +919,6 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 ),
               ),
             ),
-
             if (_isAnalyzing)
               AnimatedBuilder(
                 animation: _scanAnimController,
@@ -860,25 +938,30 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                           ),
                         ],
                         gradient: const LinearGradient(
-                          colors: [Colors.transparent, AppTheme.primaryLight, Colors.transparent],
+                          colors: [
+                            Colors.transparent,
+                            AppTheme.primaryLight,
+                            Colors.transparent
+                          ],
                         ),
                       ),
                     ),
                   );
                 },
               ),
-
             if (_isAnalyzing)
               Positioned(
                 bottom: 16,
                 left: 16,
                 right: 16,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.85),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppTheme.primaryLight.withOpacity(0.5)),
+                    border: Border.all(
+                        color: AppTheme.primaryLight.withOpacity(0.5)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -886,13 +969,17 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                       const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(color: AppTheme.primaryLight, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                            color: AppTheme.primaryLight, strokeWidth: 2),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'AI đang bóc tách màu sắc & nhận diện dáng đồ...',
-                          style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                          style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1015,11 +1102,13 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: AppTheme.primaryLight.withOpacity(0.4)),
+                    border: Border.all(
+                        color: AppTheme.primaryLight.withOpacity(0.4)),
                   ),
                   child: Text(
                     'JPG • PNG • WEBP • HEIC',
@@ -1071,7 +1160,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                             color: AppTheme.secondaryColor.withOpacity(0.15),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.add_photo_alternate_rounded, color: AppTheme.secondaryColor, size: 24),
+                          child: const Icon(Icons.add_photo_alternate_rounded,
+                              color: AppTheme.secondaryColor, size: 24),
                         ),
                         const SizedBox(height: 6),
                         Text(
@@ -1102,7 +1192,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isSelected ? AppTheme.primaryLight : Colors.white.withOpacity(0.1),
+                      color: isSelected
+                          ? AppTheme.primaryLight
+                          : Colors.white.withOpacity(0.1),
                       width: isSelected ? 2.5 : 1,
                     ),
                   ),
@@ -1154,7 +1246,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                             child: CircleAvatar(
                               radius: 9,
                               backgroundColor: AppTheme.primaryColor,
-                              child: Icon(Icons.check, size: 12, color: Colors.white),
+                              child: Icon(Icons.check,
+                                  size: 12, color: Colors.white),
                             ),
                           ),
                         if (isLocal)
@@ -1169,7 +1262,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                                   color: Colors.black54,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.close, size: 12, color: Colors.white70),
+                                child: const Icon(Icons.close,
+                                    size: 12, color: Colors.white70),
                               ),
                             ),
                           ),
@@ -1205,7 +1299,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
         children: [
           Text(
             'Danh mục phân loại',
-            style: GoogleFonts.inter(fontSize: 12, color: AppTheme.darkTextSecondary),
+            style: GoogleFonts.inter(
+                fontSize: 12, color: AppTheme.darkTextSecondary),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -1223,7 +1318,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: isSelected ? Colors.transparent : Colors.white.withOpacity(0.15),
+                    color: isSelected
+                        ? Colors.transparent
+                        : Colors.white.withOpacity(0.15),
                   ),
                 ),
                 labelStyle: TextStyle(
@@ -1246,7 +1343,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
       scrollDirection: Axis.horizontal,
       child: Row(
         children: _availableColors.map((colorName) {
-          final isSelected = _colorController.text.trim().toLowerCase() == colorName.toLowerCase();
+          final isSelected = _colorController.text.trim().toLowerCase() ==
+              colorName.toLowerCase();
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: ActionChip(
@@ -1275,7 +1373,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
   }
 
   Widget _buildTagSelector() {
-    final customTags = _selectedTags.where((t) => !_popularTags.contains(t)).toList();
+    final customTags =
+        _selectedTags.where((t) => !_popularTags.contains(t)).toList();
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1300,11 +1399,13 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
               ),
               if (_selectedTags.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.primaryLight.withOpacity(0.4)),
+                    border: Border.all(
+                        color: AppTheme.primaryLight.withOpacity(0.4)),
                   ),
                   child: Text(
                     '${_selectedTags.length} đã chọn',
@@ -1335,7 +1436,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                   side: BorderSide(
-                    color: isSelected ? Colors.transparent : Colors.white.withOpacity(0.12),
+                    color: isSelected
+                        ? Colors.transparent
+                        : Colors.white.withOpacity(0.12),
                   ),
                 ),
                 labelStyle: TextStyle(
@@ -1357,15 +1460,35 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
             }).toList(),
           ),
 
-          // 2. Các thẻ do người dùng tự nhập (có nút 'X' để xóa)
+          // 2. Các thẻ phong cách mở rộng (do AI nhận diện mới hoặc người dùng tự thêm)
           if (customTags.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                const Icon(
+                  Icons.auto_awesome,
+                  size: 13,
+                  color: AppTheme.primaryLight,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryLight,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: customTags.map((tag) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor.withOpacity(0.45),
                     borderRadius: BorderRadius.circular(10),
@@ -1446,7 +1569,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                     onSubmitted: (val) => _addCustomTag(val),
                     decoration: InputDecoration(
                       isDense: true,
-                      hintText: 'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
+                      hintText:
+                          'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
                       hintStyle: GoogleFonts.inter(
                         fontSize: 12,
                         color: AppTheme.darkTextSecondary.withOpacity(0.6),
@@ -1463,7 +1587,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                       gradient: AppTheme.primaryGradient,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
+                    child: const Icon(Icons.add_rounded,
+                        size: 16, color: Colors.white),
                   ),
                   tooltip: 'Thêm phong cách',
                   onPressed: () => _addCustomTag(_customTagController.text),
@@ -1497,7 +1622,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
               color: AppTheme.primaryColor.withOpacity(0.3),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.psychology_rounded, color: AppTheme.primaryLight, size: 28),
+            child: const Icon(Icons.psychology_rounded,
+                color: AppTheme.primaryLight, size: 28),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -1577,11 +1703,9 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                     imageUrl: _currentImageUrl,
                     fit: BoxFit.cover,
                   ),
-
             Container(
               color: Colors.black.withOpacity(0.35),
             ),
-
             Positioned(
               top: 16,
               left: 20,
@@ -1592,24 +1716,32 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                   IconButton(
                     icon: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
-                      child: const Icon(Icons.close_rounded, color: Colors.white),
+                      decoration: const BoxDecoration(
+                          color: Colors.black54, shape: BoxShape.circle),
+                      child:
+                          const Icon(Icons.close_rounded, color: Colors.white),
                     ),
-                    onPressed: () => setState(() => _isCameraSimulatorOpen = false),
+                    onPressed: () =>
+                        setState(() => _isCameraSimulatorOpen = false),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.black54,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.lens_blur_rounded, color: Colors.greenAccent, size: 14),
+                        const Icon(Icons.lens_blur_rounded,
+                            color: Colors.greenAccent, size: 14),
                         const SizedBox(width: 6),
                         Text(
                           'AI Auto-Detecting',
-                          style: GoogleFonts.inter(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -1617,15 +1749,16 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                   IconButton(
                     icon: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
-                      child: const Icon(Icons.flash_on_rounded, color: Colors.amber),
+                      decoration: const BoxDecoration(
+                          color: Colors.black54, shape: BoxShape.circle),
+                      child: const Icon(Icons.flash_on_rounded,
+                          color: Colors.amber),
                     ),
                     onPressed: () {},
                   ),
                 ],
               ),
             ),
-
             Center(
               child: Container(
                 width: 290,
@@ -1639,8 +1772,8 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                     Positioned(top: 8, left: 8, child: _viewfinderCorner(0)),
                     Positioned(top: 8, right: 8, child: _viewfinderCorner(1)),
                     Positioned(bottom: 8, left: 8, child: _viewfinderCorner(2)),
-                    Positioned(bottom: 8, right: 8, child: _viewfinderCorner(3)),
-
+                    Positioned(
+                        bottom: 8, right: 8, child: _viewfinderCorner(3)),
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
@@ -1660,7 +1793,6 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 ),
               ),
             ),
-
             Positioned(
               bottom: 30,
               left: 0,
@@ -1669,23 +1801,26 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                 children: [
                   Text(
                     'Chạm nút chụp để AI phân tích trang phục',
-                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                    style:
+                        GoogleFonts.inter(color: Colors.white70, fontSize: 13),
                   ),
                   const SizedBox(height: 18),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 28),
+                        icon: const Icon(Icons.refresh_rounded,
+                            color: Colors.white, size: 28),
                         onPressed: () {
-                          final nextIndex = Random().nextInt(_defaultFashionPresets.length);
+                          final nextIndex =
+                              Random().nextInt(_defaultFashionPresets.length);
                           setState(() {
                             _localImagePath = null;
-                            _currentImageUrl = _defaultFashionPresets[nextIndex].imageUrl;
+                            _currentImageUrl =
+                                _defaultFashionPresets[nextIndex].imageUrl;
                           });
                         },
                       ),
-
                       GestureDetector(
                         onTap: () {
                           setState(() => _isCameraSimulatorOpen = false);
@@ -1704,13 +1839,14 @@ class _AddItemScreenState extends State<AddItemScreen> with SingleTickerProvider
                               gradient: AppTheme.primaryGradient,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 34),
+                            child: const Icon(Icons.camera_alt_rounded,
+                                color: Colors.white, size: 34),
                           ),
                         ),
                       ),
-
                       IconButton(
-                        icon: const Icon(Icons.photo_library_rounded, color: Colors.white, size: 28),
+                        icon: const Icon(Icons.photo_library_rounded,
+                            color: Colors.white, size: 28),
                         onPressed: () {
                           setState(() => _isCameraSimulatorOpen = false);
                           _pickImageFromGallery();

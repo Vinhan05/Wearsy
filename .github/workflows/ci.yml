@@ -1,0 +1,175 @@
+name: WEARSY CI Pipeline (PR Gate)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - develop
+      - 'release/**'
+  push:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # =========================================================================
+  # 1. BACKEND CI PIPELINE (NestJS / TypeScript)
+  # =========================================================================
+  backend-ci:
+    name: Backend CI (Install, Format, Lint, Typecheck, Unit, E2E, Build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wearsy-backend
+
+    steps:
+      - name: 📥 Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: wearsy-backend/package-lock.json
+
+      # Step 1: Install dependencies
+      - name: 1. 📦 Install dependencies (npm ci)
+        run: npm ci
+
+      # Step 2: Check format
+      - name: 2. 🎨 Check format (Prettier Check)
+        run: npm run format:check
+
+      # Step 3: Run lint
+      - name: 3. 🔍 Run lint (ESLint)
+        run: npm run lint
+
+      # Step 4: Run typecheck
+      - name: 4. 🔎 Run typecheck (tsc --noEmit)
+        run: npm run typecheck
+
+      # Step 5: Run unit tests
+      - name: 5. 🧪 Run unit tests (Jest)
+        run: npm test -- --coverage
+        env:
+          NODE_ENV: test
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-mock-key' }}
+
+      # Step 6: Run integration tests
+      - name: 6. 🔗 Run integration tests (Jest E2E & Health Check)
+        run: npm run test:e2e
+        env:
+          NODE_ENV: test
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-mock-key' }}
+
+      # Step 7: Build project
+      - name: 7. 🏗️ Build project (NestJS dist)
+        run: npm run build
+
+      - name: 💾 Save Backend Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dist
+          path: wearsy-backend/dist/
+          retention-days: 7
+
+  # =========================================================================
+  # 2. MOBILE CI PIPELINE (Flutter / Dart)
+  # =========================================================================
+  mobile-ci:
+    name: Mobile CI (Install, Format, Lint, Typecheck, Unit, Integration, Build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wearsy_mobile
+
+    steps:
+      - name: 📥 Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 🐦 Setup Flutter 3.24.x
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.3'
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:'
+
+      # Step 1: Install dependencies
+      - name: 1. 📦 Install dependencies (flutter pub get)
+        run: flutter pub get
+
+      # Step 2: Check format
+      - name: 2. 🎨 Check format (Dart Format)
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      # Step 3: Run lint
+      - name: 3. 🔍 Run lint (Flutter Analyze)
+        run: flutter analyze --no-fatal-infos
+
+      # Step 4: Run typecheck
+      - name: 4. 🔎 Run typecheck (Dart Analyze Fatal Warnings)
+        run: dart analyze --fatal-warnings lib test
+
+      # Step 5: Run unit tests
+      - name: 5. 🧪 Run unit tests (Flutter Test Unit Suites)
+        run: flutter test test/auth_validation_test.dart test/smart_fit_test.dart --coverage
+
+      # Step 6: Run integration tests
+      - name: 6. 🔗 Run integration tests (Flutter Widget & Flow Tests)
+        run: flutter test test/widget_test.dart
+
+      # Step 7: Build project
+      - name: 7. 🏗️ Build project (Android APK Smoke Build)
+        run: flutter build apk --debug --no-tree-shake-icons
+
+  # =========================================================================
+  # 3. PULL REQUEST GATE (Tất cả job phải PASS mới được gộp nhánh)
+  # =========================================================================
+  pull-request-gate:
+    name: 🛡️ Pull Request Gate (All Checks Must Pass)
+    runs-on: ubuntu-latest
+    needs: [backend-ci, mobile-ci]
+    if: always()
+    steps:
+      - name: 🚦 Kiểm tra trạng thái của toàn bộ CI Pipeline
+        run: |
+          BACKEND_STATUS="${{ needs.backend-ci.result }}"
+          MOBILE_STATUS="${{ needs.mobile-ci.result }}"
+
+          echo "=========================================================="
+          echo "           WEARSY CI STATUS REPORT & PR GATE              "
+          echo "=========================================================="
+          echo "Backend CI Result : $BACKEND_STATUS"
+          echo "Mobile CI Result  : $MOBILE_STATUS"
+          echo "=========================================================="
+
+          echo "### 🛡️ WEARSY CI Quality Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :---: | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Backend (NestJS)** | $BACKEND_STATUS | Format, Lint, Typecheck, Unit, E2E, Build |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Mobile (Flutter)** | $MOBILE_STATUS | Format, Lint, Typecheck, Unit, Widget, Build |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$BACKEND_STATUS" != "success" ] || [ "$MOBILE_STATUS" != "success" ]; then
+            echo "❌ CI Pipeline FAILED! Pull Request bị chặn gộp nhánh."
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> ❌ **PR Gate Status**: FAILED. Một hoặc nhiều bước kiểm thử không đạt. Yêu cầu sửa lỗi trước khi merge." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "✅ Tất cả các bước kiểm thử, lint, typecheck, integration test và build đã PASS!"
+          echo "🎉 Pull Request Gate MỞ: Đủ điều kiện để Review & Merge."
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "> ✅ **PR Gate Status**: PASSED. Tất cả các bước kiểm thử hợp lệ. Đủ điều kiện Review & Merge vào nhánh chính!" >> $GITHUB_STEP_SUMMARY

@@ -16,7 +16,9 @@ class WardrobeProvider with ChangeNotifier {
 
   List<WardrobeItemModel> get filteredItems {
     if (_selectedCategory == null) return _allItems;
-    return _allItems.where((item) => item.category == _selectedCategory).toList();
+    return _allItems
+        .where((item) => item.category == _selectedCategory)
+        .toList();
   }
 
   Map<WardrobeCategory, int> get itemCountByCategory {
@@ -54,7 +56,8 @@ class WardrobeProvider with ChangeNotifier {
     if (testAccounts.contains(clean)) return true;
 
     // Any demo/test account under wearsy.app domain
-    if (clean.endsWith('@wearsy.app') && (clean.contains('demo') || clean.contains('test'))) {
+    if (clean.endsWith('@wearsy.app') &&
+        (clean.contains('demo') || clean.contains('test'))) {
       return true;
     }
 
@@ -74,7 +77,8 @@ class WardrobeProvider with ChangeNotifier {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
 
       // Check if current user is an authorized test account
       final isDemo = isPreSeededDemoAccount(email, prefs);
@@ -87,7 +91,8 @@ class WardrobeProvider with ChangeNotifier {
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
       customItems = customJson
-          .map((str) => WardrobeItemModel.fromJson(jsonDecode(str) as Map<String, dynamic>))
+          .map((str) => WardrobeItemModel.fromJson(
+              jsonDecode(str) as Map<String, dynamic>))
           .toList();
     } catch (e) {
       debugPrint('[WardrobeProvider] loadItems error: $e');
@@ -116,10 +121,28 @@ class WardrobeProvider with ChangeNotifier {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = [jsonEncode(item.toJson()), ...customJson];
+      await prefs.setStringList(storageKey, updatedJson);
+    } catch (_) {}
+  }
+
+  Future<void> addMultipleItems(List<WardrobeItemModel> items) async {
+    if (items.isEmpty) return;
+    _allItems = [...items, ..._allItems];
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final storageKey = _getStorageKey(email);
+      final customJson = prefs.getStringList(storageKey) ?? [];
+      final newJsons = items.map((i) => jsonEncode(i.toJson())).toList();
+      final updatedJson = [...newJsons, ...customJson];
       await prefs.setStringList(storageKey, updatedJson);
     } catch (_) {}
   }
@@ -132,7 +155,8 @@ class WardrobeProvider with ChangeNotifier {
 
       try {
         final prefs = await SharedPreferences.getInstance();
-        final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+        final email =
+            (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
         final storageKey = _getStorageKey(email);
         final customJson = prefs.getStringList(storageKey) ?? [];
         final updatedJson = customJson.map((str) {
@@ -153,7 +177,8 @@ class WardrobeProvider with ChangeNotifier {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final email = (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
       final storageKey = _getStorageKey(email);
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = customJson.where((str) {
@@ -164,4 +189,3 @@ class WardrobeProvider with ChangeNotifier {
     } catch (_) {}
   }
 }
-

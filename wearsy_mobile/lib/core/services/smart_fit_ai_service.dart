@@ -6,7 +6,8 @@ import '../../features/wardrobe/models/wardrobe_item_model.dart';
 import 'smart_fit_engine.dart';
 
 class SmartFitAiService {
-  static const String _geminiApiKey = 'YOUR_GEMINI_API_KEY';
+  static const String _geminiApiKey =
+      'YOUR_GEMINI_API_KEY';
   static const String _geminiModel = 'gemini-1.5-flash';
 
   /// Sinh gợi ý Outfit kết hợp giữa 2D Layering và Smart Fit (Chiều cao & Cân nặng)
@@ -143,7 +144,8 @@ Trả về duy nhất JSON có cấu trúc sau:
 
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      final text = jsonResponse['candidates']?[0]?['content']?['parts']?[0]?['text'];
+      final text =
+          jsonResponse['candidates']?[0]?['content']?['parts']?[0]?['text'];
       if (text != null) {
         final parsed = jsonDecode(text.trim()) as Map<String, dynamic>;
         final selectedIds = (parsed['selected_item_ids'] as List<dynamic>?)
@@ -152,9 +154,12 @@ Trả về duy nhất JSON có cấu trúc sau:
             [];
 
         // Kiểm tra hợp lệ: Chỉ giữ lại các ID có thực trong tủ đồ
-        final validIds = selectedIds.where((id) => wardrobeItems.any((i) => i.id == id)).toList();
+        final validIds = selectedIds
+            .where((id) => wardrobeItems.any((i) => i.id == id))
+            .toList();
         if (validIds.length >= 2) {
-          final firstItem = wardrobeItems.firstWhere((i) => i.id == validIds.first);
+          final firstItem =
+              wardrobeItems.firstWhere((i) => i.id == validIds.first);
           final rawAdvice = parsed['smart_fit_advice'] as Map<String, dynamic>?;
 
           final smartFitAdvice = SmartFitAdvice(
@@ -173,12 +178,15 @@ Trả về duy nhất JSON có cấu trúc sau:
           );
 
           return OutfitModel(
-            id: parsed['outfit_id']?.toString() ?? 'o_ai_${DateTime.now().millisecondsSinceEpoch}',
-            name: parsed['title']?.toString() ?? 'Bộ phối Smart Fit Thời Thượng',
+            id: parsed['outfit_id']?.toString() ??
+                'o_ai_${DateTime.now().millisecondsSinceEpoch}',
+            name:
+                parsed['title']?.toString() ?? 'Bộ phối Smart Fit Thời Thượng',
             occasion: _mapOccasion(occasion),
             weatherSuitable: ['Mọi thời tiết'],
             aiScore: (parsed['elegance_score'] as num?)?.toDouble() ?? 9.5,
-            eleganceScore: (parsed['elegance_score'] as num?)?.toDouble() ?? 9.5,
+            eleganceScore:
+                (parsed['elegance_score'] as num?)?.toDouble() ?? 9.5,
             colorScore: (parsed['color_score'] as num?)?.toDouble() ?? 9.2,
             aiReason: parsed['stylist_reasoning']?.toString() ??
                 'Sự phối hợp hài hòa giữa các lớp trang phục tôn dáng và phù hợp sự kiện.',
@@ -204,14 +212,24 @@ Trả về duy nhất JSON có cấu trúc sau:
 
     if (wardrobeItems.isNotEmpty) {
       // 1. Tìm lớp nền 1: Áo hoặc Đầm
-      final tops = wardrobeItems.where((i) => i.category == WardrobeCategory.tops).toList();
-      final dresses = wardrobeItems.where((i) => i.category == WardrobeCategory.dresses).toList();
-      final bottoms = wardrobeItems.where((i) => i.category == WardrobeCategory.bottoms).toList();
-      final outerwear =
-          wardrobeItems.where((i) => i.category == WardrobeCategory.outerwear).toList();
-      final shoes = wardrobeItems.where((i) => i.category == WardrobeCategory.shoes).toList();
-      final accessories =
-          wardrobeItems.where((i) => i.category == WardrobeCategory.accessories).toList();
+      final tops = wardrobeItems
+          .where((i) => i.category == WardrobeCategory.tops)
+          .toList();
+      final dresses = wardrobeItems
+          .where((i) => i.category == WardrobeCategory.dresses)
+          .toList();
+      final bottoms = wardrobeItems
+          .where((i) => i.category == WardrobeCategory.bottoms)
+          .toList();
+      final outerwear = wardrobeItems
+          .where((i) => i.category == WardrobeCategory.outerwear)
+          .toList();
+      final shoes = wardrobeItems
+          .where((i) => i.category == WardrobeCategory.shoes)
+          .toList();
+      final accessories = wardrobeItems
+          .where((i) => i.category == WardrobeCategory.accessories)
+          .toList();
 
       if (dresses.isNotEmpty && (bodyAnalysis.gender == 'Nữ' || tops.isEmpty)) {
         selectedIds.add(dresses.first.id);
@@ -248,7 +266,8 @@ Trả về duy nhất JSON có cấu trúc sau:
     }
 
     final advice = SmartFitAdvice(
-      sizeRecommendation: 'Phù hợp nhất với ${bodyAnalysis.estimatedSize} chuẩn',
+      sizeRecommendation:
+          'Phù hợp nhất với ${bodyAnalysis.estimatedSize} chuẩn',
       bodyProportionTip: bodyAnalysis.defaultProportionTip,
       fitWarnings: bodyAnalysis.fitWarnings,
       bmi: bodyAnalysis.bmi,
@@ -259,7 +278,8 @@ Trả về duy nhất JSON có cấu trúc sau:
 
     return OutfitModel(
       id: 'o_smart_${DateTime.now().millisecondsSinceEpoch}',
-      name: 'Smart Fit ${bodyAnalysis.bodyFrame.split(' ').first}: Phối Đồ Tôn Dáng',
+      name:
+          'Smart Fit ${bodyAnalysis.bodyFrame.split(' ').first}: Phối Đồ Tôn Dáng',
       occasion: _mapOccasion(occasion),
       weatherSuitable: ['Mọi thời tiết'],
       aiScore: 9.4,
@@ -275,13 +295,20 @@ Trả về duy nhất JSON có cấu trúc sau:
 
   static OutfitOccasion _mapOccasion(String text) {
     final lower = text.toLowerCase();
-    if (lower.contains('công sở') || lower.contains('work') || lower.contains('báo cáo')) {
+    if (lower.contains('công sở') ||
+        lower.contains('work') ||
+        lower.contains('báo cáo')) {
       return OutfitOccasion.work;
     }
-    if (lower.contains('trang trọng') || lower.contains('formal') || lower.contains('thuyết trình')) {
+    if (lower.contains('trang trọng') ||
+        lower.contains('formal') ||
+        lower.contains('thuyết trình')) {
       return OutfitOccasion.formal;
     }
-    if (lower.contains('tối') || lower.contains('tiệc') || lower.contains('evening') || lower.contains('date')) {
+    if (lower.contains('tối') ||
+        lower.contains('tiệc') ||
+        lower.contains('evening') ||
+        lower.contains('date')) {
       return OutfitOccasion.evening;
     }
     if (lower.contains('thể thao') || lower.contains('sport')) {

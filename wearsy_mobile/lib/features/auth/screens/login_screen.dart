@@ -17,7 +17,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'nguyenvana@example.com');
+  final _emailController =
+      TextEditingController(text: 'nguyenvana@example.com');
   final _passwordController = TextEditingController(text: '12345678');
   bool _obscurePassword = true;
 
@@ -142,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _startLockout(60); // Khóa 1 phút khi sai 5 lần liên tiếp
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Bạn đã nhập sai 5 lần liên tiếp. Nút đăng nhập tạm khóa trong 1 phút.'),
+            content: Text(
+                'Bạn đã nhập sai 5 lần liên tiếp. Nút đăng nhập tạm khóa trong 1 phút.'),
             backgroundColor: AppTheme.accentColor,
             duration: Duration(seconds: 4),
           ),
@@ -151,7 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _startLockout(300); // Khóa 5 phút khi sai thêm 5 lần (tổng 10 lần)
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Bạn đã nhập sai 10 lần liên tiếp. Nút đăng nhập tạm khóa trong 5 phút.'),
+            content: Text(
+                'Bạn đã nhập sai 10 lần liên tiếp. Nút đăng nhập tạm khóa trong 5 phút.'),
             backgroundColor: AppTheme.accentColor,
             duration: Duration(seconds: 5),
           ),
@@ -181,7 +184,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -191,7 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: const BoxDecoration(
           color: AppTheme.darkBackground,
           image: DecorationImage(
-            image: NetworkImage('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop'),
+            image: NetworkImage(
+                'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop'),
             fit: BoxFit.cover,
             opacity: 0.15,
           ),
@@ -199,7 +202,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -246,7 +250,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Login Form Card (Glassmorphism)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
                     decoration: BoxDecoration(
                       color: AppTheme.darkCard.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(24),
@@ -298,7 +303,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: const TextStyle(color: Colors.white),
                             decoration: const InputDecoration(
                               hintText: 'nguyenvana@example.com',
-                              prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryLight),
+                              prefixIcon: Icon(Icons.email_outlined,
+                                  color: AppTheme.primaryLight),
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
@@ -328,10 +334,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               hintText: '••••••••',
-                              prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppTheme.primaryLight),
+                              prefixIcon: const Icon(Icons.lock_outline_rounded,
+                                  color: AppTheme.primaryLight),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   color: AppTheme.darkTextSecondary,
                                 ),
                                 onPressed: () {
@@ -368,14 +377,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height: 54,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          gradient: isLocked ? null : AppTheme.primaryGradient,
-                                          color: isLocked ? Colors.white.withOpacity(0.12) : null,
-                                          borderRadius: BorderRadius.circular(16),
+                                          gradient: isLocked
+                                              ? null
+                                              : AppTheme.primaryGradient,
+                                          color: isLocked
+                                              ? Colors.white.withOpacity(0.12)
+                                              : null,
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                           boxShadow: isLocked
                                               ? null
                                               : [
                                                   BoxShadow(
-                                                    color: AppTheme.primaryColor.withOpacity(0.4),
+                                                    color: AppTheme.primaryColor
+                                                        .withOpacity(0.4),
                                                     blurRadius: 15,
                                                     offset: const Offset(0, 5),
                                                   ),
@@ -386,10 +401,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                             backgroundColor: Colors.transparent,
                                             shadowColor: Colors.transparent,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(16),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                             ),
                                           ),
-                                          onPressed: (authProvider.isLoading || isLocked) ? null : _handleLogin,
+                                          onPressed: (authProvider.isLoading ||
+                                                  isLocked)
+                                              ? null
+                                              : _handleLogin,
                                           child: authProvider.isLoading
                                               ? const SpinKitThreeBounce(
                                                   color: Colors.white,
@@ -397,34 +416,53 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 )
                                               : isLocked
                                                   ? Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children: [
-                                                        const Icon(Icons.timer_outlined, color: Colors.white70, size: 20),
-                                                        const SizedBox(width: 8),
+                                                        const Icon(
+                                                            Icons
+                                                                .timer_outlined,
+                                                            color:
+                                                                Colors.white70,
+                                                            size: 20),
+                                                        const SizedBox(
+                                                            width: 8),
                                                         Text(
                                                           'THỬ LẠI SAU ${_formatDuration(_lockoutSecondsRemaining)}',
-                                                          style: GoogleFonts.outfit(
+                                                          style: GoogleFonts
+                                                              .outfit(
                                                             fontSize: 15,
-                                                            fontWeight: FontWeight.bold,
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                             letterSpacing: 1.0,
-                                                            color: Colors.white70,
+                                                            color:
+                                                                Colors.white70,
                                                           ),
                                                         ),
                                                       ],
                                                     )
                                                   : Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children: [
                                                         Text(
                                                           'ĐĂNG NHẬP',
-                                                          style: GoogleFonts.outfit(
+                                                          style: GoogleFonts
+                                                              .outfit(
                                                             fontSize: 16,
-                                                            fontWeight: FontWeight.bold,
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                             letterSpacing: 1.2,
                                                           ),
                                                         ),
-                                                        const SizedBox(width: 8),
-                                                        const Icon(Icons.arrow_forward_rounded, size: 20),
+                                                        const SizedBox(
+                                                            width: 8),
+                                                        const Icon(
+                                                            Icons
+                                                                .arrow_forward_rounded,
+                                                            size: 20),
                                                       ],
                                                     ),
                                         ),
@@ -457,9 +495,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Divider
                           Row(
                             children: [
-                              const Expanded(child: Divider(color: Colors.white24, height: 1)),
+                              const Expanded(
+                                  child: Divider(
+                                      color: Colors.white24, height: 1)),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(
                                   'Hoặc đăng nhập bằng',
                                   style: GoogleFonts.inter(
@@ -468,7 +509,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
-                              const Expanded(child: Divider(color: Colors.white24, height: 1)),
+                              const Expanded(
+                                  child: Divider(
+                                      color: Colors.white24, height: 1)),
                             ],
                           ),
 
@@ -478,14 +521,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: InkWell(
-                              onTap: authProvider.isLoading ? null : _handleGoogleLogin,
+                              onTap: authProvider.isLoading
+                                  ? null
+                                  : _handleGoogleLogin,
                               borderRadius: BorderRadius.circular(14),
                               child: Container(
                                 height: 48,
                                 decoration: BoxDecoration(
                                   color: Colors.white.withValues(alpha: 0.08),
                                   borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                                  border: Border.all(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.15)),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

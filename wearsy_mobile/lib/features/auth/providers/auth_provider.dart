@@ -53,7 +53,8 @@ class AuthProvider with ChangeNotifier {
     _clearError();
 
     try {
-      final authData = await _authService.login(email: email, password: password);
+      final authData =
+          await _authService.login(email: email, password: password);
       _user = authData.user;
       _status = AuthStatus.authenticated;
       notifyListeners();

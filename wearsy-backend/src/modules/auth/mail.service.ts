@@ -20,8 +20,12 @@ export class MailService {
       'smtp-relay.brevo.com';
 
     const port =
-      Number(process.env.MAIL_PORT || this.configService.get<number>('MAIL_PORT')) ||
-      Number(process.env.SMTP_PORT || this.configService.get<number>('SMTP_PORT')) ||
+      Number(
+        process.env.MAIL_PORT || this.configService.get<number>('MAIL_PORT'),
+      ) ||
+      Number(
+        process.env.SMTP_PORT || this.configService.get<number>('SMTP_PORT'),
+      ) ||
       587;
 
     const secure = false; // Bắt buộc false vì sử dụng port 587 STARTTLS
@@ -52,7 +56,9 @@ export class MailService {
           pass,
         },
       });
-      this.logger.log(`SMTP Mailer initialized successfully for host: ${host}, user: ${user}`);
+      this.logger.log(
+        `SMTP Mailer initialized successfully for host: ${host}, user: ${user}`,
+      );
     } else {
       this.logger.warn(
         'MAIL_USER (hoặc SMTP_USER) / MAIL_PASS (hoặc SMTP_PASS) chưa được cấu hình trong .env. Email sẽ không thể gửi đi.',
@@ -60,13 +66,18 @@ export class MailService {
     }
   }
 
-  async sendOtpEmail(toEmail: string, otp: string, userName?: string): Promise<{ success: boolean; message?: string }> {
+  async sendOtpEmail(
+    toEmail: string,
+    otp: string,
+    userName?: string,
+  ): Promise<{ success: boolean; message?: string }> {
     if (!this.transporter) {
       this.initTransporter();
       if (!this.transporter) {
         return {
           success: false,
-          message: 'Server chưa được cấu hình thông tin SMTP (MAIL_USER / MAIL_PASS trong file .env).',
+          message:
+            'Server chưa được cấu hình thông tin SMTP (MAIL_USER / MAIL_PASS trong file .env).',
         };
       }
     }

@@ -103,7 +103,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
       if (email != null) {
         await prefs.setString('user_gender_$email', _selectedGender);
         if (_selectedBirthDate != null) {
-          await prefs.setString('user_birthdate_$email', _selectedBirthDate!.toIso8601String());
+          await prefs.setString(
+              'user_birthdate_$email', _selectedBirthDate!.toIso8601String());
         }
       }
     } catch (_) {}
@@ -119,7 +120,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             backgroundColor: AppTheme.primaryColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
@@ -153,19 +155,22 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             backgroundColor: AppTheme.primaryColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              authProvider.errorMessage ?? 'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại.',
+              authProvider.errorMessage ??
+                  'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại.',
               style: GoogleFonts.inter(),
             ),
             backgroundColor: AppTheme.accentColor,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
@@ -188,7 +193,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           indicatorWeight: 3,
           labelColor: AppTheme.primaryLight,
           unselectedLabelColor: AppTheme.darkTextSecondary,
-          labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+          labelStyle:
+              GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
           tabs: const [
             Tab(icon: Icon(Icons.person_rounded, size: 20), text: 'Thông Tin'),
             Tab(icon: Icon(Icons.lock_rounded, size: 20), text: 'Mật Khẩu'),
@@ -228,7 +234,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 children: [
                   CircleAvatar(
                     radius: 46,
-                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.3),
+                    backgroundColor:
+                        AppTheme.primaryColor.withValues(alpha: 0.3),
                     child: Text(
                       (user?.fullName.isNotEmpty == true)
                           ? user!.fullName[0].toUpperCase()
@@ -266,7 +273,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               controller: _nameController,
               label: 'Họ và Tên',
               icon: Icons.badge_rounded,
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Vui lòng nhập họ tên' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Vui lòng nhập họ tên'
+                  : null,
             ),
             const SizedBox(height: 16),
 
@@ -280,7 +289,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.email_rounded, color: AppTheme.primaryLight, size: 22),
+                  const Icon(Icons.email_rounded,
+                      color: AppTheme.primaryLight, size: 22),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -305,20 +315,26 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.greenAccent.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.4)),
+                      border: Border.all(
+                          color: Colors.greenAccent.withValues(alpha: 0.4)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.verified_rounded, color: Colors.greenAccent, size: 12),
+                        const Icon(Icons.verified_rounded,
+                            color: Colors.greenAccent, size: 12),
                         const SizedBox(width: 4),
                         Text(
                           'Đã xác thực',
-                          style: GoogleFonts.inter(fontSize: 11, color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: Colors.greenAccent,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -358,8 +374,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                           selectedColor: AppTheme.primaryColor,
                           backgroundColor: Colors.white.withValues(alpha: 0.05),
                           labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected
+                                ? Colors.white
+                                : AppTheme.darkTextSecondary,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                           onSelected: (val) {
                             if (val) setState(() => _selectedGender = g);
@@ -388,15 +408,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: AppTheme.darkCard,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                  border:
+                      Border.all(color: Colors.white.withValues(alpha: 0.08)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.cake_rounded, color: AppTheme.primaryLight, size: 22),
+                    const Icon(Icons.cake_rounded,
+                        color: AppTheme.primaryLight, size: 22),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
@@ -404,18 +427,25 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                         children: [
                           Text(
                             'Ngày sinh',
-                            style: GoogleFonts.inter(fontSize: 12, color: AppTheme.darkTextSecondary),
+                            style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: AppTheme.darkTextSecondary),
                           ),
                           Text(
                             _selectedBirthDate != null
-                                ? DateFormat('dd/MM/yyyy').format(_selectedBirthDate!)
+                                ? DateFormat('dd/MM/yyyy')
+                                    .format(_selectedBirthDate!)
                                 : 'Chưa thiết lập',
-                            style: GoogleFonts.inter(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+                            style: GoogleFonts.inter(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(Icons.calendar_today_rounded, color: Colors.white54, size: 18),
+                    const Icon(Icons.calendar_today_rounded,
+                        color: Colors.white54, size: 18),
                   ],
                 ),
               ),
@@ -429,18 +459,23 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
                 icon: _isSavingProfile
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
                       )
                     : const Icon(Icons.save_rounded, color: Colors.white),
                 label: Text(
                   'Lưu Thay Đổi',
-                  style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 onPressed: _isSavingProfile ? null : _saveProfile,
               ),
@@ -461,12 +496,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           children: [
             Text(
               'Bảo Mật & Mật Khẩu 🔒',
-              style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             const SizedBox(height: 6),
             Text(
               'Mật khẩu mới phải có tối thiểu 6 ký tự để bảo vệ tủ đồ và dữ liệu thời trang của bạn.',
-              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
+              style: GoogleFonts.inter(
+                  fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
             ),
             const SizedBox(height: 24),
 
@@ -475,8 +514,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               controller: _oldPasswordController,
               label: 'Mật khẩu hiện tại',
               obscureText: _obscureOldPassword,
-              onToggleVisibility: () => setState(() => _obscureOldPassword = !_obscureOldPassword),
-              validator: (v) => (v == null || v.isEmpty) ? 'Vui lòng nhập mật khẩu cũ' : null,
+              onToggleVisibility: () =>
+                  setState(() => _obscureOldPassword = !_obscureOldPassword),
+              validator: (v) =>
+                  (v == null || v.isEmpty) ? 'Vui lòng nhập mật khẩu cũ' : null,
             ),
             const SizedBox(height: 16),
 
@@ -485,10 +526,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               controller: _newPasswordController,
               label: 'Mật khẩu mới',
               obscureText: _obscureNewPassword,
-              onToggleVisibility: () => setState(() => _obscureNewPassword = !_obscureNewPassword),
+              onToggleVisibility: () =>
+                  setState(() => _obscureNewPassword = !_obscureNewPassword),
               validator: (v) {
-                if (v == null || v.length < 6) return 'Mật khẩu mới tối thiểu 6 ký tự';
-                if (v == _oldPasswordController.text) return 'Mật khẩu mới không được trùng mật khẩu cũ';
+                if (v == null || v.length < 6)
+                  return 'Mật khẩu mới tối thiểu 6 ký tự';
+                if (v == _oldPasswordController.text)
+                  return 'Mật khẩu mới không được trùng mật khẩu cũ';
                 return null;
               },
             ),
@@ -499,9 +543,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               controller: _confirmPasswordController,
               label: 'Xác nhận mật khẩu mới',
               obscureText: _obscureConfirmPassword,
-              onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+              onToggleVisibility: () => setState(
+                  () => _obscureConfirmPassword = !_obscureConfirmPassword),
               validator: (v) {
-                if (v != _newPasswordController.text) return 'Mật khẩu xác nhận không khớp';
+                if (v != _newPasswordController.text)
+                  return 'Mật khẩu xác nhận không khớp';
                 return null;
               },
             ),
@@ -514,18 +560,24 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.accentColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
                 icon: _isChangingPassword
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2),
                       )
-                    : const Icon(Icons.check_circle_rounded, color: Colors.white),
+                    : const Icon(Icons.check_circle_rounded,
+                        color: Colors.white),
                 label: Text(
                   'Cập Nhật Mật Khẩu',
-                  style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 onPressed: _isChangingPassword ? null : _changePassword,
               ),
@@ -544,19 +596,23 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
         children: [
           Text(
             'Tài Khoản Liên Kết 🌐',
-            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: GoogleFonts.outfit(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 6),
           Text(
             'Liên kết tài khoản mạng xã hội để đăng nhập nhanh chóng bằng 1 cú chạm và đồng bộ an toàn.',
-            style: GoogleFonts.inter(fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
+            style: GoogleFonts.inter(
+                fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
           ),
           const SizedBox(height: 24),
 
           // Google
           _buildLinkedCard(
             title: 'Tài khoản Google',
-            subtitle: _isGoogleLinked ? (user?.email ?? 'demo@wearsy.app') : 'Chưa liên kết',
+            subtitle: _isGoogleLinked
+                ? (user?.email ?? 'demo@wearsy.app')
+                : 'Chưa liên kết',
             icon: Icons.g_mobiledata_rounded,
             iconColor: Colors.redAccent,
             isLinked: _isGoogleLinked,
@@ -589,7 +645,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           const SizedBox(height: 6),
           Text(
             'Khi xóa tài khoản, toàn bộ dữ liệu gồm tủ đồ số, các outfit AI đã phối, sở thích phong cách và thông tin tài khoản của bạn sẽ bị xóa vĩnh viễn và không thể khôi phục.',
-            style: GoogleFonts.inter(fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
+            style: GoogleFonts.inter(
+                fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
           ),
           const SizedBox(height: 18),
 
@@ -600,12 +657,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppTheme.accentColor,
                 side: const BorderSide(color: AppTheme.accentColor, width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
               ),
               icon: const Icon(Icons.delete_forever_rounded, size: 22),
               label: Text(
                 'XÓA TÀI KHOẢN VĨNH VIỄN',
-                style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5),
               ),
               onPressed: () => _confirmDeleteAccount(context),
             ),
@@ -623,55 +684,67 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: AppTheme.accentColor, size: 28),
+            const Icon(Icons.warning_amber_rounded,
+                color: AppTheme.accentColor, size: 28),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 'Xác nhận xóa tài khoản?',
-                style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
               ),
             ),
           ],
         ),
         content: Text(
           'Hành động này KHÔNG THỂ hoàn tác! Toàn bộ tủ đồ thông minh, outfits, lịch sử phong cách và dữ liệu tài khoản của bạn sẽ bị xóa vĩnh viễn khỏi hệ thống.',
-          style: GoogleFonts.inter(color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.5),
+          style: GoogleFonts.inter(
+              color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: Text('HỦY BỎ', style: GoogleFonts.inter(color: Colors.white70, fontWeight: FontWeight.bold)),
+            child: Text('HỦY BỎ',
+                style: GoogleFonts.inter(
+                    color: Colors.white70, fontWeight: FontWeight.bold)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.accentColor,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () async {
               Navigator.pop(dialogCtx);
-              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              final authProvider =
+                  Provider.of<AuthProvider>(context, listen: false);
               final success = await authProvider.deleteAccount();
               if (context.mounted) {
                 if (success) {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('🗑️ Tài khoản của bạn đã được xóa vĩnh viễn khỏi hệ thống.'),
+                      content: Text(
+                          '🗑️ Tài khoản của bạn đã được xóa vĩnh viễn khỏi hệ thống.'),
                       backgroundColor: AppTheme.primaryColor,
                     ),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(authProvider.errorMessage ?? 'Xóa tài khoản thất bại.'),
+                      content: Text(authProvider.errorMessage ??
+                          'Xóa tài khoản thất bại.'),
                       backgroundColor: AppTheme.accentColor,
                     ),
                   );
                 }
               }
             },
-            child: Text('XÓA VĨNH VIỄN', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+            child: Text('XÓA VĨNH VIỄN',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -710,27 +783,35 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.outfit(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.darkTextSecondary),
+                  style: GoogleFonts.inter(
+                      fontSize: 12, color: AppTheme.darkTextSecondary),
                 ),
               ],
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: isLinked ? Colors.white.withValues(alpha: 0.1) : AppTheme.primaryColor,
+              backgroundColor: isLinked
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : AppTheme.primaryColor,
               foregroundColor: isLinked ? Colors.white70 : Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: onToggle,
             child: Text(
               isLinked ? 'Hủy liên kết' : 'Liên kết',
-              style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+              style:
+                  GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -741,7 +822,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   void _showLinkToast(String provider, bool linked) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(linked ? '✅ Đã liên kết tài khoản $provider' : 'Đã hủy liên kết $provider'),
+        content: Text(linked
+            ? '✅ Đã liên kết tài khoản $provider'
+            : 'Đã hủy liên kết $provider'),
         backgroundColor: linked ? AppTheme.primaryColor : Colors.grey[800],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -798,10 +881,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
       decoration: InputDecoration(
         labelText: label,
         labelStyle: GoogleFonts.inter(color: AppTheme.darkTextSecondary),
-        prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppTheme.primaryLight, size: 22),
+        prefixIcon: const Icon(Icons.lock_outline_rounded,
+            color: AppTheme.primaryLight, size: 22),
         suffixIcon: IconButton(
           icon: Icon(
-            obscureText ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+            obscureText
+                ? Icons.visibility_off_rounded
+                : Icons.visibility_rounded,
             color: Colors.white54,
             size: 20,
           ),
@@ -929,8 +1015,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          isVip ? Icons.stars_rounded : Icons.star_border_rounded,
-                          color: isVip ? const Color(0xFFFFD700) : Colors.white70,
+                          isVip
+                              ? Icons.stars_rounded
+                              : Icons.star_border_rounded,
+                          color:
+                              isVip ? const Color(0xFFFFD700) : Colors.white70,
                           size: 24,
                         ),
                       ),
@@ -952,8 +1041,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                                 : 'Tài khoản Tiêu chuẩn',
                             style: GoogleFonts.inter(
                               fontSize: 12,
-                              color: isVip ? const Color(0xFFFFD700) : AppTheme.darkTextSecondary,
-                              fontWeight: isVip ? FontWeight.w600 : FontWeight.normal,
+                              color: isVip
+                                  ? const Color(0xFFFFD700)
+                                  : AppTheme.darkTextSecondary,
+                              fontWeight:
+                                  isVip ? FontWeight.w600 : FontWeight.normal,
                             ),
                           ),
                         ],
@@ -961,7 +1053,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: isVip
                           ? Colors.greenAccent.withValues(alpha: 0.2)
@@ -990,14 +1083,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.schedule_rounded, color: Color(0xFFFFD700), size: 16),
+                      const Icon(Icons.schedule_rounded,
+                          color: Color(0xFFFFD700), size: 16),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -1027,13 +1122,17 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 ),
               ),
               const SizedBox(height: 10),
-              _buildVipPerkItem('Không giới hạn số lượng món đồ trong tủ đồ số'),
+              _buildVipPerkItem(
+                  'Không giới hạn số lượng món đồ trong tủ đồ số'),
               const SizedBox(height: 8),
-              _buildVipPerkItem('AI Stylist gợi ý phối đồ thông minh không giới hạn'),
+              _buildVipPerkItem(
+                  'AI Stylist gợi ý phối đồ thông minh không giới hạn'),
               const SizedBox(height: 8),
-              _buildVipPerkItem('Phân tích bảng màu cá nhân & vóc dáng chuyên sâu'),
+              _buildVipPerkItem(
+                  'Phân tích bảng màu cá nhân & vóc dáng chuyên sâu'),
               const SizedBox(height: 8),
-              _buildVipPerkItem('Ưu tiên xử lý AI tốc độ cao & mẫu phối độc quyền'),
+              _buildVipPerkItem(
+                  'Ưu tiên xử lý AI tốc độ cao & mẫu phối độc quyền'),
 
               const SizedBox(height: 20),
               const Divider(color: Colors.white12),
@@ -1071,7 +1170,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   ),
                   suffixIcon: _couponController.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear_rounded, color: Colors.white38, size: 18),
+                          icon: const Icon(Icons.clear_rounded,
+                              color: Colors.white38, size: 18),
                           onPressed: () {
                             setState(() {
                               _couponController.clear();
@@ -1081,18 +1181,22 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       : null,
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.06),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withValues(alpha: 0.15)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                    borderSide:
+                        BorderSide(color: Colors.white.withValues(alpha: 0.15)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppTheme.primaryLight, width: 1.5),
+                    borderSide: const BorderSide(
+                        color: AppTheme.primaryLight, width: 1.5),
                   ),
                 ),
                 onChanged: (_) => setState(() {}),
@@ -1108,13 +1212,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
                     padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                   onPressed: _isUpgradingVip ? null : _handleUpgradeVip,
                   child: Ink(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFFEC4899), Color(0xFFF59E0B)],
+                        colors: [
+                          Color(0xFF8B5CF6),
+                          Color(0xFFEC4899),
+                          Color(0xFFF59E0B)
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -1133,15 +1242,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2),
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.stars_rounded, color: Colors.white, size: 20),
+                                const Icon(Icons.stars_rounded,
+                                    color: Colors.white, size: 20),
                                 const SizedBox(width: 8),
                                 Text(
-                                  isVip ? 'GIA HẠN THÊM VIP 7 NGÀY' : 'KÍCH HOẠT VIP 7 NGÀY',
+                                  isVip
+                                      ? 'GIA HẠN THÊM VIP 7 NGÀY'
+                                      : 'KÍCH HOẠT VIP 7 NGÀY',
                                   style: GoogleFonts.outfit(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
@@ -1159,20 +1272,24 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
 
               // Tip coupon text
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryLight.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.2)),
+                  border: Border.all(
+                      color: AppTheme.primaryLight.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.card_giftcard_rounded, color: AppTheme.primaryLight, size: 16),
+                    const Icon(Icons.card_giftcard_rounded,
+                        color: AppTheme.primaryLight, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: RichText(
                         text: TextSpan(
-                          style: GoogleFonts.inter(fontSize: 12, color: Colors.white70),
+                          style: GoogleFonts.inter(
+                              fontSize: 12, color: Colors.white70),
                           children: [
                             const TextSpan(text: 'Nhập mã '),
                             TextSpan(
@@ -1182,7 +1299,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                                 color: const Color(0xFFFFD700),
                               ),
                             ),
-                            const TextSpan(text: ' để nhận ngay 7 ngày VIP miễn phí!'),
+                            const TextSpan(
+                                text: ' để nhận ngay 7 ngày VIP miễn phí!'),
                           ],
                         ),
                       ),
@@ -1230,7 +1348,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           content: Text('Vui lòng nhập mã Coupon.', style: GoogleFonts.inter()),
           backgroundColor: AppTheme.accentColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
       return;
@@ -1245,7 +1364,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           ),
           backgroundColor: AppTheme.accentColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
       return;
@@ -1265,12 +1385,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            authProvider.errorMessage ?? 'Nâng cấp VIP thất bại. Vui lòng thử lại.',
+            authProvider.errorMessage ??
+                'Nâng cấp VIP thất bại. Vui lòng thử lại.',
             style: GoogleFonts.inter(),
           ),
           backgroundColor: AppTheme.accentColor,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
     }
@@ -1353,7 +1475,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     children: [
                       Text(
                         'Gói hội viên:',
-                        style: GoogleFonts.inter(fontSize: 12, color: Colors.white60),
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: Colors.white60),
                       ),
                       Text(
                         'VIP Fashionista 👑',
@@ -1371,7 +1494,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     children: [
                       Text(
                         'Hạn sử dụng:',
-                        style: GoogleFonts.inter(fontSize: 12, color: Colors.white60),
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: Colors.white60),
                       ),
                       Text(
                         expiryDateStr,
@@ -1394,7 +1518,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFD700),
                   foregroundColor: const Color(0xFF1E1435),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                 ),
                 onPressed: () => Navigator.pop(dialogCtx),
                 child: Text(

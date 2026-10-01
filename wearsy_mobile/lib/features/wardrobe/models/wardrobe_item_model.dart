@@ -101,7 +101,9 @@ class WardrobeItemModel {
       color: json['color']?.toString() ?? '',
       brand: json['brand']?.toString() ?? '',
       imageUrl: json['image_url']?.toString() ?? '',
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+              [],
       aiMatchScore: (json['ai_match_score'] as num?)?.toDouble() ?? 9.0,
       layerOrder: parsedOrder,
     );
@@ -146,5 +148,3 @@ class WardrobeItemModel {
     };
   }
 }
-
-

@@ -14,14 +14,18 @@ export class UsersService {
     const cleanCoupon = (coupon || '').trim().toUpperCase();
 
     if (cleanCoupon !== 'WEARSY') {
-      throw new BadRequestException('Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 7 ngày VIP!');
+      throw new BadRequestException(
+        'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 7 ngày VIP!',
+      );
     }
 
     const cleanEmail = email?.trim().toLowerCase();
     let user: UserEntity | null = null;
 
     if (cleanEmail) {
-      user = await this.userRepository.findOne({ where: { email: cleanEmail } });
+      user = await this.userRepository.findOne({
+        where: { email: cleanEmail },
+      });
     }
 
     const now = new Date();
@@ -45,7 +49,8 @@ export class UsersService {
 
     return {
       success: true,
-      message: 'Chúc mừng! Bạn đã nâng cấp thành công gói VIP Fashionista 7 ngày.',
+      message:
+        'Chúc mừng! Bạn đã nâng cấp thành công gói VIP Fashionista 7 ngày.',
       is_vip: true,
       vip_expires_at: vipExpiresAt.toISOString(),
       days_added: 7,

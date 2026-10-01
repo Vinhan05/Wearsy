@@ -85,7 +85,8 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
     final scaleRatio = SmartFitEngine.calculateScaleRatio(widget.heightCm);
 
     // 2. Phân loại các món đồ theo Layer Order
-    final activeItems = widget.items.where((i) => _visibleItemIds.contains(i.id)).toList();
+    final activeItems =
+        widget.items.where((i) => _visibleItemIds.contains(i.id)).toList();
     activeItems.sort((a, b) => a.layerOrder.compareTo(b.layerOrder));
 
     final baseItems = activeItems.where((i) => i.layerOrder == 1).toList();
@@ -93,9 +94,12 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
     final shoeItems = activeItems.where((i) => i.layerOrder == 3).toList();
     final accItems = activeItems.where((i) => i.layerOrder == 4).toList();
 
-    final tops = baseItems.where((i) => i.category == WardrobeCategory.tops).toList();
-    final bottoms = baseItems.where((i) => i.category == WardrobeCategory.bottoms).toList();
-    final dresses = baseItems.where((i) => i.category == WardrobeCategory.dresses).toList();
+    final tops =
+        baseItems.where((i) => i.category == WardrobeCategory.tops).toList();
+    final bottoms =
+        baseItems.where((i) => i.category == WardrobeCategory.bottoms).toList();
+    final dresses =
+        baseItems.where((i) => i.category == WardrobeCategory.dresses).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -168,7 +172,8 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                   right: 12,
                   top: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.65),
                       borderRadius: BorderRadius.circular(20),
@@ -177,7 +182,8 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.layers_rounded, color: AppTheme.primaryLight, size: 13),
+                        const Icon(Icons.layers_rounded,
+                            color: AppTheme.primaryLight, size: 13),
                         const SizedBox(width: 4),
                         Text(
                           'Layering 2D • Scale ${scaleRatio.toStringAsFixed(2)}x',
@@ -223,14 +229,17 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                 onTap: () => setState(() => _showOrbitRings = !_showOrbitRings),
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: _showOrbitRings
                         ? AppTheme.primaryColor.withOpacity(0.35)
                         : AppTheme.darkCard,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: _showOrbitRings ? AppTheme.primaryLight : Colors.white12,
+                      color: _showOrbitRings
+                          ? AppTheme.primaryLight
+                          : Colors.white12,
                       width: 1.0,
                     ),
                   ),
@@ -240,15 +249,20 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                       Icon(
                         Icons.rotate_right_rounded,
                         size: 14,
-                        color: _showOrbitRings ? AppTheme.primaryLight : Colors.white54,
+                        color: _showOrbitRings
+                            ? AppTheme.primaryLight
+                            : Colors.white54,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'Quỹ đạo 360°',
                         style: GoogleFonts.inter(
                           fontSize: 11,
-                          fontWeight: _showOrbitRings ? FontWeight.bold : FontWeight.normal,
-                          color: _showOrbitRings ? Colors.white : Colors.white54,
+                          fontWeight: _showOrbitRings
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          color:
+                              _showOrbitRings ? Colors.white : Colors.white54,
                         ),
                       ),
                     ],
@@ -267,7 +281,8 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
             children: [
               Row(
                 children: [
-                  const Icon(Icons.touch_app_rounded, color: AppTheme.primaryLight, size: 16),
+                  const Icon(Icons.touch_app_rounded,
+                      color: AppTheme.primaryLight, size: 16),
                   const SizedBox(width: 6),
                   Text(
                     'Tương tác lớp phối đồ (Chạm để bật/tắt lớp):',
@@ -299,7 +314,8 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                           '${item.name} (${item.category.displayName})',
                           style: GoogleFonts.inter(
                             fontSize: 11,
-                            fontWeight: isVisible ? FontWeight.bold : FontWeight.normal,
+                            fontWeight:
+                                isVisible ? FontWeight.bold : FontWeight.normal,
                             color: isVisible ? Colors.white : Colors.white54,
                           ),
                         ),
@@ -308,7 +324,9 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                           side: BorderSide(
-                            color: isVisible ? AppTheme.primaryLight : Colors.white12,
+                            color: isVisible
+                                ? AppTheme.primaryLight
+                                : Colors.white12,
                             width: isVisible ? 1.2 : 0.8,
                           ),
                         ),
@@ -592,7 +610,8 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
                         color: isLayer2Outer
                             ? AppTheme.accentColor.withOpacity(0.85)
@@ -727,7 +746,8 @@ class _NeonOrbitPainter extends CustomPainter {
     canvas.translate(center.dx, center.dy);
     canvas.rotate(tiltAngle);
 
-    final rect = Rect.fromCenter(center: Offset.zero, width: radiusX * 2, height: radiusY * 2);
+    final rect = Rect.fromCenter(
+        center: Offset.zero, width: radiusX * 2, height: radiusY * 2);
 
     // Vòng mờ ảo nền (Aura Glow)
     final glowPaint = Paint()

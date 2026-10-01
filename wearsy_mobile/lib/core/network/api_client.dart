@@ -47,11 +47,13 @@ class ApiClient {
     } on SocketException {
       throw ApiException(
         statusCode: 503,
-        message: 'Không thể kết nối đến máy chủ WEARSY. Vui lòng kiểm tra mạng.',
+        message:
+            'Không thể kết nối đến máy chủ WEARSY. Vui lòng kiểm tra mạng.',
       );
     } catch (e) {
       if (e is ApiException) rethrow;
-      throw ApiException(statusCode: 500, message: 'Đã xảy ra lỗi không xác định: $e');
+      throw ApiException(
+          statusCode: 500, message: 'Đã xảy ra lỗi không xác định: $e');
     }
   }
 
@@ -68,11 +70,13 @@ class ApiClient {
     } on SocketException {
       throw ApiException(
         statusCode: 503,
-        message: 'Không thể kết nối đến máy chủ WEARSY. Vui lòng kiểm tra mạng.',
+        message:
+            'Không thể kết nối đến máy chủ WEARSY. Vui lòng kiểm tra mạng.',
       );
     } catch (e) {
       if (e is ApiException) rethrow;
-      throw ApiException(statusCode: 500, message: 'Đã xảy ra lỗi không xác định: $e');
+      throw ApiException(
+          statusCode: 500, message: 'Đã xảy ra lỗi không xác định: $e');
     }
   }
 
@@ -123,7 +127,8 @@ class ApiClient {
     }
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (jsonResponseBody != null && jsonResponseBody is Map<String, dynamic>) {
+      if (jsonResponseBody != null &&
+          jsonResponseBody is Map<String, dynamic>) {
         if (jsonResponseBody.containsKey('data')) {
           return jsonResponseBody['data'];
         }
