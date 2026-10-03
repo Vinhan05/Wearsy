@@ -64,10 +64,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
     });
 
     ProspectiveProduct finalProduct = product;
-    // Cào ảnh thật từ sàn thương mại điện tử nếu là liên kết web
-    if (product.productUrl.startsWith('http') &&
-        !product.imageUrl.contains('susercontent.com') &&
-        !product.imageUrl.contains('tiktokcdn.com')) {
+    // Cào ảnh thật và tiêu đề chuẩn từ sàn thương mại điện tử nếu là liên kết web
+    if (product.productUrl.startsWith('http')) {
       try {
         final enriched =
             await SmartShoppingAiService.enrichProductFromUrl(product);

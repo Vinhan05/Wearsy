@@ -1368,31 +1368,87 @@ class _WardrobeCard extends StatelessWidget {
               ),
               // Image
               Expanded(
-                child: isNetworkImage
-                    ? Image.network(
-                        item.imageUrl,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: AppTheme.lavenderCard,
-                          child: Icon(Icons.checkroom_rounded,
-                              color: AppTheme.primaryLight, size: 40),
-                        ),
-                      )
-                    : Image.file(
-                        File(item.imageUrl),
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: AppTheme.lavenderCard,
-                          child: Icon(Icons.checkroom_rounded,
-                              color: AppTheme.primaryLight, size: 40),
-                        ),
-                      ),
+                child: _buildItemImage(context, item, isNetworkImage),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildItemImage(
+      BuildContext context, WardrobeItemModel item, bool isNetworkImage) {
+    if (isNetworkImage) {
+      return Image.network(
+        item.imageUrl,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _buildFallbackCard(item),
+      );
+    }
+    return Image.file(
+      File(item.imageUrl),
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => _buildFallbackCard(item),
+    );
+  }
+
+  Widget _buildFallbackCard(WardrobeItemModel item) {
+    final lowerName = item.name.toLowerCase();
+    String? backupUrl;
+    if (lowerName.contains('sweater') ||
+        lowerName.contains('hoodie') ||
+        lowerName.contains('nỉ')) {
+      backupUrl =
+          'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=600&auto=format&fit=crop';
+    } else if (lowerName.contains('3 lỗ') || lowerName.contains('ba lỗ')) {
+      backupUrl =
+          'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop';
+    } else if (item.category == WardrobeCategory.tops) {
+      backupUrl =
+          'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=600&auto=format&fit=crop';
+    } else if (item.category == WardrobeCategory.bottoms) {
+      backupUrl =
+          'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=600&auto=format&fit=crop';
+    } else if (item.category == WardrobeCategory.shoes) {
+      backupUrl =
+          'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=600&auto=format&fit=crop';
+    } else if (item.category == WardrobeCategory.outerwear) {
+      backupUrl =
+          'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=600&auto=format&fit=crop';
+    }
+
+    if (backupUrl != null) {
+      return Image.network(
+        backupUrl,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _buildCategoryPlaceholder(item),
+      );
+    }
+    return _buildCategoryPlaceholder(item);
+  }
+
+  Widget _buildCategoryPlaceholder(WardrobeItemModel item) {
+    return Container(
+      color: AppTheme.lavenderCard,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(item.category.icon, style: const TextStyle(fontSize: 32)),
+          const SizedBox(height: 6),
+          Text(
+            item.category.displayName,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.darkTextSecondary,
+            ),
+          ),
+        ],
       ),
     );
   }

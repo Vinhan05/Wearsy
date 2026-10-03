@@ -7,8 +7,8 @@ import 'smart_fit_engine.dart';
 
 class SmartFitAiService {
   // URLs for Android Emulator (10.0.2.2) and local host
-  static const String _backendUrl = 'http://10.0.2.2:3000/api/v1';
-  static const String _aiOrchestratorUrl = 'http://10.0.2.2:8000/api/v1';
+  static const String _backendUrl = 'http://10.0.2.2:8000/v1';
+  static const String _aiOrchestratorUrl = 'http://10.0.2.2:8000/v1';
 
   /// Sinh gợi ý Outfit kết hợp giữa Gemma 4 Multimodal và ComfyUI Try-on
   static Future<OutfitModel> generateSmartFitOutfit({

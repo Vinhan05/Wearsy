@@ -21,10 +21,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController =
-      TextEditingController(text: 'nguyenvana@example.com');
-  final _passwordController = TextEditingController(text: '12345678');
-  final bool _obscurePassword = true;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   int _failedAttempts = 0;
   int _lockoutSecondsRemaining = 0;
@@ -328,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.emailAddress,
                             style: TextStyle(color: AppTheme.darkTextPrimary),
                             decoration: InputDecoration(
-                              hintText: 'Nguyễn Văn A',
+                              hintText: 'Nhập email của bạn',
                               hintStyle: TextStyle(
                                   color: AppTheme.darkTextSecondary
                                       .withOpacity(0.5)),
@@ -398,7 +397,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: _obscurePassword,
                             style: TextStyle(color: AppTheme.darkTextPrimary),
                             decoration: InputDecoration(
-                              hintText: '*********',
+                              hintText: 'Nhập mật khẩu',
                               hintStyle: TextStyle(
                                   color: AppTheme.darkTextSecondary
                                       .withOpacity(0.5)),
@@ -415,6 +414,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: const Icon(Icons.lock,
                                       color: Colors.white, size: 18),
                                 ),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: AppTheme.darkTextSecondary
+                                      .withOpacity(0.6),
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
                               ),
                               fillColor: AppTheme.lavenderSurface,
                               filled: true,
@@ -541,7 +555,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: authProvider.isLoading
                                   ? null
                                   : _handleGoogleLogin,
-                              child: const GoogleLogoWidget(size: 26),
+                              child: const GoogleLogoWidget(size: 30),
                             ),
                           ),
                           const SizedBox(height: 32),
@@ -597,76 +611,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
 class GoogleLogoWidget extends StatelessWidget {
   final double size;
-  const GoogleLogoWidget({super.key, this.size = 24.0});
+  const GoogleLogoWidget({super.key, this.size = 28.0});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Image.asset(
+      'assets/images/google_logo.png',
       width: size,
       height: size,
-      child: CustomPaint(
-        painter: _GoogleLogoPainter(),
-      ),
+      fit: BoxFit.contain,
     );
   }
-}
-
-class _GoogleLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double w = size.width;
-    final double h = size.height;
-    final double cx = w / 2;
-    final double cy = h / 2;
-    final double r = w / 2;
-    final double strokeWidth = w * 0.23;
-    final rect =
-        Rect.fromCircle(center: Offset(cx, cy), radius: r - strokeWidth / 2);
-
-    final paintRed = Paint()
-      ..color = const Color(0xFFEA4335)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
-
-    final paintYellow = Paint()
-      ..color = const Color(0xFFFBBC05)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
-
-    final paintGreen = Paint()
-      ..color = const Color(0xFF34A853)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
-
-    final paintBlue = Paint()
-      ..color = const Color(0xFF4285F4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
-
-    // Red arc (top)
-    canvas.drawArc(rect, -2.35, 1.65, false, paintRed);
-    // Yellow arc (left)
-    canvas.drawArc(rect, -3.5, 1.15, false, paintYellow);
-    // Green arc (bottom)
-    canvas.drawArc(rect, 0.5, 2.28, false, paintGreen);
-    // Blue arc (right)
-    canvas.drawArc(rect, -0.7, 1.2, false, paintBlue);
-
-    // Blue center horizontal bar
-    final barPaint = Paint()
-      ..color = const Color(0xFF4285F4)
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(
-      Rect.fromLTRB(cx - strokeWidth * 0.2, cy - strokeWidth / 2, cx + r,
-          cy + strokeWidth / 2),
-      barPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

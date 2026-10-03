@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/utils/security_utils.dart';
+import '../../home/screens/main_navigation_screen.dart';
 import '../providers/auth_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -21,8 +22,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final bool _obscurePassword = true;
-  final bool _obscureConfirmPassword = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   final String _selectedGender = 'Nam';
   final DateTime _selectedBirthDate = DateTime(2002, 5, 20);
@@ -118,7 +119,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     backgroundColor: AppTheme.primaryColor,
                   ),
                 );
-                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MainNavigationScreen(),
+                  ),
+                  (route) => false,
+                );
               } else if (authProvider.errorMessage != null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -580,6 +587,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(color: AppTheme.darkTextPrimary),
                             decoration: InputDecoration(
                               hintText: '••••••••',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: AppTheme.darkTextSecondary
+                                      .withOpacity(0.6),
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
                               fillColor: const Color(0xFFF7F5FC),
                               filled: true,
                               border: OutlineInputBorder(
@@ -613,6 +635,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(color: AppTheme.darkTextPrimary),
                             decoration: InputDecoration(
                               hintText: '••••••••',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: AppTheme.darkTextSecondary
+                                      .withOpacity(0.6),
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmPassword =
+                                        !_obscureConfirmPassword;
+                                  });
+                                },
+                              ),
                               fillColor: const Color(0xFFF7F5FC),
                               filled: true,
                               border: OutlineInputBorder(
@@ -671,7 +709,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         size: 24,
                                       )
                                     : Text(
-                                        'Đăng Nhập',
+                                        'Đăng Ký',
                                         style: GoogleFonts.outfit(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -729,22 +767,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      width: 28,
-                                      height: 28,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        'G',
-                                        style: GoogleFonts.outfit(
-                                          fontWeight: FontWeight.w900,
-                                          color: const Color(0xFFEA4335),
-                                          fontSize: 16,
-                                        ),
-                                      ),
+                                    Image.asset(
+                                      'assets/images/google_logo.png',
+                                      width: 26,
+                                      height: 26,
+                                      fit: BoxFit.contain,
                                     ),
                                   ],
                                 ),

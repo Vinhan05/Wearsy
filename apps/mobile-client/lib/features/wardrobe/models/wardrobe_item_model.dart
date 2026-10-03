@@ -75,18 +75,29 @@ class WardrobeItemModel {
   final int layerOrder;
   final String wardrobeId;
 
+  static String sanitizeImageUrl(String url) {
+    if (url.contains('m8310ffh8t8516')) {
+      return 'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0vmtrp190x9f2';
+    }
+    if (url.contains('lxk0s90z8x0665')) {
+      return 'https://down-vn.img.susercontent.com/file/sg-11134201-824g8-mptkw6sgly4r4c';
+    }
+    return url;
+  }
+
   WardrobeItemModel({
     required this.id,
     required this.name,
     required this.category,
     required this.color,
     required this.brand,
-    required this.imageUrl,
+    required String imageUrl,
     this.tags = const [],
     this.aiMatchScore = 9.0,
     int? layerOrder,
     this.wardrobeId = 'default',
-  }) : layerOrder = layerOrder ?? category.defaultLayerOrder;
+  })  : imageUrl = sanitizeImageUrl(imageUrl),
+        layerOrder = layerOrder ?? category.defaultLayerOrder;
 
   factory WardrobeItemModel.fromJson(Map<String, dynamic> json) {
     final cat = WardrobeCategory.values.firstWhere(
@@ -99,13 +110,15 @@ class WardrobeItemModel {
         json['wardrobeId']?.toString() ??
         'default';
 
+    final rawImg = json['image_url']?.toString() ?? '';
+
     return WardrobeItemModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       category: cat,
       color: json['color']?.toString() ?? '',
       brand: json['brand']?.toString() ?? '',
-      imageUrl: json['image_url']?.toString() ?? '',
+      imageUrl: sanitizeImageUrl(rawImg),
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
               [],
