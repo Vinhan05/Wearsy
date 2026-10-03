@@ -45,7 +45,8 @@ void main() {
       );
     });
 
-    test('TokenStorage saves and clears authentication session properly', () async {
+    test('TokenStorage saves and clears authentication session properly',
+        () async {
       SharedPreferences.setMockInitialValues({});
       await TokenStorage.saveSession(
         token: 'test_real_jwt_token_2026',
@@ -71,7 +72,8 @@ void main() {
 
       expect(
         () => authService.upgradeVip(couponCode: 'INVALID_COUPON'),
-        throwsA(isA<ApiException>().having((e) => e.statusCode, 'statusCode', 400)),
+        throwsA(
+            isA<ApiException>().having((e) => e.statusCode, 'statusCode', 400)),
       );
     });
   });

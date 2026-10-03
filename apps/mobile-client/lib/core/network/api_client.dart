@@ -38,7 +38,8 @@ class ApiClient {
     return headers;
   }
 
-  Future<dynamic> get(String endpoint, {Map<String, dynamic>? queryParameters}) async {
+  Future<dynamic> get(String endpoint,
+      {Map<String, dynamic>? queryParameters}) async {
     var url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
     if (queryParameters != null && queryParameters.isNotEmpty) {
       final qp = Map<String, String>.from(url.queryParameters);
@@ -108,7 +109,8 @@ class ApiClient {
     }
   }
 
-  Future<dynamic> delete(String endpoint, {Map<String, dynamic>? queryParameters}) async {
+  Future<dynamic> delete(String endpoint,
+      {Map<String, dynamic>? queryParameters}) async {
     var url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
     if (queryParameters != null && queryParameters.isNotEmpty) {
       final qp = Map<String, String>.from(url.queryParameters);

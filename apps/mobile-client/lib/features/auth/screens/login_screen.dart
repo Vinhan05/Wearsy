@@ -40,14 +40,16 @@ class _LoginScreenState extends State<LoginScreen> {
   /// Chặn chụp màn hình trên Android (FLAG_SECURE)
   Future<void> _enableSecureScreen() async {
     try {
-      await FlutterWindowManagerPlus.addFlags(FlutterWindowManagerPlus.FLAG_SECURE);
+      await FlutterWindowManagerPlus.addFlags(
+          FlutterWindowManagerPlus.FLAG_SECURE);
     } catch (_) {}
   }
 
   /// Gỡ FLAG_SECURE khi rời màn hình đăng nhập
   Future<void> _disableSecureScreen() async {
     try {
-      await FlutterWindowManagerPlus.clearFlags(FlutterWindowManagerPlus.FLAG_SECURE);
+      await FlutterWindowManagerPlus.clearFlags(
+          FlutterWindowManagerPlus.FLAG_SECURE);
     } catch (_) {}
   }
 
@@ -146,7 +148,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Đăng nhập thành công! Chào mừng bạn đến với WEARSY.'),
+          content:
+              const Text('Đăng nhập thành công! Chào mừng bạn đến với WEARSY.'),
           backgroundColor: AppTheme.primaryColor,
         ),
       );
@@ -231,7 +234,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -243,7 +247,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.white,
                       shape: BoxShape.circle,
                       border: isTheme2
-                          ? Border.all(color: AppTheme.primaryLight.withOpacity(0.4), width: 2)
+                          ? Border.all(
+                              color: AppTheme.primaryLight.withOpacity(0.4),
+                              width: 2)
                           : null,
                       boxShadow: [
                         BoxShadow(
@@ -260,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Title Wearsy
                   Text(
                     'Wearsy',
@@ -271,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // Subtitle
                   Text(
                     'Trợ lý Thời trang & Tủ đồ Thông minh AI',
@@ -286,7 +292,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Login Form Card
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 32),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(32),
@@ -322,21 +329,27 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(color: AppTheme.darkTextPrimary),
                             decoration: InputDecoration(
                               hintText: 'Nguyễn Văn A',
-                              hintStyle: TextStyle(color: AppTheme.darkTextSecondary.withOpacity(0.5)),
+                              hintStyle: TextStyle(
+                                  color: AppTheme.darkTextSecondary
+                                      .withOpacity(0.5)),
                               prefixIcon: Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                    color: isTheme2 ? AppTheme.primaryLight : AppTheme.primaryColor,
+                                    color: isTheme2
+                                        ? AppTheme.primaryLight
+                                        : AppTheme.primaryColor,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.person, color: Colors.white, size: 18),
+                                  child: const Icon(Icons.person,
+                                      color: Colors.white, size: 18),
                                 ),
                               ),
                               fillColor: AppTheme.lavenderSurface,
                               filled: true,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 16),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(24),
                                 borderSide: BorderSide(
@@ -358,12 +371,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(24),
                                 borderSide: BorderSide(
-                                  color: isTheme2 ? AppTheme.primaryLight : AppTheme.primaryColor,
+                                  color: isTheme2
+                                      ? AppTheme.primaryLight
+                                      : AppTheme.primaryColor,
                                   width: 2.0,
                                 ),
                               ),
                             ),
-                            validator: (value) => SecurityUtils.validateEmail(value),
+                            validator: (value) =>
+                                SecurityUtils.validateEmail(value),
                           ),
                           const SizedBox(height: 24),
 
@@ -383,21 +399,27 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(color: AppTheme.darkTextPrimary),
                             decoration: InputDecoration(
                               hintText: '*********',
-                              hintStyle: TextStyle(color: AppTheme.darkTextSecondary.withOpacity(0.5)),
+                              hintStyle: TextStyle(
+                                  color: AppTheme.darkTextSecondary
+                                      .withOpacity(0.5)),
                               prefixIcon: Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                    color: isTheme2 ? AppTheme.primaryLight : AppTheme.primaryColor,
+                                    color: isTheme2
+                                        ? AppTheme.primaryLight
+                                        : AppTheme.primaryColor,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.lock, color: Colors.white, size: 18),
+                                  child: const Icon(Icons.lock,
+                                      color: Colors.white, size: 18),
                                 ),
                               ),
                               fillColor: AppTheme.lavenderSurface,
                               filled: true,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 16),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(24),
                                 borderSide: BorderSide(
@@ -419,12 +441,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(24),
                                 borderSide: BorderSide(
-                                  color: isTheme2 ? AppTheme.primaryLight : AppTheme.primaryColor,
+                                  color: isTheme2
+                                      ? AppTheme.primaryLight
+                                      : AppTheme.primaryColor,
                                   width: 2.0,
                                 ),
                               ),
                             ),
-                            validator: (value) => SecurityUtils.validatePassword(value),
+                            validator: (value) =>
+                                SecurityUtils.validatePassword(value),
                           ),
                           const SizedBox(height: 32),
 
@@ -442,13 +467,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppTheme.primaryColor,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(28),
+                                          borderRadius:
+                                              BorderRadius.circular(28),
                                         ),
                                         elevation: 0,
                                       ),
-                                      onPressed: (authProvider.isLoading || isLocked)
-                                          ? null
-                                          : _handleLogin,
+                                      onPressed:
+                                          (authProvider.isLoading || isLocked)
+                                              ? null
+                                              : _handleLogin,
                                       child: authProvider.isLoading
                                           ? const SpinKitThreeBounce(
                                               color: Colors.white,
@@ -485,7 +512,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Hoặc',
                               style: GoogleFonts.inter(
-                                color: AppTheme.darkTextSecondary.withOpacity(0.7),
+                                color:
+                                    AppTheme.darkTextSecondary.withOpacity(0.7),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -505,11 +533,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(28),
                                   side: BorderSide(
-                                    color: AppTheme.primaryColor.withOpacity(0.12),
+                                    color:
+                                        AppTheme.primaryColor.withOpacity(0.12),
                                   ),
                                 ),
                               ),
-                              onPressed: authProvider.isLoading ? null : _handleGoogleLogin,
+                              onPressed: authProvider.isLoading
+                                  ? null
+                                  : _handleGoogleLogin,
                               child: const GoogleLogoWidget(size: 26),
                             ),
                           ),
@@ -522,7 +553,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const RegisterScreen(),
+                                    builder: (context) =>
+                                        const RegisterScreen(),
                                   ),
                                 );
                               },
@@ -531,10 +563,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 text: TextSpan(
                                   style: GoogleFonts.inter(
                                     fontSize: 13,
-                                    color: AppTheme.darkTextSecondary.withOpacity(0.8),
+                                    color: AppTheme.darkTextSecondary
+                                        .withOpacity(0.8),
                                   ),
                                   children: [
-                                    const TextSpan(text: 'Chưa có tài khoản Wearsy? - '),
+                                    const TextSpan(
+                                        text: 'Chưa có tài khoản Wearsy? - '),
                                     TextSpan(
                                       text: 'Đăng ký ngay',
                                       style: GoogleFonts.inter(
@@ -586,7 +620,8 @@ class _GoogleLogoPainter extends CustomPainter {
     final double cy = h / 2;
     final double r = w / 2;
     final double strokeWidth = w * 0.23;
-    final rect = Rect.fromCircle(center: Offset(cx, cy), radius: r - strokeWidth / 2);
+    final rect =
+        Rect.fromCircle(center: Offset(cx, cy), radius: r - strokeWidth / 2);
 
     final paintRed = Paint()
       ..color = const Color(0xFFEA4335)
@@ -626,7 +661,8 @@ class _GoogleLogoPainter extends CustomPainter {
       ..color = const Color(0xFF4285F4)
       ..style = PaintingStyle.fill;
     canvas.drawRect(
-      Rect.fromLTRB(cx - strokeWidth * 0.2, cy - strokeWidth / 2, cx + r, cy + strokeWidth / 2),
+      Rect.fromLTRB(cx - strokeWidth * 0.2, cy - strokeWidth / 2, cx + r,
+          cy + strokeWidth / 2),
       barPaint,
     );
   }

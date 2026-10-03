@@ -209,8 +209,8 @@ class SmartShoppingAiService {
         String cleanedSeg = segment;
         cleanedSeg = cleanedSeg.replaceAll(
             RegExp(r'-i\.\d+\.\d+.*$', caseSensitive: false), '');
-        cleanedSeg = cleanedSeg.replaceAll(
-            RegExp(r'\.html$', caseSensitive: false), '');
+        cleanedSeg =
+            cleanedSeg.replaceAll(RegExp(r'\.html$', caseSensitive: false), '');
         cleanedSeg = cleanedSeg.replaceAll(
             RegExp(r'-s\d+.*$', caseSensitive: false), '');
         cleanedSeg = cleanedSeg.replaceAll(
@@ -284,7 +284,8 @@ class SmartShoppingAiService {
         textToAnalyze.contains('chan vay') ||
         textToAnalyze.contains('skirt')) {
       cat = WardrobeCategory.bottoms;
-      imgUrl = (textToAnalyze.contains('váy') || textToAnalyze.contains('skirt'))
+      imgUrl = (textToAnalyze.contains('váy') ||
+              textToAnalyze.contains('skirt'))
           ? 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop'
           : 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=600&auto=format&fit=crop';
     } else if (textToAnalyze.contains('đầm') ||
@@ -487,7 +488,8 @@ class SmartShoppingAiService {
       // Mặc định thông minh theo loại sản phẩm
       if (textToAnalyze.contains('quạt') || textToAnalyze.contains('fan')) {
         color = 'Trắng';
-      } else if (textToAnalyze.contains('sweater') || textToAnalyze.contains('nỉ')) {
+      } else if (textToAnalyze.contains('sweater') ||
+          textToAnalyze.contains('nỉ')) {
         color = 'Xám';
       } else if (textToAnalyze.contains('3 lỗ') ||
           textToAnalyze.contains('ba lỗ')) {
@@ -566,7 +568,8 @@ class SmartShoppingAiService {
         textToAnalyze.contains('polo')) {
       price = 320000;
     } else if (textToAnalyze.contains('đầm') ||
-        (textToAnalyze.contains('váy') && !textToAnalyze.contains('chân váy'))) {
+        (textToAnalyze.contains('váy') &&
+            !textToAnalyze.contains('chân váy'))) {
       price = 450000;
     } else if (textToAnalyze.contains('giày') ||
         textToAnalyze.contains('sneaker')) {
@@ -629,7 +632,8 @@ class SmartShoppingAiService {
   }
 
   /// Trích xuất ảnh thật và tiêu đề chuẩn từ thẻ OpenGraph meta của URL sản phẩm (Shopee, TikTok, Lazada, v.v.)
-  static Future<Map<String, String>> fetchRealMetadataFromUrl(String url) async {
+  static Future<Map<String, String>> fetchRealMetadataFromUrl(
+      String url) async {
     final cleanUrl = url.trim();
     if (!cleanUrl.startsWith('http')) return {};
 
@@ -651,7 +655,8 @@ class SmartShoppingAiService {
 
       final buffer = StringBuffer();
       // Chỉ đọc phần đầu (head) để lấy thẻ OpenGraph, không đợi tải toàn bộ HTML nặng
-      await for (final chunk in streamedResponse.stream.transform(utf8.decoder)) {
+      await for (final chunk
+          in streamedResponse.stream.transform(utf8.decoder)) {
         buffer.write(chunk);
         if (buffer.length > 50000 ||
             (buffer.toString().contains('og:image') &&
@@ -666,13 +671,13 @@ class SmartShoppingAiService {
 
       // 1. Trích xuất og:image
       final ogImageMatch = RegExp(
-        r'''<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']''',
-        caseSensitive: false,
-      ).firstMatch(html) ??
-      RegExp(
-        r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']''',
-        caseSensitive: false,
-      ).firstMatch(html);
+            r'''<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']''',
+            caseSensitive: false,
+          ).firstMatch(html) ??
+          RegExp(
+            r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']''',
+            caseSensitive: false,
+          ).firstMatch(html);
 
       if (ogImageMatch != null) {
         String img = ogImageMatch.group(1) ?? '';
@@ -684,13 +689,13 @@ class SmartShoppingAiService {
 
       // 2. Trích xuất og:title
       final ogTitleMatch = RegExp(
-        r'''<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']''',
-        caseSensitive: false,
-      ).firstMatch(html) ??
-      RegExp(
-        r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']''',
-        caseSensitive: false,
-      ).firstMatch(html);
+            r'''<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']''',
+            caseSensitive: false,
+          ).firstMatch(html) ??
+          RegExp(
+            r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']''',
+            caseSensitive: false,
+          ).firstMatch(html);
 
       if (ogTitleMatch != null) {
         String title = ogTitleMatch.group(1) ?? '';
@@ -711,7 +716,8 @@ class SmartShoppingAiService {
       return result;
     } catch (e) {
       client.close();
-      debugPrint('[SmartShoppingAiService] Error fetching metadata from $url: $e');
+      debugPrint(
+          '[SmartShoppingAiService] Error fetching metadata from $url: $e');
     }
 
     return {};
@@ -854,72 +860,73 @@ Hãy phân tích tính tương thích trước khi mua:
             final parsed = jsonDecode(text);
             final score =
                 (parsed['compatibility_score'] as num?)?.toDouble() ?? 8.8;
-        final scoreLevel = parsed['score_level'] ?? 'HIGH';
-        final status = parsed['recommendation_status'] ?? 'NÊN MUA NGAY 🔥';
-        final reason = parsed['recommendation_reason'] ??
-            'Món đồ này phối hợp cực kỳ hài hòa với các trang phục sẵn có trong tủ.';
-        final colorHarmony = parsed['color_harmony'] ??
-            'Gam màu tương thích tốt với tông trung tính trong tủ đồ.';
-        final silhouette = parsed['silhouette_analysis'] ??
-            'Phom dáng cân đối, dễ dàng phối nhiều lớp (layering).';
+            final scoreLevel = parsed['score_level'] ?? 'HIGH';
+            final status = parsed['recommendation_status'] ?? 'NÊN MUA NGAY 🔥';
+            final reason = parsed['recommendation_reason'] ??
+                'Món đồ này phối hợp cực kỳ hài hòa với các trang phục sẵn có trong tủ.';
+            final colorHarmony = parsed['color_harmony'] ??
+                'Gam màu tương thích tốt với tông trung tính trong tủ đồ.';
+            final silhouette = parsed['silhouette_analysis'] ??
+                'Phom dáng cân đối, dễ dàng phối nhiều lớp (layering).';
 
-        final compIds = (parsed['compatible_item_ids'] as List?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            [];
-        final compItems = wardrobeItems
-            .where((w) => compIds.contains(w.id))
-            .toList();
+            final compIds = (parsed['compatible_item_ids'] as List?)
+                    ?.map((e) => e.toString())
+                    .toList() ??
+                [];
+            final compItems =
+                wardrobeItems.where((w) => compIds.contains(w.id)).toList();
 
-        final rawOutfits = (parsed['suggested_outfits'] as List?) ?? [];
-        final suggestedOutfits = <SuggestedOutfitPair>[];
+            final rawOutfits = (parsed['suggested_outfits'] as List?) ?? [];
+            final suggestedOutfits = <SuggestedOutfitPair>[];
 
-        for (final o in rawOutfits) {
-          final oItemIds = (o['item_ids'] as List?)
-                  ?.map((e) => e.toString())
-                  .toList() ??
-              [];
-          final outfitWardrobeItems = wardrobeItems
-              .where((w) => oItemIds.contains(w.id))
-              .toList();
+            for (final o in rawOutfits) {
+              final oItemIds =
+                  (o['item_ids'] as List?)?.map((e) => e.toString()).toList() ??
+                      [];
+              final outfitWardrobeItems =
+                  wardrobeItems.where((w) => oItemIds.contains(w.id)).toList();
 
-          if (outfitWardrobeItems.isNotEmpty) {
-            suggestedOutfits.add(SuggestedOutfitPair(
-              title: o['title'] ?? 'Set đồ phong cách',
-              style: product.tags.isNotEmpty ? product.tags.first : 'Casual',
-              wardrobeItems: outfitWardrobeItems,
-              stylingTip: o['styling_tip'] ?? 'Phối layer tôn dáng hoàn hảo.',
-            ));
+              if (outfitWardrobeItems.isNotEmpty) {
+                suggestedOutfits.add(SuggestedOutfitPair(
+                  title: o['title'] ?? 'Set đồ phong cách',
+                  style:
+                      product.tags.isNotEmpty ? product.tags.first : 'Casual',
+                  wardrobeItems: outfitWardrobeItems,
+                  stylingTip:
+                      o['styling_tip'] ?? 'Phối layer tôn dáng hoàn hảo.',
+                ));
+              }
+            }
+
+            // Kiểm tra xem có trùng món đồ trong tủ
+            final duplicate = wardrobeItems.any((item) =>
+                item.category == product.category &&
+                item.color.toLowerCase() == product.color.toLowerCase());
+
+            return ShoppingCompatibilityResult(
+              product: product,
+              compatibilityScore: score,
+              scoreLevel: scoreLevel,
+              recommendationStatus: status,
+              recommendationReason: reason,
+              matchingItemsCount: compItems.isNotEmpty ? compItems.length : 5,
+              compatibleItems: compItems.isNotEmpty
+                  ? compItems
+                  : wardrobeItems.take(4).toList(),
+              suggestedOutfits: suggestedOutfits.isNotEmpty
+                  ? suggestedOutfits
+                  : _buildFallbackSuggestedOutfits(product, wardrobeItems),
+              colorHarmonyAnalysis: colorHarmony,
+              silhouetteAnalysis: silhouette,
+              isDuplicate: duplicate,
+            );
           }
         }
-
-        // Kiểm tra xem có trùng món đồ trong tủ
-        final duplicate = wardrobeItems.any((item) =>
-            item.category == product.category &&
-            item.color.toLowerCase() == product.color.toLowerCase());
-
-        return ShoppingCompatibilityResult(
-          product: product,
-          compatibilityScore: score,
-          scoreLevel: scoreLevel,
-          recommendationStatus: status,
-          recommendationReason: reason,
-          matchingItemsCount: compItems.isNotEmpty ? compItems.length : 5,
-          compatibleItems: compItems.isNotEmpty ? compItems : wardrobeItems.take(4).toList(),
-          suggestedOutfits: suggestedOutfits.isNotEmpty
-              ? suggestedOutfits
-              : _buildFallbackSuggestedOutfits(product, wardrobeItems),
-          colorHarmonyAnalysis: colorHarmony,
-          silhouetteAnalysis: silhouette,
-          isDuplicate: duplicate,
-        );
+      } catch (e) {
+        debugPrint('[SmartShoppingAiService] Error calling model $model: $e');
       }
     }
-  } catch (e) {
-    debugPrint('[SmartShoppingAiService] Error calling model $model: $e');
-  }
-}
-return null;
+    return null;
   }
 
   static ShoppingCompatibilityResult _buildDeterministicCompatibility(
@@ -953,7 +960,8 @@ return null;
 
     // Nếu không khớp món nào thì lấy các món khác category
     if (compItems.isEmpty) {
-      compItems.addAll(wardrobeItems.where((w) => w.category != product.category).take(4));
+      compItems.addAll(
+          wardrobeItems.where((w) => w.category != product.category).take(4));
     }
 
     // Kiểm tra trùng lặp
@@ -1007,7 +1015,8 @@ return null;
     );
   }
 
-  static bool _isCompatible(ProspectiveProduct product, WardrobeItemModel item) {
+  static bool _isCompatible(
+      ProspectiveProduct product, WardrobeItemModel item) {
     // Không phối 2 món cùng một danh mục (trừ khoác ngoài và phụ kiện)
     if (product.category == item.category &&
         product.category != WardrobeCategory.accessories) {
@@ -1015,7 +1024,19 @@ return null;
     }
 
     // Màu trung tính (Trắng, Đen, Xám, Be, Nâu, Xanh Navy) phối được với hầu hết mọi màu
-    const neutralColors = {'trắng', 'đen', 'xám', 'be', 'nâu', 'xanh navy', 'white', 'black', 'grey', 'beige', 'navy'};
+    const neutralColors = {
+      'trắng',
+      'đen',
+      'xám',
+      'be',
+      'nâu',
+      'xanh navy',
+      'white',
+      'black',
+      'grey',
+      'beige',
+      'navy'
+    };
     final pColor = product.color.toLowerCase();
     final iColor = item.color.toLowerCase();
 
@@ -1024,11 +1045,14 @@ return null;
     }
 
     // Cùng tone hoặc tương phản nhẹ
-    return pColor == iColor || (pColor.contains('xanh') && iColor.contains('trắng'));
+    return pColor == iColor ||
+        (pColor.contains('xanh') && iColor.contains('trắng'));
   }
 
-  static String _getColorHarmonyText(String color, List<WardrobeItemModel> compItems) {
-    final names = compItems.take(2).map((e) => '"${e.name}" (${e.color})').join(', ');
+  static String _getColorHarmonyText(
+      String color, List<WardrobeItemModel> compItems) {
+    final names =
+        compItems.take(2).map((e) => '"${e.name}" (${e.color})').join(', ');
     return 'Gam màu $color tạo hiệu ứng thị giác hài hòa khi đi kèm với $names.';
   }
 
@@ -1079,20 +1103,25 @@ return null;
     }
 
     // Set 1: Đi làm / Lịch thiệp
-    final formalMatches = compItems.where((i) =>
-        i.tags.any((t) => t.contains('Casual') || t.contains('công sở') || t.contains('thanh lịch'))).toList();
+    final formalMatches = compItems
+        .where((i) => i.tags.any((t) =>
+            t.contains('Casual') ||
+            t.contains('công sở') ||
+            t.contains('thanh lịch')))
+        .toList();
     if (formalMatches.isNotEmpty) {
       outfits.add(SuggestedOutfitPair(
         title: 'Set Công Sở & Hội Họp Lịch Thiệp',
         style: 'Smart Casual',
         wardrobeItems: formalMatches.take(2).toList(),
-        stylingTip: 'Sơ vin chỉn chu và kết hợp giày/túi cùng tông màu để tăng vẻ chuyên nghiệp.',
+        stylingTip:
+            'Sơ vin chỉn chu và kết hợp giày/túi cùng tông màu để tăng vẻ chuyên nghiệp.',
       ));
     }
 
     // Set 2: Dạo phố / Cuối tuần
-    final casualMatches = compItems.where((i) =>
-        !formalMatches.contains(i)).toList();
+    final casualMatches =
+        compItems.where((i) => !formalMatches.contains(i)).toList();
     final listForSet2 = casualMatches.isNotEmpty ? casualMatches : compItems;
 
     if (listForSet2.isNotEmpty) {
@@ -1100,7 +1129,8 @@ return null;
         title: 'Set Dạo Phố Cuối Tuần Năng Động',
         style: 'Streetwear / Casual',
         wardrobeItems: listForSet2.take(2).toList(),
-        stylingTip: 'Thêm sneakers trắng và phụ kiện tối giản để tạo cảm giác trẻ trung, tự tin.',
+        stylingTip:
+            'Thêm sneakers trắng và phụ kiện tối giản để tạo cảm giác trẻ trung, tự tin.',
       ));
     }
 

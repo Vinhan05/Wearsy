@@ -35,7 +35,9 @@ class WardrobeProvider with ChangeNotifier {
   /// Tất cả các món đồ thuộc tủ đồ hiện tại đang mở
   List<WardrobeItemModel> get allItems {
     return _allItems
-        .where((item) => (item.wardrobeId.isEmpty ? 'default' : item.wardrobeId) == _activeWardrobeId)
+        .where((item) =>
+            (item.wardrobeId.isEmpty ? 'default' : item.wardrobeId) ==
+            _activeWardrobeId)
         .toList();
   }
 
@@ -68,7 +70,8 @@ class WardrobeProvider with ChangeNotifier {
   int getItemCountForWardrobe(String wardrobeId) {
     final targetId = wardrobeId.isEmpty ? 'default' : wardrobeId;
     return _allItems
-        .where((item) => (item.wardrobeId.isEmpty ? 'default' : item.wardrobeId) == targetId)
+        .where((item) =>
+            (item.wardrobeId.isEmpty ? 'default' : item.wardrobeId) == targetId)
         .length;
   }
 
@@ -87,7 +90,8 @@ class WardrobeProvider with ChangeNotifier {
     return 'active_wardrobe_id_$email';
   }
 
-  static bool isPreSeededDemoAccount(String? email, SharedPreferences prefs) => false;
+  static bool isPreSeededDemoAccount(String? email, SharedPreferences prefs) =>
+      false;
 
   WardrobeProvider() {
     loadItems();
@@ -120,7 +124,8 @@ class WardrobeProvider with ChangeNotifier {
 
         // Đảm bảo tủ đồ mặc định luôn luôn tồn tại
         if (!loadedCollections.any((c) => c.id == 'default')) {
-          loadedCollections.insert(0, WardrobeCollectionModel.defaultWardrobe());
+          loadedCollections.insert(
+              0, WardrobeCollectionModel.defaultWardrobe());
         }
       }
 
@@ -311,10 +316,12 @@ class WardrobeProvider with ChangeNotifier {
   }
 
   /// Chuyển món đồ sang một tủ đồ khác
-  Future<void> moveItemToWardrobe(String itemId, String targetWardrobeId) async {
+  Future<void> moveItemToWardrobe(
+      String itemId, String targetWardrobeId) async {
     final index = _allItems.indexWhere((i) => i.id == itemId);
     if (index != -1) {
-      _allItems[index] = _allItems[index].copyWith(wardrobeId: targetWardrobeId);
+      _allItems[index] =
+          _allItems[index].copyWith(wardrobeId: targetWardrobeId);
       notifyListeners();
       await _saveItems();
     }
@@ -322,9 +329,10 @@ class WardrobeProvider with ChangeNotifier {
 
   /// Thêm món đồ mới (tự động gán vào tủ đồ đang mở nếu chưa chỉ định)
   Future<void> addItem(WardrobeItemModel item) async {
-    final assignedWardrobeId = item.wardrobeId.isEmpty || item.wardrobeId == 'default'
-        ? _activeWardrobeId
-        : item.wardrobeId;
+    final assignedWardrobeId =
+        item.wardrobeId.isEmpty || item.wardrobeId == 'default'
+            ? _activeWardrobeId
+            : item.wardrobeId;
     final itemToSave = item.copyWith(wardrobeId: assignedWardrobeId);
 
     _allItems = [itemToSave, ..._allItems];
@@ -341,9 +349,10 @@ class WardrobeProvider with ChangeNotifier {
   Future<void> addMultipleItems(List<WardrobeItemModel> items) async {
     if (items.isEmpty) return;
     final itemsToSave = items.map((item) {
-      final assignedWardrobeId = item.wardrobeId.isEmpty || item.wardrobeId == 'default'
-          ? _activeWardrobeId
-          : item.wardrobeId;
+      final assignedWardrobeId =
+          item.wardrobeId.isEmpty || item.wardrobeId == 'default'
+              ? _activeWardrobeId
+              : item.wardrobeId;
       return item.copyWith(wardrobeId: assignedWardrobeId);
     }).toList();
 

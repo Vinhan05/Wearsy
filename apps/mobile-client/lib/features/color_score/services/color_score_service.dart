@@ -81,7 +81,8 @@ class ColorScoreService {
       ruleApplied = 'Phối màu đa sắc có kiểm soát (Multicolor Accent)';
       feedback =
           'Set đồ có nhiều màu sắc phong phú, năng động. Hãy chú ý tiết chế phụ kiện để tránh gây rối mắt.';
-      ratioEval = 'Phân bổ: 50% Nền - 25% Thứ cấp - 15% Thứ ba - 10% Điểm nhấn.';
+      ratioEval =
+          'Phân bổ: 50% Nền - 25% Thứ cấp - 15% Thứ ba - 10% Điểm nhấn.';
       tips = [
         'Nên giữ ít nhất một item màu đen/trắng trơn để cân bằng thị giác.',
       ];
@@ -245,7 +246,8 @@ class ColorScoreService {
           name: 'Đen Tuyệt Đối',
           color: Color(0xFF000000),
           hex: '#000000',
-          usageTip: 'Có thể tạo cảm giác nặng nề, nên thay bằng xanh navy hoặc xám khói',
+          usageTip:
+              'Có thể tạo cảm giác nặng nề, nên thay bằng xanh navy hoặc xám khói',
         ),
         ColorItem(
           name: 'Tím Đậm U Tối',
@@ -373,7 +375,7 @@ class ColorScoreService {
         title: 'Thử Thách Tone Đất 60-30-10 🍂',
         category: 'Color Harmony',
         description:
-          'Phối 1 outfit kết hợp hoàn hảo giữa Nâu, Be và Xanh rêu theo tỷ lệ vàng chuẩn fashionista.',
+            'Phối 1 outfit kết hợp hoàn hảo giữa Nâu, Be và Xanh rêu theo tỷ lệ vàng chuẩn fashionista.',
         rewardBadge: 'Master of Earth Tone',
         rewardPoints: 150,
         status: 'IN_PROGRESS',
@@ -390,7 +392,7 @@ class ColorScoreService {
         title: 'Đơn Sắc Sang Trọng (Quiet Luxury) ✨',
         category: 'Minimalism',
         description:
-          'Tạo bộ outfit chỉ sử dụng các sắc độ khác nhau của màu Trắng/Xám/Đen nhưng nhiều chất liệu.',
+            'Tạo bộ outfit chỉ sử dụng các sắc độ khác nhau của màu Trắng/Xám/Đen nhưng nhiều chất liệu.',
         rewardBadge: 'Monochrome Stylist',
         rewardPoints: 200,
         status: 'AVAILABLE',
@@ -407,7 +409,7 @@ class ColorScoreService {
         title: 'Phối Màu Pastel Nhẹ Nhàng 🌸',
         category: 'Trending',
         description:
-          'Sử dụng gam màu phấn tươi mát để đạt điểm phối màu AI trên 9.2.',
+            'Sử dụng gam màu phấn tươi mát để đạt điểm phối màu AI trên 9.2.',
         rewardBadge: 'Pastel Dreamer',
         rewardPoints: 120,
         status: 'AVAILABLE',
@@ -424,7 +426,7 @@ class ColorScoreService {
         title: 'Bậc Thầy Mua Sắm Thông Thái 🛍️',
         category: 'Smart Shopping',
         description:
-          'Kiểm tra độ tương thích trước khi mua ít nhất 3 lần để tránh lãng phí đồ trùng trong tủ.',
+            'Kiểm tra độ tương thích trước khi mua ít nhất 3 lần để tránh lãng phí đồ trùng trong tủ.',
         rewardBadge: 'Smart Fashion Shopper',
         rewardPoints: 300,
         status: 'COMPLETED',

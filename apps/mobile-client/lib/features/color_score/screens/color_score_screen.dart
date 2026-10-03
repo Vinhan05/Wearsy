@@ -28,16 +28,56 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
 
   // Interactive Color Lab State
   final List<ColorItem> _availableLabColors = [
-    const ColorItem(name: 'Trắng Trơn', color: Color(0xFFFFFFFF), hex: '#FFFFFF', usageTip: 'Màu nền trung tính'),
-    const ColorItem(name: 'Đen Huyền', color: Color(0xFF1E293B), hex: '#1E293B', usageTip: 'Màu nền tạo phom'),
-    const ColorItem(name: 'Bege / Khaki', color: Color(0xFFC3B091), hex: '#C3B091', usageTip: 'Thanh lịch, ấm áp'),
-    const ColorItem(name: 'Xanh Navy', color: Color(0xFF1E3A8A), hex: '#1E3A8A', usageTip: 'Công sở lịch lãm'),
-    const ColorItem(name: 'Xanh Rêu Olive', color: Color(0xFF556B2F), hex: '#556B2F', usageTip: 'Tone đất trendy'),
-    const ColorItem(name: 'Nâu Da Bò', color: Color(0xFFC06C46), hex: '#C06C46', usageTip: 'Vintage sang trọng'),
-    const ColorItem(name: 'Xanh Baby Pastel', color: Color(0xFF89CFF0), hex: '#89CFF0', usageTip: 'Dịu mát, tươi trẻ'),
-    const ColorItem(name: 'Vàng Mù Tạt', color: Color(0xFFE1AD01), hex: '#E1AD01', usageTip: 'Điểm nhấn rực rỡ'),
-    const ColorItem(name: 'Hồng Khói', color: Color(0xFFDCAE96), hex: '#DCAE96', usageTip: 'Nữ tính tinh tế'),
-    const ColorItem(name: 'Đỏ Rượu Burgundy', color: Color(0xFF800020), hex: '#800020', usageTip: 'Quyến rũ, quý phái'),
+    const ColorItem(
+        name: 'Trắng Trơn',
+        color: Color(0xFFFFFFFF),
+        hex: '#FFFFFF',
+        usageTip: 'Màu nền trung tính'),
+    const ColorItem(
+        name: 'Đen Huyền',
+        color: Color(0xFF1E293B),
+        hex: '#1E293B',
+        usageTip: 'Màu nền tạo phom'),
+    const ColorItem(
+        name: 'Bege / Khaki',
+        color: Color(0xFFC3B091),
+        hex: '#C3B091',
+        usageTip: 'Thanh lịch, ấm áp'),
+    const ColorItem(
+        name: 'Xanh Navy',
+        color: Color(0xFF1E3A8A),
+        hex: '#1E3A8A',
+        usageTip: 'Công sở lịch lãm'),
+    const ColorItem(
+        name: 'Xanh Rêu Olive',
+        color: Color(0xFF556B2F),
+        hex: '#556B2F',
+        usageTip: 'Tone đất trendy'),
+    const ColorItem(
+        name: 'Nâu Da Bò',
+        color: Color(0xFFC06C46),
+        hex: '#C06C46',
+        usageTip: 'Vintage sang trọng'),
+    const ColorItem(
+        name: 'Xanh Baby Pastel',
+        color: Color(0xFF89CFF0),
+        hex: '#89CFF0',
+        usageTip: 'Dịu mát, tươi trẻ'),
+    const ColorItem(
+        name: 'Vàng Mù Tạt',
+        color: Color(0xFFE1AD01),
+        hex: '#E1AD01',
+        usageTip: 'Điểm nhấn rực rỡ'),
+    const ColorItem(
+        name: 'Hồng Khói',
+        color: Color(0xFFDCAE96),
+        hex: '#DCAE96',
+        usageTip: 'Nữ tính tinh tế'),
+    const ColorItem(
+        name: 'Đỏ Rượu Burgundy',
+        color: Color(0xFF800020),
+        hex: '#800020',
+        usageTip: 'Quyến rũ, quý phái'),
   ];
 
   final List<ColorItem> _selectedLabColors = [];
@@ -83,7 +123,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
     setState(() => _isAnalyzingLab = true);
 
     final colorsHex = _selectedLabColors.map((e) => e.hex).toList();
-    final result = await ColorScoreService.analyzeColorCombination(colors: colorsHex);
+    final result =
+        await ColorScoreService.analyzeColorCombination(colors: colorsHex);
 
     if (mounted) {
       setState(() {
@@ -97,7 +138,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
   Widget build(BuildContext context) {
     final wardrobeProvider = Provider.of<WardrobeProvider>(context);
     final outfitProvider = Provider.of<OutfitProvider>(context);
-    final wardrobeScore = ColorScoreService.calculateWardrobeColorScore(wardrobeProvider.allItems);
+    final wardrobeScore = ColorScoreService.calculateWardrobeColorScore(
+        wardrobeProvider.allItems);
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
@@ -116,10 +158,12 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
               _runLabAnalysis();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('✨ Đã làm mới phân tích bánh xe màu sắc!'),
+                  content:
+                      const Text('✨ Đã làm mới phân tích bánh xe màu sắc!'),
                   backgroundColor: AppTheme.primaryColor,
                   behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               );
             },
@@ -129,7 +173,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverToBoxAdapter(
-            child: _buildHeroScoreHeader(wardrobeScore, wardrobeProvider.allItems.length),
+            child: _buildHeroScoreHeader(
+                wardrobeScore, wardrobeProvider.allItems.length),
           ),
           SliverPersistentHeader(
             pinned: true,
@@ -142,7 +187,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 indicatorWeight: 3,
                 labelColor: AppTheme.primaryLight,
                 unselectedLabelColor: AppTheme.darkTextSecondary,
-                labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+                labelStyle: GoogleFonts.outfit(
+                    fontWeight: FontWeight.bold, fontSize: 13),
                 tabs: const [
                   Tab(text: '📊 Tủ Đồ 60-30-10'),
                   Tab(text: '🌸 Tone Da & 4 Mùa'),
@@ -202,7 +248,11 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFF59E0B), Color(0xFFEC4899), Color(0xFF8B5CF6)],
+                    colors: [
+                      Color(0xFFF59E0B),
+                      Color(0xFFEC4899),
+                      Color(0xFF8B5CF6)
+                    ],
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -251,16 +301,19 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: Colors.amber.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.amber.withOpacity(0.4)),
+                            border: Border.all(
+                                color: Colors.amber.withOpacity(0.4)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.stars_rounded, color: Colors.amber, size: 12),
+                              const Icon(Icons.stars_rounded,
+                                  color: Colors.amber, size: 12),
                               const SizedBox(width: 4),
                               Text(
                                 'TIÊU CHUẨN VÀNG',
@@ -307,7 +360,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
             children: [
               Text(
                 'Phổ màu tủ đồ chính:',
-                style: GoogleFonts.inter(fontSize: 11, color: AppTheme.darkTextSecondary),
+                style: GoogleFonts.inter(
+                    fontSize: 11, color: AppTheme.darkTextSecondary),
               ),
               Row(
                 children: [
@@ -350,7 +404,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
             ),
           ),
           const SizedBox(width: 4),
-          Text(label, style: GoogleFonts.inter(fontSize: 9, color: Colors.white70)),
+          Text(label,
+              style: GoogleFonts.inter(fontSize: 9, color: Colors.white70)),
         ],
       ),
     );
@@ -376,7 +431,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
               children: [
                 Row(
                   children: [
-                    Icon(Icons.pie_chart_rounded, color: AppTheme.primaryLight, size: 20),
+                    Icon(Icons.pie_chart_rounded,
+                        color: AppTheme.primaryLight, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       'Tỷ Lệ Vàng Thời Trang: 60 - 30 - 10',
@@ -396,9 +452,15 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     height: 16,
                     child: Row(
                       children: [
-                        Expanded(flex: 60, child: Container(color: const Color(0xFF6366F1))),
-                        Expanded(flex: 30, child: Container(color: const Color(0xFFEC4899))),
-                        Expanded(flex: 10, child: Container(color: const Color(0xFFF59E0B))),
+                        Expanded(
+                            flex: 60,
+                            child: Container(color: const Color(0xFF6366F1))),
+                        Expanded(
+                            flex: 30,
+                            child: Container(color: const Color(0xFFEC4899))),
+                        Expanded(
+                            flex: 10,
+                            child: Container(color: const Color(0xFFF59E0B))),
                       ],
                     ),
                   ),
@@ -408,21 +470,24 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                   color: const Color(0xFF6366F1),
                   percent: '60%',
                   title: 'Màu Chủ Đạo (Dominant Base)',
-                  desc: 'Trắng, Đen, Xám, Be — Dành cho quần tây, chân váy, blazer hoặc áo sơ mi chính.',
+                  desc:
+                      'Trắng, Đen, Xám, Be — Dành cho quần tây, chân váy, blazer hoặc áo sơ mi chính.',
                 ),
                 const SizedBox(height: 12),
                 _buildRatioItem(
                   color: const Color(0xFFEC4899),
                   percent: '30%',
                   title: 'Màu Thứ Cấp (Secondary Complement)',
-                  desc: 'Xanh navy, Xanh rêu, Nâu da bò — Dành cho áo khoác ngoài, áo len hoặc layer 2.',
+                  desc:
+                      'Xanh navy, Xanh rêu, Nâu da bò — Dành cho áo khoác ngoài, áo len hoặc layer 2.',
                 ),
                 const SizedBox(height: 12),
                 _buildRatioItem(
                   color: const Color(0xFFF59E0B),
                   percent: '10%',
                   title: 'Màu Nhấn (Accent Pop)',
-                  desc: 'Vàng mù tạt, Đỏ rượu, Ánh kim — Dành cho thắt lưng, túi xách, giày hoặc trang sức.',
+                  desc:
+                      'Vàng mù tạt, Đỏ rượu, Ánh kim — Dành cho thắt lưng, túi xách, giày hoặc trang sức.',
                 ),
               ],
             ),
@@ -447,7 +512,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.auto_awesome_rounded, color: Colors.amber, size: 18),
+                    const Icon(Icons.auto_awesome_rounded,
+                        color: Colors.amber, size: 18),
                     const SizedBox(width: 8),
                     Text(
                       'Lời Khuyên Từ Chuyên Gia AI Stylist',
@@ -537,11 +603,13 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('• ', style: TextStyle(color: AppTheme.primaryLight, fontSize: 16)),
+          Text('• ',
+              style: TextStyle(color: AppTheme.primaryLight, fontSize: 16)),
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.inter(fontSize: 12, color: Colors.white70, height: 1.4),
+              style: GoogleFonts.inter(
+                  fontSize: 12, color: Colors.white70, height: 1.4),
             ),
           ),
         ],
@@ -560,7 +628,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
         children: [
           Text(
             'Chọn Mùa Màu Sắc Cá Nhân Của Bạn:',
-            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+            style: GoogleFonts.outfit(
+                fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
           // Season Selector Pills
@@ -578,8 +647,11 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     selectedColor: AppTheme.primaryColor,
                     backgroundColor: AppTheme.darkCard,
                     labelStyle: GoogleFonts.outfit(
-                      color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? Colors.white
+                          : AppTheme.darkTextSecondary,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 12,
                     ),
                     onSelected: (_) {
@@ -605,17 +677,24 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
               children: [
                 Text(
                   profile.seasonName,
-                  style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   profile.subtitle,
-                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.primaryLight, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppTheme.primaryLight,
+                      fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   profile.description,
-                  style: GoogleFonts.inter(fontSize: 13, color: Colors.white70, height: 1.4),
+                  style: GoogleFonts.inter(
+                      fontSize: 13, color: Colors.white70, height: 1.4),
                 ),
               ],
             ),
@@ -625,22 +704,28 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
           // Best Colors Section
           Text(
             'Bảng Màu Tôn Da Nhất (Best Palette) ✨',
-            style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+            style: GoogleFonts.outfit(
+                fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
           Column(
-            children: profile.bestColors.map((colorItem) => _buildColorCard(colorItem, isBest: true)).toList(),
+            children: profile.bestColors
+                .map((colorItem) => _buildColorCard(colorItem, isBest: true))
+                .toList(),
           ),
           const SizedBox(height: 16),
 
           // Avoid Colors Section
           Text(
             'Bảng Màu Nên Tiết Chế (Colors to Avoid) ⚠️',
-            style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+            style: GoogleFonts.outfit(
+                fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
           Column(
-            children: profile.avoidColors.map((colorItem) => _buildColorCard(colorItem, isBest: false)).toList(),
+            children: profile.avoidColors
+                .map((colorItem) => _buildColorCard(colorItem, isBest: false))
+                .toList(),
           ),
         ],
       ),
@@ -654,7 +739,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
       decoration: BoxDecoration(
         color: AppTheme.darkCard,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: isBest ? Colors.white10 : Colors.red.withOpacity(0.2)),
+        border: Border.all(
+            color: isBest ? Colors.white10 : Colors.red.withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -684,18 +770,26 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                   children: [
                     Text(
                       item.name,
-                      style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                     Text(
                       item.hex,
-                      style: GoogleFonts.inter(fontSize: 11, color: AppTheme.darkTextSecondary),
+                      style: GoogleFonts.inter(
+                          fontSize: 11, color: AppTheme.darkTextSecondary),
                     ),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(
                   item.usageTip,
-                  style: GoogleFonts.inter(fontSize: 12, color: isBest ? Colors.white70 : Colors.redAccent.withOpacity(0.8)),
+                  style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: isBest
+                          ? Colors.white70
+                          : Colors.redAccent.withOpacity(0.8)),
                 ),
               ],
             ),
@@ -714,7 +808,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
         children: [
           Text(
             'Chọn 2 - 4 Màu Để Kiểm Tra Độ Ăn Ý:',
-            style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+            style: GoogleFonts.outfit(
+                fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
           // Lab color selector chips
@@ -722,7 +817,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
             spacing: 8,
             runSpacing: 8,
             children: _availableLabColors.map((colorItem) {
-              final isSelected = _selectedLabColors.any((c) => c.hex == colorItem.hex);
+              final isSelected =
+                  _selectedLabColors.any((c) => c.hex == colorItem.hex);
               return FilterChip(
                 selected: isSelected,
                 avatar: Container(
@@ -737,7 +833,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 label: Text(colorItem.name),
                 selectedColor: AppTheme.primaryColor.withOpacity(0.4),
                 backgroundColor: AppTheme.darkCard,
-                side: BorderSide(color: isSelected ? AppTheme.primaryLight : Colors.white12),
+                side: BorderSide(
+                    color: isSelected ? AppTheme.primaryLight : Colors.white12),
                 labelStyle: GoogleFonts.inter(
                   fontSize: 12,
                   color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
@@ -750,7 +847,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                         _selectedLabColors.add(colorItem);
                       }
                     } else {
-                      _selectedLabColors.removeWhere((c) => c.hex == colorItem.hex);
+                      _selectedLabColors
+                          .removeWhere((c) => c.hex == colorItem.hex);
                     }
                   });
                   _runLabAnalysis();
@@ -774,7 +872,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
               decoration: BoxDecoration(
                 color: AppTheme.darkCard,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.primaryLight.withOpacity(0.3)),
+                border:
+                    Border.all(color: AppTheme.primaryLight.withOpacity(0.3)),
                 boxShadow: [
                   BoxShadow(
                     color: AppTheme.primaryColor.withOpacity(0.15),
@@ -791,7 +890,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.palette_rounded, color: AppTheme.warningColor, size: 22),
+                          const Icon(Icons.palette_rounded,
+                              color: AppTheme.warningColor, size: 22),
                           const SizedBox(width: 8),
                           Text(
                             'Điểm Phối Màu AI',
@@ -804,7 +904,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppTheme.primaryColor,
                           borderRadius: BorderRadius.circular(12),
@@ -847,7 +948,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.tune_rounded, color: Colors.amber, size: 16),
+                        const Icon(Icons.tune_rounded,
+                            color: Colors.amber, size: 16),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -872,7 +974,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     ),
                   ),
                   const SizedBox(height: 6),
-                  ..._labResult!.stylingTips.map((tip) => _buildAdviceBullet(tip)),
+                  ..._labResult!.stylingTips
+                      .map((tip) => _buildAdviceBullet(tip)),
                 ],
               ),
             ),
@@ -912,7 +1015,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     color: Colors.amber,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.emoji_events_rounded, color: Colors.black87, size: 28),
+                  child: const Icon(Icons.emoji_events_rounded,
+                      color: Colors.black87, size: 28),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -930,7 +1034,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                       const SizedBox(height: 4),
                       Text(
                         'Đã mở khóa 3 / 8 danh hiệu • 750 Fashion Points',
-                        style: GoogleFonts.inter(fontSize: 12, color: Colors.white70),
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: Colors.white70),
                       ),
                     ],
                   ),
@@ -980,7 +1085,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: challenge.status == 'COMPLETED'
                                 ? Colors.green.withOpacity(0.2)
@@ -1023,7 +1129,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.workspace_premium_rounded, color: Colors.amber, size: 14),
+                            const Icon(Icons.workspace_premium_rounded,
+                                color: Colors.amber, size: 14),
                             const SizedBox(width: 4),
                             Text(
                               '+${challenge.rewardPoints} Pts • ${challenge.rewardBadge}',
@@ -1044,7 +1151,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                               decoration: BoxDecoration(
                                 color: c,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white30, width: 0.5),
+                                border: Border.all(
+                                    color: Colors.white30, width: 0.5),
                               ),
                             );
                           }).toList(),
@@ -1057,7 +1165,9 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                       child: LinearProgressIndicator(
                         value: challenge.progressPercent,
                         backgroundColor: Colors.white10,
-                        color: challenge.status == 'COMPLETED' ? Colors.green : AppTheme.primaryLight,
+                        color: challenge.status == 'COMPLETED'
+                            ? Colors.green
+                            : AppTheme.primaryLight,
                         minHeight: 6,
                       ),
                     ),
@@ -1082,7 +1192,8 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: AppTheme.darkBackground,
       child: _tabBar,

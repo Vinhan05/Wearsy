@@ -42,7 +42,8 @@ class AppThemePalette {
   static const AppThemePalette theme1 = AppThemePalette(
     id: 'theme_1',
     name: 'Theme 1 - Tím Lavender (Mặc định)',
-    description: 'Tone tím lavender nhận diện thương hiệu nguyên bản của WEARSY',
+    description:
+        'Tone tím lavender nhận diện thương hiệu nguyên bản của WEARSY',
     primary: Color(0xFF8174DB),
     primaryLight: Color(0xFF9E94E8),
     secondary: Color(0xFF00CEC9),
@@ -71,16 +72,20 @@ class AppThemePalette {
   static const AppThemePalette theme2 = AppThemePalette(
     id: 'theme_2',
     name: 'Theme 2 - Xanh Hoàng Gia & Nâu Cacao (Blue Royal)',
-    description: 'Tone xanh hoàng gia nhạt phối nâu cacao cổ điển, sang trọng và thanh lịch theo thiết kế 2.png',
-    primary: Color(0xFF543D37),        // Nâu cacao / espresso đậm (nút chính, logo W, tiêu đề Wearsy)
-    primaryLight: Color(0xFF8EBAE5),   // Xanh hoàng gia pastel (viền ô input, icon AI, highlight)
-    secondary: Color(0xFF6BA3E8),      // Xanh royal sapphire điểm nhấn
-    accent: Color(0xFFD63031),         // Đỏ cảnh báo / xóa
-    lightBackground: Color(0xFFFAF5F1),// Nền kem hạnh nhân ấm áp, thanh lịch
-    cardColor: Color(0xFFF0E8E1),      // Nền khối thẻ card be sáng
-    surfaceColor: Color(0xFFFCFAF7),   // Nền bên trong ô gõ chữ
-    textPrimary: Color(0xFF432F2A),    // Chữ chính nâu đậm sang trọng (tương phản AAA > 11:1)
-    textSecondary: Color(0xFF7A6A64),  // Chữ phụ nâu ấm thanh thoát
+    description:
+        'Tone xanh hoàng gia nhạt phối nâu cacao cổ điển, sang trọng và thanh lịch theo thiết kế 2.png',
+    primary: Color(
+        0xFF543D37), // Nâu cacao / espresso đậm (nút chính, logo W, tiêu đề Wearsy)
+    primaryLight: Color(
+        0xFF8EBAE5), // Xanh hoàng gia pastel (viền ô input, icon AI, highlight)
+    secondary: Color(0xFF6BA3E8), // Xanh royal sapphire điểm nhấn
+    accent: Color(0xFFD63031), // Đỏ cảnh báo / xóa
+    lightBackground: Color(0xFFFAF5F1), // Nền kem hạnh nhân ấm áp, thanh lịch
+    cardColor: Color(0xFFF0E8E1), // Nền khối thẻ card be sáng
+    surfaceColor: Color(0xFFFCFAF7), // Nền bên trong ô gõ chữ
+    textPrimary: Color(
+        0xFF432F2A), // Chữ chính nâu đậm sang trọng (tương phản AAA > 11:1)
+    textSecondary: Color(0xFF7A6A64), // Chữ phụ nâu ấm thanh thoát
     primaryGradient: LinearGradient(
       colors: [Color(0xFF634942), Color(0xFF4A342E)],
       begin: Alignment.topLeft,

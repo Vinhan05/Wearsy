@@ -65,7 +65,8 @@ class WardrobeService {
       );
       return true;
     } catch (e) {
-      debugPrint('[WardrobeService] Lỗi khi cập nhật món đồ trên Server DB: $e');
+      debugPrint(
+          '[WardrobeService] Lỗi khi cập nhật món đồ trên Server DB: $e');
       return false;
     }
   }
@@ -93,7 +94,8 @@ class WardrobeService {
       );
       return true;
     } catch (e) {
-      debugPrint('[WardrobeService] Lỗi khi reset toàn bộ tủ đồ trên Server DB: $e');
+      debugPrint(
+          '[WardrobeService] Lỗi khi reset toàn bộ tủ đồ trên Server DB: $e');
       return false;
     }
   }

@@ -167,15 +167,32 @@ export class AuthService {
       await this.userRepository.save(user);
     } else {
       let changed = false;
-      if (
-        body.full_name &&
-        body.full_name.trim().length > 0 &&
-        user.full_name !== body.full_name.trim()
-      ) {
-        user.full_name = body.full_name.trim();
-        changed = true;
+      const isDefaultOrEmailName = (name?: string) => {
+        if (!name || name.trim().length === 0) return true;
+        const n = name.trim().toLowerCase();
+        const prefix = cleanEmail.split('@')[0].toLowerCase();
+        return (
+          n === prefix ||
+          n === 'a con dog' ||
+          n === 'nguyễn văn demo' ||
+          n.includes('@')
+        );
+      };
+
+      // Nếu client gửi tên đã tùy chỉnh (không phải tên mặc định/email), cho phép cập nhật;
+      // nếu client gửi tên mặc định/email thì tuyệt đối giữ nguyên tên tùy chỉnh trong DB
+      if (body.full_name && !isDefaultOrEmailName(body.full_name)) {
+        if (user.full_name !== body.full_name.trim()) {
+          user.full_name = body.full_name.trim();
+          changed = true;
+        }
+      } else if (!user.full_name || user.full_name.trim().length === 0) {
+        if (body.full_name && body.full_name.trim().length > 0) {
+          user.full_name = body.full_name.trim();
+          changed = true;
+        }
       }
-      if (body.avatar_url && user.avatar_url !== body.avatar_url) {
+      if (body.avatar_url && !user.avatar_url) {
         user.avatar_url = body.avatar_url;
         changed = true;
       }

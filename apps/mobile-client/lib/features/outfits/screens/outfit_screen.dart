@@ -90,7 +90,8 @@ class _OutfitBody extends StatelessWidget {
 
   Widget _buildGrid(BuildContext context) {
     final outfitProvider = Provider.of<OutfitProvider>(context);
-    final wardrobeProvider = Provider.of<WardrobeProvider>(context, listen: false);
+    final wardrobeProvider =
+        Provider.of<WardrobeProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final outfits = outfitProvider.filteredOutfits;
 
@@ -137,12 +138,14 @@ class _OutfitBody extends StatelessWidget {
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                icon: const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
+                icon: const Icon(Icons.auto_awesome,
+                    color: Colors.white, size: 18),
                 label: Text(
                   'Tạo Outfit Mới Với AI',
                   style: GoogleFonts.outfit(
@@ -224,7 +227,8 @@ class _OutfitBody extends StatelessWidget {
                     value: Provider.of<OutfitProvider>(context, listen: false),
                   ),
                   ChangeNotifierProvider.value(
-                    value: Provider.of<WardrobeProvider>(context, listen: false),
+                    value:
+                        Provider.of<WardrobeProvider>(context, listen: false),
                   ),
                   ChangeNotifierProvider.value(
                     value: Provider.of<AuthProvider>(context, listen: false),
@@ -292,7 +296,8 @@ class _OutfitCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: const Color(0xFF383350),
                       borderRadius: BorderRadius.circular(10),
@@ -334,4 +339,3 @@ class _OutfitCard extends StatelessWidget {
     );
   }
 }
-

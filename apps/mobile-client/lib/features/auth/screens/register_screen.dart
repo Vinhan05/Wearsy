@@ -113,8 +113,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content:
-                        const Text('Xác thực OTP & Đăng ký tài khoản thành công!'),
+                    content: const Text(
+                        'Xác thực OTP & Đăng ký tài khoản thành công!'),
                     backgroundColor: AppTheme.primaryColor,
                   ),
                 );
@@ -137,7 +137,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: AppTheme.darkCard,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(28)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -401,7 +402,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.darkTextPrimary),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppTheme.darkTextPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
@@ -424,7 +426,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -474,7 +477,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   // Register Form Card (White Container)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 24),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(28),
@@ -514,7 +518,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: Color(0x1A8174DB)),
+                                borderSide:
+                                    const BorderSide(color: Color(0x1A8174DB)),
                               ),
                             ),
                             validator: (value) {
@@ -550,7 +555,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: Color(0x1A8174DB)),
+                                borderSide:
+                                    const BorderSide(color: Color(0x1A8174DB)),
                               ),
                             ),
                             validator: (value) =>
@@ -582,7 +588,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: Color(0x1A8174DB)),
+                                borderSide:
+                                    const BorderSide(color: Color(0x1A8174DB)),
                               ),
                             ),
                             validator: (value) =>
@@ -614,7 +621,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: Color(0x1A8174DB)),
+                                borderSide:
+                                    const BorderSide(color: Color(0x1A8174DB)),
                               ),
                             ),
                             validator: (value) {
@@ -639,7 +647,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 borderRadius: BorderRadius.circular(26),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppTheme.primaryColor.withOpacity(0.3),
+                                    color:
+                                        AppTheme.primaryColor.withOpacity(0.3),
                                     blurRadius: 16,
                                     offset: const Offset(0, 6),
                                   ),
@@ -756,7 +765,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     color: AppTheme.darkTextSecondary,
                                   ),
                                   children: [
-                                    const TextSpan(text: 'Đã có tài khoản Wearsy? - '),
+                                    const TextSpan(
+                                        text: 'Đã có tài khoản Wearsy? - '),
                                     TextSpan(
                                       text: 'Đăng nhập ngay',
                                       style: GoogleFonts.inter(

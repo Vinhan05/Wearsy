@@ -25,6 +25,22 @@ class AuthService {
     scopes: ['email', 'profile'],
   );
 
+  bool _isDefaultOrEmailName(String? name, String email) {
+    if (name == null || name.trim().isEmpty) return true;
+    final n = name.trim().toLowerCase();
+    final cleanEmail = email.trim().toLowerCase();
+    final prefix = cleanEmail.split('@')[0];
+    if (n == 'nguyễn văn demo' || n == 'a con dog') return true;
+    if (n.contains('@')) return true;
+    if (n == prefix) return true;
+    if (n == _deriveNameFromEmail(cleanEmail).toLowerCase()) return true;
+    if (n.replaceAll(' ', '') ==
+        prefix.replaceAll('.', '').replaceAll('_', '')) {
+      return true;
+    }
+    return false;
+  }
+
   /// Real Email & Password Login with Backend Database API
   /// Merge with local persistent profile so user's custom name, avatar, and VIP status are never lost
   Future<UserModel> _mergeWithLocalSavedUser(UserModel newUser) async {
@@ -32,17 +48,43 @@ class AuthService {
       final prefs = await SharedPreferences.getInstance();
       final cleanEmail = newUser.email.trim().toLowerCase();
       final savedJson = prefs.getString('saved_user_profile_$cleanEmail');
+      final explicitlySavedName =
+          prefs.getString('user_custom_name_$cleanEmail');
       if (savedJson != null && savedJson.isNotEmpty) {
         final decoded = jsonDecode(savedJson) as Map<String, dynamic>;
         final savedUser = UserModel.fromJson(decoded);
 
-        final bestFullName = (newUser.fullName.isNotEmpty &&
-                newUser.fullName != 'Nguyễn Văn Demo' &&
-                !newUser.fullName.contains('@'))
-            ? newUser.fullName
-            : (savedUser.fullName.isNotEmpty
-                ? savedUser.fullName
-                : newUser.fullName);
+        final isSavedCustom =
+            !_isDefaultOrEmailName(savedUser.fullName, cleanEmail);
+        final isNewCustom =
+            !_isDefaultOrEmailName(newUser.fullName, cleanEmail);
+        final hasExplicit = explicitlySavedName != null &&
+            !_isDefaultOrEmailName(explicitlySavedName, cleanEmail);
+
+        String bestFullName;
+        if (hasExplicit) {
+          bestFullName = explicitlySavedName;
+        } else if (isSavedCustom && !isNewCustom) {
+          bestFullName = savedUser.fullName;
+        } else if (isNewCustom) {
+          bestFullName = newUser.fullName;
+        } else if (isSavedCustom) {
+          bestFullName = savedUser.fullName;
+        } else {
+          bestFullName = newUser.fullName.isNotEmpty
+              ? newUser.fullName
+              : (savedUser.fullName.isNotEmpty
+                  ? savedUser.fullName
+                  : _deriveNameFromEmail(cleanEmail));
+        }
+
+        // Tự động đồng bộ tên tùy chỉnh lên server
+        if ((isSavedCustom || hasExplicit) && !isNewCustom) {
+          updateProfileOnServer(
+            fullName: bestFullName,
+            userEmail: cleanEmail,
+          );
+        }
 
         final bestAvatar = newUser.avatarUrl ?? savedUser.avatarUrl;
         final isVip = newUser.hasActiveVip ||
@@ -117,7 +159,8 @@ class AuthService {
     } catch (e) {
       throw ApiException(
         statusCode: 500,
-        message: 'Không thể kết nối đến máy chủ Backend. Vui lòng kiểm tra kết nối mạng và thử lại.',
+        message:
+            'Không thể kết nối đến máy chủ Backend. Vui lòng kiểm tra kết nối mạng và thử lại.',
       );
     }
   }
@@ -167,9 +210,32 @@ class AuthService {
       }
     }
 
-    // Default to selected Google Account (acondog468@gmail.com / A CON DOG)
-    final finalEmail = (realEmail ?? 'acondog468@gmail.com').trim().toLowerCase();
-    final finalName = (realName != null && realName.isNotEmpty) ? realName : 'A CON DOG';
+    final cleanEmail =
+        (realEmail ?? 'acondog468@gmail.com').trim().toLowerCase();
+    final prefs = await SharedPreferences.getInstance();
+    final explicitlySavedName = prefs.getString('user_custom_name_$cleanEmail');
+    final savedJson = prefs.getString('saved_user_profile_$cleanEmail');
+    String? localSavedName;
+    if (explicitlySavedName != null &&
+        explicitlySavedName.trim().isNotEmpty &&
+        !_isDefaultOrEmailName(explicitlySavedName, cleanEmail)) {
+      localSavedName = explicitlySavedName.trim();
+    } else if (savedJson != null && savedJson.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(savedJson) as Map<String, dynamic>;
+        final n =
+            decoded['full_name']?.toString() ?? decoded['fullName']?.toString();
+        if (n != null && !_isDefaultOrEmailName(n, cleanEmail)) {
+          localSavedName = n.trim();
+        }
+      } catch (_) {}
+    }
+
+    final finalEmail = cleanEmail;
+    final finalName = localSavedName ??
+        ((realName != null && realName.isNotEmpty)
+            ? realName
+            : _deriveNameFromEmail(cleanEmail));
 
     UserModel? serverUser;
     String? serverToken;
@@ -184,10 +250,12 @@ class AuthService {
       }
     } catch (_) {}
 
-    final baseUser = serverUser ?? await _getSavedOrMockUser(finalEmail, finalName);
+    final baseUser =
+        serverUser ?? await _getSavedOrMockUser(finalEmail, finalName);
     final mergedUser = await _mergeWithLocalSavedUser(baseUser);
 
-    final token = serverToken ?? 'google_sso_token_${DateTime.now().millisecondsSinceEpoch}';
+    final token = serverToken ??
+        'google_sso_token_${DateTime.now().millisecondsSinceEpoch}';
     await TokenStorage.saveSession(
       token: token,
       userId: mergedUser.id,
@@ -221,7 +289,8 @@ class AuthService {
       }
     } catch (_) {}
 
-    final finalEmail = (realEmail ?? 'facebook.user@wearsy.app').trim().toLowerCase();
+    final finalEmail =
+        (realEmail ?? 'facebook.user@wearsy.app').trim().toLowerCase();
     final finalName = realName ?? 'Trần Ngọc (Facebook User)';
 
     UserModel? serverUser;
@@ -237,10 +306,12 @@ class AuthService {
       }
     } catch (_) {}
 
-    final baseUser = serverUser ?? await _getSavedOrMockUser(finalEmail, finalName);
+    final baseUser =
+        serverUser ?? await _getSavedOrMockUser(finalEmail, finalName);
     final mergedUser = await _mergeWithLocalSavedUser(baseUser);
 
-    final token = serverToken ?? 'facebook_sso_token_${DateTime.now().millisecondsSinceEpoch}';
+    final token = serverToken ??
+        'facebook_sso_token_${DateTime.now().millisecondsSinceEpoch}';
     await TokenStorage.saveSession(
       token: token,
       userId: mergedUser.id,
@@ -374,9 +445,10 @@ class AuthService {
         final user = UserModel.fromJson(decoded);
         return user.copyWith(
           email: cleanEmail,
-          fullName: (user.fullName.isNotEmpty && user.fullName != 'Nguyễn Văn Demo')
-              ? user.fullName
-              : (fullName.isNotEmpty ? fullName : user.fullName),
+          fullName:
+              (user.fullName.isNotEmpty && user.fullName != 'Nguyễn Văn Demo')
+                  ? user.fullName
+                  : (fullName.isNotEmpty ? fullName : user.fullName),
         );
       }
     } catch (_) {}
@@ -450,7 +522,8 @@ class AuthService {
     }
   }
 
-  Future<void> updateProfileOnServer({String? fullName, String? avatarUrl, String? userEmail}) async {
+  Future<void> updateProfileOnServer(
+      {String? fullName, String? avatarUrl, String? userEmail}) async {
     try {
       var email = userEmail ?? await TokenStorage.getUserEmail() ?? '';
       if (email.isEmpty) {

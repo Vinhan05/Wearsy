@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/services/email_service.dart';
 import '../../../core/storage/token_storage.dart';
@@ -187,6 +188,12 @@ class AuthProvider with ChangeNotifier {
     try {
       if (_user != null) {
         _user = _user!.copyWith(fullName: fullName);
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          final cleanEmail = _user!.email.trim().toLowerCase();
+          await prefs.setString(
+              'user_custom_name_$cleanEmail', fullName.trim());
+        } catch (_) {}
         final token = await TokenStorage.getToken() ?? 'mock_token';
         await TokenStorage.saveSession(
           token: token,

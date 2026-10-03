@@ -244,8 +244,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
         actions: [
           if (_scanResult != null)
             IconButton(
-              icon: Icon(Icons.refresh_rounded,
-                  color: AppTheme.primaryLight),
+              icon: Icon(Icons.refresh_rounded, color: AppTheme.primaryLight),
               onPressed: () => _pickImage(ImageSource.camera),
               tooltip: 'Chụp lại',
             ),

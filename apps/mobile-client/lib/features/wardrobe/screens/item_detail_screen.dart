@@ -268,7 +268,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             _InfoChip(
                               icon: Icons.door_sliding_outlined,
                               label: 'Tủ đồ',
-                              value: '${curWardrobe.icon} ${curWardrobe.name.split(' ')[0]}',
+                              value:
+                                  '${curWardrobe.icon} ${curWardrobe.name.split(' ')[0]}',
                               color: Colors.amber,
                             ),
                           ],
@@ -479,13 +480,14 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: Colors.grey.withOpacity(0.2)),
+                            border:
+                                Border.all(color: Colors.grey.withOpacity(0.2)),
                           ),
                           child: Row(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(left: 12, right: 8),
+                                padding:
+                                    const EdgeInsets.only(left: 12, right: 8),
                                 child: Icon(
                                   Icons.local_offer_outlined,
                                   size: 18,
@@ -496,7 +498,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                 child: TextField(
                                   controller: _customTagController,
                                   style: GoogleFonts.inter(
-                                      fontSize: 13, color: AppTheme.darkTextPrimary),
+                                      fontSize: 13,
+                                      color: AppTheme.darkTextPrimary),
                                   textInputAction: TextInputAction.done,
                                   onSubmitted: (val) => _addCustomTag(val),
                                   decoration: InputDecoration(
@@ -598,7 +601,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.primaryColor,
-                        side: BorderSide(color: AppTheme.primaryColor, width: 1.5),
+                        side: BorderSide(
+                            color: AppTheme.primaryColor, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -637,7 +641,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      icon: const Icon(Icons.drive_file_move_outlined, size: 20),
+                      icon:
+                          const Icon(Icons.drive_file_move_outlined, size: 20),
                       label: Text(
                         'Chuyển sang tủ đồ khác',
                         style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
@@ -763,8 +768,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               : Colors.white.withOpacity(0.08),
                         ),
                       ),
-                      leading: Text(col.icon,
-                          style: const TextStyle(fontSize: 22)),
+                      leading:
+                          Text(col.icon, style: const TextStyle(fontSize: 22)),
                       title: Text(
                         col.name,
                         style: GoogleFonts.outfit(

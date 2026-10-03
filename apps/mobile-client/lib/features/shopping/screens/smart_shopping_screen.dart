@@ -273,7 +273,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   style: const TextStyle(color: Colors.white, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Dán link Shopee, TikTok, Lazada, Zara...',
-                    hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
+                    hintStyle:
+                        const TextStyle(color: Colors.white38, fontSize: 13),
                     filled: true,
                     fillColor: AppTheme.darkSurface,
                     prefixIcon: Icon(Icons.link_rounded,
@@ -345,7 +346,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              icon: const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
+              icon:
+                  const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
               label: Text(
                 'Kiểm Tra Tương Thích Với AI',
                 style: GoogleFonts.outfit(
@@ -407,7 +409,6 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             ),
           ),
         ],
-
       ),
     );
   }
@@ -676,7 +677,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                       color: statusColor.withOpacity(0.18),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.star_rounded, color: statusColor, size: 24),
+                    child:
+                        Icon(Icons.star_rounded, color: statusColor, size: 24),
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -709,7 +711,6 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             ],
           ),
           const SizedBox(height: 14),
-
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -740,7 +741,6 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               ],
             ),
           ),
-
           if (result.isDuplicate) ...[
             const SizedBox(height: 10),
             Container(
@@ -1316,30 +1316,25 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
         TextField(
           controller: controller,
           maxLines: maxLines,
-          style: GoogleFonts.inter(
-              color: Colors.white, fontSize: 13),
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
           decoration: InputDecoration(
-            prefixIcon:
-                Icon(icon, color: AppTheme.primaryLight, size: 18),
+            prefixIcon: Icon(icon, color: AppTheme.primaryLight, size: 18),
             filled: true,
             fillColor: Colors.white.withOpacity(0.06),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  BorderSide(color: Colors.white.withOpacity(0.15)),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  BorderSide(color: Colors.white.withOpacity(0.15)),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.15)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                  color: AppTheme.primaryLight, width: 1.5),
+              borderSide: BorderSide(color: AppTheme.primaryLight, width: 1.5),
             ),
-            contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12, vertical: 10),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),
         ),
       ],

@@ -4,6 +4,7 @@ export * from './users.service';
 export * from './wardrobe.service';
 export * from './wardrobe-scanner.service';
 export * from './ai-outfit.service';
+export * from './outfits.service';
 export * from './shopping.service';
 export * from './gamification.service';
 export * from './cloudinary.service';

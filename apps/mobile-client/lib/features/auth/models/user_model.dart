@@ -55,7 +55,8 @@ class UserModel {
       email: json['email']?.toString() ?? '',
       fullName:
           json['full_name']?.toString() ?? json['fullName']?.toString() ?? '',
-      avatarUrl: json['avatar_url']?.toString() ?? json['avatarUrl']?.toString(),
+      avatarUrl:
+          json['avatar_url']?.toString() ?? json['avatarUrl']?.toString(),
       preferredStyles: (json['preferred_styles'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??

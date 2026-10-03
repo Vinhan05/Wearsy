@@ -1,20 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { InternalServerErrorException } from '@nestjs/common';
+import axios from 'axios';
 import { AiOutfitService, WardrobeItemDto } from './ai-outfit.service';
 
-// Mock module @google/genai
-const mockGenerateContent = jest.fn();
-
-jest.mock('@google/genai', () => {
-  return {
-    GoogleGenAI: jest.fn().mockImplementation(() => ({
-      models: {
-        generateContent: mockGenerateContent,
-      },
-    })),
-  };
-});
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('AiOutfitService', () => {
   let service: AiOutfitService;
@@ -46,7 +36,10 @@ describe('AiOutfitService', () => {
 
   beforeEach(async () => {
     mockConfigService = {
-      get: jest.fn().mockReturnValue('mock-gemini-api-key'),
+      get: jest.fn().mockImplementation((key: string, defaultValue?: string) => {
+        if (key === 'AI_ORCHESTRATOR_URL') return 'http://127.0.0.1:8000';
+        return defaultValue || '';
+      }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -75,22 +68,18 @@ describe('AiOutfitService', () => {
       );
 
       expect(result).toEqual([]);
-      expect(mockGenerateContent).not.toHaveBeenCalled();
+      expect(mockedAxios.post).not.toHaveBeenCalled();
     });
 
     it('2. Trả về danh sách bộ outfit hợp lệ được AI gợi ý', async () => {
-      const mockAiResponse = [
-        {
+      mockedAxios.post.mockResolvedValueOnce({
+        data: {
           title: 'Trang phục Thuyết trình Thanh lịch',
           elegance_score: 9.5,
           color_score: 9.0,
-          ai_reasoning: 'Áo sơ mi kết hợp quần âu đen mang lại vẻ lịch sự.',
-          item_ids: ['item-1', 'item-2', 'item-3'],
+          reply: 'Áo sơ mi kết hợp quần âu đen mang lại vẻ lịch sự.',
+          selected_item_ids: ['item-1', 'item-2', 'item-3'],
         },
-      ];
-
-      mockGenerateContent.mockResolvedValueOnce({
-        text: JSON.stringify(mockAiResponse),
       });
 
       const result = await service.generateOutfitRecommendations(
@@ -101,21 +90,18 @@ describe('AiOutfitService', () => {
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe('Trang phục Thuyết trình Thanh lịch');
       expect(result[0].item_ids).toEqual(['item-1', 'item-2', 'item-3']);
-      expect(mockGenerateContent).toHaveBeenCalledTimes(1);
+      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
     });
 
     it('3. Lọc bỏ các ID không hợp lệ (Chống AI Hallucination)', async () => {
-      const mockResponseWithHallucination = [
-        {
+      mockedAxios.post.mockResolvedValueOnce({
+        data: {
           title: 'Outfit có chứa ID ảo',
           elegance_score: 8.0,
-          ai_reasoning: 'Gợi ý phối đồ',
-          item_ids: ['item-1', 'item-2', 'fake-item-999'], // 'fake-item-999' không có trong tủ
+          color_score: 8.5,
+          reply: 'Gợi ý phối đồ',
+          selected_item_ids: ['item-1', 'item-2', 'fake-item-999'],
         },
-      ];
-
-      mockGenerateContent.mockResolvedValueOnce({
-        text: JSON.stringify(mockResponseWithHallucination),
       });
 
       const result = await service.generateOutfitRecommendations(
@@ -128,14 +114,19 @@ describe('AiOutfitService', () => {
       expect(result[0].item_ids).not.toContain('fake-item-999');
     });
 
-    it('4. Ném ra InternalServerErrorException khi AI Engine gặp lỗi API', async () => {
-      mockGenerateContent.mockRejectedValueOnce(
-        new Error('Gemini API Rate Limit Exceeded'),
+    it('4. Tự động chuyển sang smart fallback heuristic khi AI Orchestrator ngoại tuyến', async () => {
+      mockedAxios.post.mockRejectedValueOnce(
+        new Error('Connection refused to AI Orchestrator'),
       );
 
-      await expect(
-        service.generateOutfitRecommendations('Đi tiệc tối', sampleWardrobe),
-      ).rejects.toThrow(InternalServerErrorException);
+      const result = await service.generateOutfitRecommendations(
+        'Đi tiệc tối',
+        sampleWardrobe,
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].title).toContain('Đi tiệc tối');
+      expect(result[0].selected_item_ids.length).toBeGreaterThan(0);
     });
   });
 });

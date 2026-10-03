@@ -230,7 +230,8 @@ class SmartFitCard extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: GoogleFonts.inter(color: Colors.white54, fontSize: 10),
+                      style: GoogleFonts.inter(
+                          color: Colors.white54, fontSize: 10),
                     ),
                     Text(
                       '${score.toStringAsFixed(1)} / 10',

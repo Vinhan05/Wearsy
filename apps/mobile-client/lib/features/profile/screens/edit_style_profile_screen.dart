@@ -110,7 +110,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Cập nhật Hồ sơ phong cách thời trang thành công!'),
+          content:
+              const Text('Cập nhật Hồ sơ phong cách thời trang thành công!'),
           backgroundColor: AppTheme.primaryColor,
         ),
       );
@@ -135,8 +136,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon:
-              Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.darkTextPrimary),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppTheme.darkTextPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -357,7 +358,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Kiểu vóc dáng cơ thể',
-                  style: GoogleFonts.inter(color: AppTheme.darkTextPrimary, fontSize: 13),
+                  style: GoogleFonts.inter(
+                      color: AppTheme.darkTextPrimary, fontSize: 13),
                 ),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(

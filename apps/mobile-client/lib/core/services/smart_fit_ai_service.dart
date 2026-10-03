@@ -6,11 +6,11 @@ import '../../features/wardrobe/models/wardrobe_item_model.dart';
 import 'smart_fit_engine.dart';
 
 class SmartFitAiService {
-  static const String _geminiApiKey =
-      String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
-  static const String _geminiModel = 'gemini-1.5-flash';
+  // URLs for Android Emulator (10.0.2.2) and local host
+  static const String _backendUrl = 'http://10.0.2.2:3000/api/v1';
+  static const String _aiOrchestratorUrl = 'http://10.0.2.2:8000/api/v1';
 
-  /// Sinh gợi ý Outfit kết hợp giữa 2D Layering và Smart Fit (Chiều cao & Cân nặng)
+  /// Sinh gợi ý Outfit kết hợp giữa Gemma 4 Multimodal và ComfyUI Try-on
   static Future<OutfitModel> generateSmartFitOutfit({
     required List<WardrobeItemModel> wardrobeItems,
     required double heightCm,
@@ -18,6 +18,7 @@ class SmartFitAiService {
     String gender = 'Nữ',
     String occasion = 'Công sở thường ngày',
     String stylePreference = 'Thanh lịch, hiện đại',
+    String userName = 'Bạn',
   }) async {
     // 1. Phân tích thể trạng qua Deterministic Engine (< 5ms)
     final bodyAnalysis = SmartFitEngine.analyzeBody(
@@ -34,19 +35,20 @@ class SmartFitAiService {
       );
     }
 
-    // 2. Thử gọi Gemini AI Context Engine (Online)
+    // 2. Thử gọi Wearsy AI Service (Backend hoặc AI Orchestrator Gateway)
     try {
-      final geminiResult = await _callGeminiApi(
+      final aiResult = await _callWearsyAiEngine(
         wardrobeItems: wardrobeItems,
         bodyAnalysis: bodyAnalysis,
         occasion: occasion,
         stylePreference: stylePreference,
+        userName: userName,
       );
-      if (geminiResult != null) {
-        return geminiResult;
+      if (aiResult != null) {
+        return aiResult;
       }
     } catch (e) {
-      debugPrint('[SmartFitAiService] Gemini API call failed or timed out: $e');
+      debugPrint('[SmartFitAiService] Wearsy AI Engine call exception: $e');
     }
 
     // 3. Fallback: Heuristic Engine nội bộ đảm bảo app hoạt động 100% không gián đoạn
@@ -57,26 +59,13 @@ class SmartFitAiService {
     );
   }
 
-  static Future<OutfitModel?> _callGeminiApi({
+  static Future<OutfitModel?> _callWearsyAiEngine({
     required List<WardrobeItemModel> wardrobeItems,
     required BodyAnalysisResult bodyAnalysis,
     required String occasion,
     required String stylePreference,
+    required String userName,
   }) async {
-    const systemInstruction = '''
-[SYSTEM ROLE]
-Bạn là Trợ lý AI Thời trang & Styling Cá nhân hóa cho ứng dụng WEARSY.
-Nhiệm vụ của bạn là chọn các món đồ từ tủ đồ kỹ thuật số của người dùng để tạo thành một bộ trang phục (Outfit) hoàn chỉnh, đồng thời phân tích sự tương thích về thẩm mỹ và đưa ra lời khuyên về độ vừa vặn/tôn dáng dựa trên số liệu thể trạng thực tế (Chiều cao & Cân nặng).
-
-[CRITICAL CONSTRAINTS]
-1. CHỈ ĐƯỢC CHỌN item_id có thật trong mảng [User Wardrobe]. Tuyệt đối KHÔNG tự tạo ra ID giả mạo (No Hallucination).
-2. Tối thiểu mỗi outfit phải gồm 2 items (Ví dụ: 1 Top + 1 Bottom, hoặc 1 Dress + 1 Shoes, kèm áo khoác hoặc phụ kiện nếu có).
-3. Đánh giá tính thẩm mỹ dựa trên quy tắc bánh xe màu sắc và mức độ trang trọng (Elegance/Color Score từ 1.0 đến 10.0).
-4. Phân tích độ tôn dáng dựa vào [User Body Summary]:
-   - Người gầy: Ưu tiên gợi ý đồ sáng màu, họa tiết sọc ngang, hoặc phối layering nhiều lớp (như khoác thêm blazer/cardigan) để tạo độ dày cơ thể.
-   - Người đậm người/chiều cao khiêm tốn: Ưu tiên phối màu đơn sắc (Monochrome), sơ vin hoặc chọn quần cạp cao để kéo dài tỷ lệ chân.
-5. Luôn trả về dữ liệu đúng định dạng JSON chuẩn. Không thêm văn bản chào hỏi hay kết luận bên ngoài JSON.''';
-
     final wardrobeJson = wardrobeItems.map((item) {
       return {
         'id': item.id,
@@ -84,191 +73,101 @@ Nhiệm vụ của bạn là chọn các món đồ từ tủ đồ kỹ thuật
         'category': item.category.displayName,
         'primary_color': item.color,
         'style_tags': item.tags,
+        'image_url': item.imageUrl,
         'layer_order': item.layerOrder,
       };
     }).toList();
 
-    final inputPayload = {
-      'user_context': {
-        'occasion': occasion,
-        'style_preference': stylePreference,
-      },
+    final payload = {
+      'user_prompt': occasion,
+      'occasion': occasion,
+      'user_name': userName,
       'user_body_summary': bodyAnalysis.toJson(),
       'wardrobe_items': wardrobeJson,
     };
 
-    final promptText = '''
-Hãy phân tích dữ liệu sau và tạo ra 1 bộ outfit tối ưu nhất:
-${jsonEncode(inputPayload)}
+    // 1st attempt: Call NestJS Backend
+    try {
+      final uri = Uri.parse('$_backendUrl/outfits/ai-recommend');
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(minutes: 30));
 
-Trả về duy nhất JSON có cấu trúc sau:
-{
-  "outfit_id": "outfit_gemini_${DateTime.now().millisecondsSinceEpoch}",
-  "title": "Tên bộ trang phục phong cách",
-  "elegance_score": 9.5,
-  "color_score": 9.4,
-  "selected_item_ids": ["id_1", "id_2"],
-  "stylist_reasoning": "Giải thích lý do thẩm mỹ và phối màu bối cảnh",
-  "smart_fit_advice": {
-    "size_recommendation": "Phù hợp nhất với ${bodyAnalysis.estimatedSize} chuẩn",
-    "body_proportion_tip": "Lời khuyên tôn dáng cụ thể theo chiều cao ${bodyAnalysis.heightCm.toInt()}cm",
-    "fit_warnings": ["Lưu ý hoặc cảnh báo độ dài/form dáng"]
-  }
-}''';
-
-    final uri = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/$_geminiModel:generateContent?key=$_geminiApiKey');
-
-    final requestBody = {
-      'contents': [
-        {
-          'parts': [
-            {'text': '$systemInstruction\n\n$promptText'}
-          ]
-        }
-      ],
-      'generationConfig': {
-        'temperature': 0.2,
-        'topP': 0.8,
-        'responseMimeType': 'application/json',
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data =
+            jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        return _parseOutfitFromJson(
+            data, wardrobeItems, bodyAnalysis, occasion);
       }
-    };
-
-    final response = await http
-        .post(
-          uri,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(requestBody),
-        )
-        .timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      final text =
-          jsonResponse['candidates']?[0]?['content']?['parts']?[0]?['text'];
-      if (text != null) {
-        final parsed = jsonDecode(text.trim()) as Map<String, dynamic>;
-        final selectedIds = (parsed['selected_item_ids'] as List<dynamic>?)
-                ?.map((e) => e.toString())
-                .toList() ??
-            [];
-
-        // Kiểm tra hợp lệ: Chỉ giữ lại các ID có thực trong tủ đồ
-        final validIds = selectedIds
-            .where((id) => wardrobeItems.any((i) => i.id == id))
-            .toList();
-        if (validIds.length >= 2) {
-          final firstItem =
-              wardrobeItems.firstWhere((i) => i.id == validIds.first);
-          final rawAdvice = parsed['smart_fit_advice'] as Map<String, dynamic>?;
-
-          final smartFitAdvice = SmartFitAdvice(
-            sizeRecommendation: rawAdvice?['size_recommendation']?.toString() ??
-                'Phù hợp nhất với ${bodyAnalysis.estimatedSize} chuẩn',
-            bodyProportionTip: rawAdvice?['body_proportion_tip']?.toString() ??
-                bodyAnalysis.defaultProportionTip,
-            fitWarnings: (rawAdvice?['fit_warnings'] as List<dynamic>?)
-                    ?.map((e) => e.toString())
-                    .toList() ??
-                bodyAnalysis.fitWarnings,
-            bmi: bodyAnalysis.bmi,
-            bodyFrame: bodyAnalysis.bodyFrame,
-            userHeight: bodyAnalysis.heightCm,
-            userWeight: bodyAnalysis.weightKg,
-          );
-
-          return OutfitModel(
-            id: parsed['outfit_id']?.toString() ??
-                'o_ai_${DateTime.now().millisecondsSinceEpoch}',
-            name:
-                parsed['title']?.toString() ?? 'Bộ phối Smart Fit Thời Thượng',
-            occasion: _mapOccasion(occasion),
-            weatherSuitable: ['Mọi thời tiết'],
-            aiScore: (parsed['elegance_score'] as num?)?.toDouble() ?? 9.5,
-            eleganceScore:
-                (parsed['elegance_score'] as num?)?.toDouble() ?? 9.5,
-            colorScore: (parsed['color_score'] as num?)?.toDouble() ?? 9.2,
-            aiReason: parsed['stylist_reasoning']?.toString() ??
-                'Sự phối hợp hài hòa giữa các lớp trang phục tôn dáng và phù hợp sự kiện.',
-            itemIds: validIds,
-            coverImageUrl: firstItem.imageUrl,
-            smartFitAdvice: smartFitAdvice,
-          );
-        }
-      }
+    } catch (e) {
+      debugPrint(
+          '[SmartFitAiService] Backend failed, trying direct AI Orchestrator: $e');
     }
+
+    // 2nd attempt: Call Direct AI Orchestrator Gateway (port 8000)
+    try {
+      final uri = Uri.parse('$_aiOrchestratorUrl/stylist/recommend');
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(minutes: 30));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data =
+            jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        return _parseOutfitFromJson(
+            data, wardrobeItems, bodyAnalysis, occasion);
+      }
+    } catch (e) {
+      debugPrint('[SmartFitAiService] Direct AI Orchestrator failed: $e');
+    }
+
     return null;
   }
 
-  /// Fallback Heuristic Builder: Khi không có internet hoặc tủ đồ ít món
-  static OutfitModel _buildFallbackOutfit({
-    required List<WardrobeItemModel> wardrobeItems,
-    required BodyAnalysisResult bodyAnalysis,
-    required String occasion,
-  }) {
-    final selectedIds = <String>[];
-    String coverImg =
-        'https://images.unsplash.com/photo-1594938298603-c8148c4b4671?q=80&w=600&auto=format&fit=crop';
+  static OutfitModel _parseOutfitFromJson(
+    Map<String, dynamic> data,
+    List<WardrobeItemModel> wardrobeItems,
+    BodyAnalysisResult bodyAnalysis,
+    String occasion,
+  ) {
+    final rawItemIds = (data['selected_item_ids'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        (data['item_ids'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        [];
 
-    if (wardrobeItems.isNotEmpty) {
-      // 1. Tìm lớp nền 1: Áo hoặc Đầm
-      final tops = wardrobeItems
-          .where((i) => i.category == WardrobeCategory.tops)
-          .toList();
-      final dresses = wardrobeItems
-          .where((i) => i.category == WardrobeCategory.dresses)
-          .toList();
-      final bottoms = wardrobeItems
-          .where((i) => i.category == WardrobeCategory.bottoms)
-          .toList();
-      final outerwear = wardrobeItems
-          .where((i) => i.category == WardrobeCategory.outerwear)
-          .toList();
-      final shoes = wardrobeItems
-          .where((i) => i.category == WardrobeCategory.shoes)
-          .toList();
-      final accessories = wardrobeItems
-          .where((i) => i.category == WardrobeCategory.accessories)
-          .toList();
+    final validIds = rawItemIds
+        .where((id) => wardrobeItems.any((item) => item.id == id))
+        .toList();
 
-      if (dresses.isNotEmpty && (bodyAnalysis.gender == 'Nữ' || tops.isEmpty)) {
-        selectedIds.add(dresses.first.id);
-        coverImg = dresses.first.imageUrl;
-      } else {
-        if (tops.isNotEmpty) {
-          selectedIds.add(tops.first.id);
-          coverImg = tops.first.imageUrl;
-        }
-        if (bottoms.isNotEmpty) {
-          selectedIds.add(bottoms.first.id);
-        }
-      }
+    final finalItemIds = validIds.isNotEmpty
+        ? validIds
+        : wardrobeItems.take(2).map((i) => i.id).toList();
 
-      // 2. Thêm Outerwear (Layer 2) nếu thể trạng gầy hoặc dịp trang trọng
-      if (outerwear.isNotEmpty) {
-        selectedIds.add(outerwear.first.id);
-      }
+    final title = data['title']?.toString() ?? 'Gợi ý từ WEARSY AI';
+    final reply = data['reply']?.toString() ??
+        data['stylist_reasoning']?.toString() ??
+        'Bộ outfit được AI phối hợp hài hòa, tôn dáng và phù hợp với dịp của bạn.';
 
-      // 3. Thêm Shoes (Layer 3)
-      if (shoes.isNotEmpty) {
-        selectedIds.add(shoes.first.id);
-      }
-
-      // 4. Thêm Phụ kiện (Layer 4)
-      if (accessories.isNotEmpty) {
-        selectedIds.add(accessories.first.id);
-      }
-    }
-
-    if (selectedIds.isEmpty && wardrobeItems.isNotEmpty) {
-      selectedIds.addAll(wardrobeItems.take(3).map((e) => e.id));
-      coverImg = wardrobeItems.first.imageUrl;
-    }
+    final imageUrl = data['image_url']?.toString() ??
+        data['image_base64']?.toString() ??
+        '';
 
     final advice = SmartFitAdvice(
-      sizeRecommendation:
-          'Phù hợp nhất với ${bodyAnalysis.estimatedSize} chuẩn',
-      bodyProportionTip: bodyAnalysis.defaultProportionTip,
+      sizeRecommendation: 'Size ${bodyAnalysis.estimatedSize}',
+      bodyProportionTip: bodyAnalysis.defaultProportionTip.isNotEmpty
+          ? bodyAnalysis.defaultProportionTip
+          : 'Sơ vin áo gọn gàng để nâng cao tỷ lệ eo và chân.',
       fitWarnings: bodyAnalysis.fitWarnings,
       bmi: bodyAnalysis.bmi,
       bodyFrame: bodyAnalysis.bodyFrame,
@@ -277,43 +176,76 @@ Trả về duy nhất JSON có cấu trúc sau:
     );
 
     return OutfitModel(
-      id: 'o_smart_${DateTime.now().millisecondsSinceEpoch}',
-      name:
-          'Smart Fit ${bodyAnalysis.bodyFrame.split(' ').first}: Phối Đồ Tôn Dáng',
-      occasion: _mapOccasion(occasion),
+      id: data['outfit_id']?.toString() ??
+          'ai_outfit_${DateTime.now().millisecondsSinceEpoch}',
+      name: title,
+      occasion: _matchOccasion(occasion),
       weatherSuitable: ['Mọi thời tiết'],
-      aiScore: 9.4,
-      eleganceScore: 9.5,
-      colorScore: 9.3,
-      aiReason:
-          'Tối ưu hóa các lớp trang phục Layering dựa trên số đo chiều cao ${bodyAnalysis.heightCm.toInt()}cm và cân nặng ${bodyAnalysis.weightKg.toInt()}kg.',
-      itemIds: selectedIds,
-      coverImageUrl: coverImg,
+      aiScore: (data['elegance_score'] as num?)?.toDouble() ?? 9.2,
+      eleganceScore: (data['elegance_score'] as num?)?.toDouble() ?? 9.2,
+      colorScore: (data['color_score'] as num?)?.toDouble() ?? 9.0,
+      aiReason: reply,
+      itemIds: finalItemIds,
+      coverImageUrl: imageUrl,
       smartFitAdvice: advice,
     );
   }
 
-  static OutfitOccasion _mapOccasion(String text) {
-    final lower = text.toLowerCase();
-    if (lower.contains('công sở') ||
-        lower.contains('work') ||
-        lower.contains('báo cáo')) {
-      return OutfitOccasion.work;
-    }
-    if (lower.contains('trang trọng') ||
-        lower.contains('formal') ||
-        lower.contains('thuyết trình')) {
+  static OutfitOccasion _matchOccasion(String occasion) {
+    final lower = occasion.toLowerCase();
+    if (lower.contains('tiệc') ||
+        lower.contains('cưới') ||
+        lower.contains('sang')) {
       return OutfitOccasion.formal;
-    }
-    if (lower.contains('tối') ||
-        lower.contains('tiệc') ||
-        lower.contains('evening') ||
+    } else if (lower.contains('làm') ||
+        lower.contains('sở') ||
+        lower.contains('họp')) {
+      return OutfitOccasion.work;
+    } else if (lower.contains('tối') ||
+        lower.contains('bar') ||
         lower.contains('date')) {
       return OutfitOccasion.evening;
-    }
-    if (lower.contains('thể thao') || lower.contains('sport')) {
+    } else if (lower.contains('thao') ||
+        lower.contains('chạy') ||
+        lower.contains('gym')) {
       return OutfitOccasion.sport;
     }
     return OutfitOccasion.casual;
+  }
+
+  static OutfitModel _buildFallbackOutfit({
+    required List<WardrobeItemModel> wardrobeItems,
+    required BodyAnalysisResult bodyAnalysis,
+    required String occasion,
+  }) {
+    final selectedItems = wardrobeItems.take(3).toList();
+    final itemIds = selectedItems.map((item) => item.id).toList();
+
+    return OutfitModel(
+      id: 'outfit_local_${DateTime.now().millisecondsSinceEpoch}',
+      name: 'Phối Đồ Hài Hòa Cho $occasion',
+      occasion: _matchOccasion(occasion),
+      weatherSuitable: ['Mọi thời tiết'],
+      aiScore: 9.0,
+      eleganceScore: 9.0,
+      colorScore: 8.8,
+      aiReason: selectedItems.isNotEmpty
+          ? 'Sự kết hợp giữa ${selectedItems.map((e) => e.name).join(', ')} mang lại vẻ ngoài trẻ trung, thanh lịch và cân đối.'
+          : 'Tủ đồ của bạn chưa có đủ món để phối.',
+      itemIds: itemIds,
+      coverImageUrl:
+          selectedItems.isNotEmpty ? selectedItems.first.imageUrl : '',
+      smartFitAdvice: SmartFitAdvice(
+        sizeRecommendation: 'Size ${bodyAnalysis.estimatedSize}',
+        bodyProportionTip: bodyAnalysis.defaultProportionTip.isNotEmpty
+            ? bodyAnalysis.defaultProportionTip
+            : 'Sơ vin áo gọn gàng để nâng cao tỷ lệ chân.',
+        fitWarnings: bodyAnalysis.fitWarnings,
+        bmi: bodyAnalysis.bmi,
+        bodyFrame: bodyAnalysis.bodyFrame,
+        userHeight: bodyAnalysis.heightCm,
+        userWeight: bodyAnalysis.weightKg,
+      ),
+    );
   }
 }

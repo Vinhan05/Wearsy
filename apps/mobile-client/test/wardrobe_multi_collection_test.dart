@@ -41,7 +41,8 @@ void main() {
   });
 
   group('WardrobeProvider Multi-Wardrobe Tests', () {
-    test('Provider creates, switches, and filters items per wardrobe', () async {
+    test('Provider creates, switches, and filters items per wardrobe',
+        () async {
       final provider = WardrobeProvider();
       await Future.delayed(const Duration(milliseconds: 100));
 

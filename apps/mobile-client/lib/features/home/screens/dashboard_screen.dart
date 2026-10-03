@@ -86,8 +86,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: WeatherService.popularCities.length,
-                  separatorBuilder: (_, __) =>
-                      Divider(color: AppTheme.primaryColor.withOpacity(0.1), height: 1),
+                  separatorBuilder: (_, __) => Divider(
+                      color: AppTheme.primaryColor.withOpacity(0.1), height: 1),
                   itemBuilder: (context, index) {
                     final city = WeatherService.popularCities[index];
                     final isSelected = city.name == _selectedCity.name;
@@ -102,7 +102,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           fontSize: 16,
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.w500,
-                          color: isSelected ? AppTheme.primaryColor : AppTheme.darkTextPrimary,
+                          color: isSelected
+                              ? AppTheme.primaryColor
+                              : AppTheme.darkTextPrimary,
                         ),
                       ),
                       trailing: isSelected
@@ -125,7 +127,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _showTrendingDetailModal(BuildContext context, Map<String, String> item) {
+  void _showTrendingDetailModal(
+      BuildContext context, Map<String, String> item) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.lightBackground,
@@ -168,7 +171,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: AppTheme.primaryColor.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(10),
@@ -217,11 +221,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           builder: (_) => MultiProvider(
                             providers: [
                               ChangeNotifierProvider.value(
-                                  value: Provider.of<OutfitProvider>(context, listen: false)),
+                                  value: Provider.of<OutfitProvider>(context,
+                                      listen: false)),
                               ChangeNotifierProvider.value(
-                                  value: Provider.of<WardrobeProvider>(context, listen: false)),
+                                  value: Provider.of<WardrobeProvider>(context,
+                                      listen: false)),
                               ChangeNotifierProvider.value(
-                                  value: Provider.of<AuthProvider>(context, listen: false)),
+                                  value: Provider.of<AuthProvider>(context,
+                                      listen: false)),
                             ],
                             child: const AiStylistChatScreen(),
                           ),
@@ -230,9 +237,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
                     ),
-                    icon: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 20),
+                    icon: const Icon(Icons.auto_awesome_rounded,
+                        color: Colors.white, size: 20),
                     label: Text(
                       'Tạo Outfit Với AI Stylist',
                       style: GoogleFonts.outfit(
@@ -365,10 +374,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 builder: (_) => MultiProvider(
                   providers: [
                     ChangeNotifierProvider.value(
-                      value: Provider.of<OutfitProvider>(context, listen: false),
+                      value:
+                          Provider.of<OutfitProvider>(context, listen: false),
                     ),
                     ChangeNotifierProvider.value(
-                      value: Provider.of<WardrobeProvider>(context, listen: false),
+                      value:
+                          Provider.of<WardrobeProvider>(context, listen: false),
                     ),
                     ChangeNotifierProvider.value(
                       value: Provider.of<AuthProvider>(context, listen: false),
@@ -406,7 +417,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         _showCityPickerBottomSheet();
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
                           color: AppTheme.primaryLight.withOpacity(0.35),
                           borderRadius: BorderRadius.circular(20),
@@ -500,7 +512,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        _getDynamicFormulaText(_weatherData?.temperature ?? 28.0),
+                        _getDynamicFormulaText(
+                            _weatherData?.temperature ?? 28.0),
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: AppTheme.darkTextSecondary,
@@ -539,7 +552,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     final double avgScore = allItems.isEmpty
         ? 0.0
-        : (allItems.fold(0.0, (sum, item) => sum + item.aiMatchScore) / allItems.length);
+        : (allItems.fold(0.0, (sum, item) => sum + item.aiMatchScore) /
+            allItems.length);
     final colorScoreStr = avgScore == 0.0 ? '0' : avgScore.toStringAsFixed(1);
 
     return Row(
@@ -571,10 +585,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   builder: (_) => MultiProvider(
                     providers: [
                       ChangeNotifierProvider.value(
-                        value: Provider.of<WardrobeProvider>(context, listen: false),
+                        value: Provider.of<WardrobeProvider>(context,
+                            listen: false),
                       ),
                       ChangeNotifierProvider.value(
-                        value: Provider.of<OutfitProvider>(context, listen: false),
+                        value:
+                            Provider.of<OutfitProvider>(context, listen: false),
                       ),
                     ],
                     child: const ColorScoreScreen(),
@@ -655,9 +671,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppTheme.primaryLight.withOpacity(0.35) : AppTheme.lavenderCard.withOpacity(0.5),
+                    color: isSelected
+                        ? AppTheme.primaryLight.withOpacity(0.35)
+                        : AppTheme.lavenderCard.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isSelected
@@ -669,8 +688,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     opt,
                     style: GoogleFonts.inter(
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected ? AppTheme.darkTextPrimary : AppTheme.darkTextSecondary,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isSelected
+                          ? AppTheme.darkTextPrimary
+                          : AppTheme.darkTextSecondary,
                     ),
                   ),
                 ),

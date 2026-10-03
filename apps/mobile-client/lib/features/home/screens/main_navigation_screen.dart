@@ -39,11 +39,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   List<Widget> get _screens => [
-    DashboardScreen(onSwitchTab: _switchTab),
-    const WardrobeScreen(),
-    const OutfitScreen(),
-    const ProfileScreen(),
-  ];
+        DashboardScreen(onSwitchTab: _switchTab),
+        const WardrobeScreen(),
+        const OutfitScreen(),
+        const ProfileScreen(),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -154,7 +155,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             Icon(
               icon,
               size: 24,
-              color: isSelected ? AppTheme.primaryColor : AppTheme.darkTextSecondary.withOpacity(0.7),
+              color: isSelected
+                  ? AppTheme.primaryColor
+                  : AppTheme.darkTextSecondary.withOpacity(0.7),
             ),
             const SizedBox(height: 3),
             Text(
@@ -162,7 +165,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? AppTheme.primaryColor : AppTheme.darkTextSecondary.withOpacity(0.7),
+                color: isSelected
+                    ? AppTheme.primaryColor
+                    : AppTheme.darkTextSecondary.withOpacity(0.7),
               ),
             ),
           ],

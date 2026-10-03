@@ -530,8 +530,8 @@ class _AddItemScreenState extends State<AddItemScreen>
               decoration: InputDecoration(
                 hintText: 'https://example.com/item.jpg',
                 hintStyle: const TextStyle(color: Colors.white38),
-                prefixIcon: Icon(Icons.link_rounded,
-                    color: AppTheme.primaryLight),
+                prefixIcon:
+                    Icon(Icons.link_rounded, color: AppTheme.primaryLight),
                 filled: true,
                 fillColor: AppTheme.darkSurface,
                 border:
@@ -597,7 +597,8 @@ class _AddItemScreenState extends State<AddItemScreen>
     );
 
     final newItem = WardrobeItemModel(
-      id: widget.existingItem?.id ?? 'w_${DateTime.now().millisecondsSinceEpoch}',
+      id: widget.existingItem?.id ??
+          'w_${DateTime.now().millisecondsSinceEpoch}',
       name: _nameController.text.trim(),
       category: _selectedCategory,
       color: _colorController.text.trim().isEmpty
@@ -658,13 +659,16 @@ class _AddItemScreenState extends State<AddItemScreen>
         iconTheme: IconThemeData(color: AppTheme.darkTextPrimary),
         title: Row(
           children: [
-            Icon(Icons.checkroom_rounded, color: AppTheme.primaryColor, size: 20),
+            Icon(Icons.checkroom_rounded,
+                color: AppTheme.primaryColor, size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 _nameController.text.isNotEmpty
                     ? _nameController.text
-                    : (widget.existingItem != null ? 'Chỉnh Sửa Món Đồ' : 'Thêm Đồ Vào Tủ'),
+                    : (widget.existingItem != null
+                        ? 'Chỉnh Sửa Món Đồ'
+                        : 'Thêm Đồ Vào Tủ'),
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -749,7 +753,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.primaryColor.withOpacity(0.15),
+                                    color:
+                                        AppTheme.primaryColor.withOpacity(0.15),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
@@ -1427,7 +1432,9 @@ class _AddItemScreenState extends State<AddItemScreen>
           Text(
             'Danh mục phân loại',
             style: GoogleFonts.inter(
-                fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.darkTextPrimary),
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.darkTextPrimary),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -1475,9 +1482,8 @@ class _AddItemScreenState extends State<AddItemScreen>
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: ActionChip(
-              backgroundColor: isSelected
-                  ? AppTheme.primaryColor
-                  : Colors.white,
+              backgroundColor:
+                  isSelected ? AppTheme.primaryColor : Colors.white,
               side: BorderSide(
                 color: isSelected
                     ? AppTheme.primaryColor
@@ -1693,7 +1699,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                 Expanded(
                   child: TextField(
                     controller: _customTagController,
-                    style: GoogleFonts.inter(fontSize: 13, color: AppTheme.darkTextPrimary),
+                    style: GoogleFonts.inter(
+                        fontSize: 13, color: AppTheme.darkTextPrimary),
                     textInputAction: TextInputAction.done,
                     onSubmitted: (val) => _addCustomTag(val),
                     decoration: InputDecoration(

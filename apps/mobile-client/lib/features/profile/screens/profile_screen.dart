@@ -118,10 +118,12 @@ class ProfileScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       clipBehavior: Clip.antiAlias,
-                      child: (user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty)
+                      child: (user?.avatarUrl != null &&
+                              user!.avatarUrl!.isNotEmpty)
                           ? Image(
                               image: user.avatarUrl!.startsWith('http')
-                                  ? NetworkImage(user.avatarUrl!) as ImageProvider
+                                  ? NetworkImage(user.avatarUrl!)
+                                      as ImageProvider
                                   : FileImage(File(user.avatarUrl!)),
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => const Icon(
@@ -167,20 +169,25 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: (user?.hasActiveVip == true || user?.isVip == true)
+                            child: (user?.hasActiveVip == true ||
+                                    user?.isVip == true)
                                 ? Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 14, vertical: 6),
                                     decoration: BoxDecoration(
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                                        colors: [
+                                          Color(0xFFFFD700),
+                                          Color(0xFFFFA500)
+                                        ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
                                       borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFFFFD700).withValues(alpha: 0.35),
+                                          color: const Color(0xFFFFD700)
+                                              .withValues(alpha: 0.35),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -189,7 +196,8 @@ class ProfileScreen extends StatelessWidget {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Text('👑 ', style: TextStyle(fontSize: 12)),
+                                        const Text('👑 ',
+                                            style: TextStyle(fontSize: 12)),
                                         Text(
                                           'VIP Fashionista',
                                           style: GoogleFonts.inter(
@@ -205,13 +213,15 @@ class ProfileScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 5),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryLight.withOpacity(0.35),
+                                      color: AppTheme.primaryLight
+                                          .withOpacity(0.35),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Text('👑 ', style: TextStyle(fontSize: 12)),
+                                        const Text('👑 ',
+                                            style: TextStyle(fontSize: 12)),
                                         Text(
                                           'Nâng cấp vip',
                                           style: GoogleFonts.inter(
@@ -238,12 +248,16 @@ class ProfileScreen extends StatelessWidget {
                 builder: (context, wardrobeProvider, outfitProvider, _) {
                   final allItems = wardrobeProvider.allItemsAcrossAllWardrobes;
                   final wardrobeCount = allItems.length.toString();
-                  final aiOutfitCount = outfitProvider.outfits.length.toString();
+                  final aiOutfitCount =
+                      outfitProvider.outfits.length.toString();
 
                   final double avgScore = allItems.isEmpty
                       ? 0.0
-                      : (allItems.fold(0.0, (sum, item) => sum + item.aiMatchScore) / allItems.length);
-                  final colorScoreStr = allItems.isEmpty ? '0.0' : avgScore.toStringAsFixed(1);
+                      : (allItems.fold(
+                              0.0, (sum, item) => sum + item.aiMatchScore) /
+                          allItems.length);
+                  final colorScoreStr =
+                      allItems.isEmpty ? '0.0' : avgScore.toStringAsFixed(1);
 
                   return Row(
                     children: [
@@ -310,7 +324,8 @@ class ProfileScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const EditStyleProfileScreen(),
+                                    builder: (_) =>
+                                        const EditStyleProfileScreen(),
                                   ),
                                 );
                               },
@@ -325,9 +340,7 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 16),
-
                         if (photos.isEmpty)
                           Container(
                             width: double.infinity,
@@ -368,7 +381,8 @@ class ProfileScreen extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => const EditStyleProfileScreen(),
+                                        builder: (_) =>
+                                            const EditStyleProfileScreen(),
                                       ),
                                     );
                                   },
@@ -407,23 +421,27 @@ class ProfileScreen extends StatelessWidget {
                             itemBuilder: (context, index) {
                               final path = photos[index];
                               Widget imgWidget;
-                              if (path.startsWith('http://') || path.startsWith('https://')) {
+                              if (path.startsWith('http://') ||
+                                  path.startsWith('https://')) {
                                 imgWidget = Image.network(
                                   path,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => _buildPlaceholderPhoto(),
+                                  errorBuilder: (_, __, ___) =>
+                                      _buildPlaceholderPhoto(),
                                 );
                               } else if (path.startsWith('assets/')) {
                                 imgWidget = Image.asset(
                                   path,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => _buildPlaceholderPhoto(),
+                                  errorBuilder: (_, __, ___) =>
+                                      _buildPlaceholderPhoto(),
                                 );
                               } else {
                                 imgWidget = Image.file(
                                   File(path),
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => _buildPlaceholderPhoto(),
+                                  errorBuilder: (_, __, ___) =>
+                                      _buildPlaceholderPhoto(),
                                 );
                               }
 
@@ -604,7 +622,8 @@ class ProfileScreen extends StatelessWidget {
                   if (confirm != true) return;
 
                   try {
-                    Provider.of<WardrobeProvider>(context, listen: false).reset();
+                    Provider.of<WardrobeProvider>(context, listen: false)
+                        .reset();
                     Provider.of<OutfitProvider>(context, listen: false).reset();
                     await authProvider.logout();
                   } catch (_) {}
@@ -622,7 +641,8 @@ class ProfileScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFEF4444), width: 1.8),
+                    border:
+                        Border.all(color: const Color(0xFFEF4444), width: 1.8),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFFEF4444).withOpacity(0.08),

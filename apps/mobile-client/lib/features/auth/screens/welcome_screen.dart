@@ -64,9 +64,11 @@ class WelcomeScreen extends StatelessWidget {
                     height: 56,
                     decoration: BoxDecoration(
                       color: isTheme1
-                          ? const Color(0xFFC4B8FA) // Exact Lavender button from 1.png
+                          ? const Color(
+                              0xFFC4B8FA) // Exact Lavender button from 1.png
                           : isTheme2
-                              ? const Color(0xFF543D37) // Exact Mocha Cacao from 2.png
+                              ? const Color(
+                                  0xFF543D37) // Exact Mocha Cacao from 2.png
                               : AppTheme.primaryColor,
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
@@ -89,7 +91,8 @@ class WelcomeScreen extends StatelessWidget {
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.5,
-                          color: isTheme1 ? const Color(0xFF2C2849) : Colors.white,
+                          color:
+                              isTheme1 ? const Color(0xFF2C2849) : Colors.white,
                         ),
                       ),
                     ),
@@ -103,4 +106,3 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 }
-

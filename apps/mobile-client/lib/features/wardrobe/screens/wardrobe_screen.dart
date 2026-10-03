@@ -15,7 +15,8 @@ class WardrobeScreen extends StatelessWidget {
   const WardrobeScreen({super.key});
 
   /// Modal chọn phương thức thêm đồ (Camera, Thư viện, Smart Shopping)
-  static void showAddOptionsModal(BuildContext context, {VoidCallback? onSelect}) {
+  static void showAddOptionsModal(BuildContext context,
+      {VoidCallback? onSelect}) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.lightBackground,
@@ -59,7 +60,8 @@ class WardrobeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const AddItemScreen(initialMode: 'camera'),
+                        builder: (_) =>
+                            const AddItemScreen(initialMode: 'camera'),
                       ),
                     );
                   },
@@ -124,7 +126,8 @@ class WardrobeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const AddItemScreen(initialMode: 'gallery'),
+                        builder: (_) =>
+                            const AddItemScreen(initialMode: 'gallery'),
                       ),
                     );
                   },
@@ -134,7 +137,8 @@ class WardrobeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF8174DB).withOpacity(0.15)),
+                      border: Border.all(
+                          color: const Color(0xFF8174DB).withOpacity(0.15)),
                     ),
                     child: Row(
                       children: [
@@ -197,7 +201,8 @@ class WardrobeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF8174DB).withOpacity(0.15)),
+                      border: Border.all(
+                          color: const Color(0xFF8174DB).withOpacity(0.15)),
                     ),
                     child: Row(
                       children: [
@@ -305,7 +310,8 @@ class WardrobeScreen extends StatelessWidget {
                                 color: AppTheme.primaryColor.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: AppTheme.primaryColor.withOpacity(0.3)),
+                                    color:
+                                        AppTheme.primaryColor.withOpacity(0.3)),
                               ),
                               child: Text(
                                 '${collections.length}',
@@ -411,144 +417,150 @@ class WardrobeScreen extends StatelessWidget {
                                 ),
                               ),
                               child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 4),
-                              leading: Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? AppTheme.primaryColor.withOpacity(0.2)
-                                      : AppTheme.lightBackground,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  col.icon,
-                                  style: const TextStyle(fontSize: 22),
-                                ),
-                              ),
-                              title: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      col.name,
-                                      style: GoogleFonts.outfit(
-                                        color: const Color(0xFF2C2849),
-                                        fontWeight: isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.w600,
-                                        fontSize: 15,
-                                      ),
-                                    ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 4),
+                                leading: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppTheme.primaryColor.withOpacity(0.2)
+                                        : AppTheme.lightBackground,
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  if (col.isDefault)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primaryColor.withOpacity(0.12),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    col.icon,
+                                    style: const TextStyle(fontSize: 22),
+                                  ),
+                                ),
+                                title: Row(
+                                  children: [
+                                    Expanded(
                                       child: Text(
-                                        'Mặc định',
-                                        style: GoogleFonts.inter(
-                                          color: AppTheme.primaryColor,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
+                                        col.name,
+                                        style: GoogleFonts.outfit(
+                                          color: const Color(0xFF2C2849),
+                                          fontWeight: isSelected
+                                              ? FontWeight.bold
+                                              : FontWeight.w600,
+                                          fontSize: 15,
                                         ),
                                       ),
                                     ),
-                                ],
-                              ),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  col.description.isNotEmpty
-                                      ? '$itemCount món đồ • ${col.description}'
-                                      : '$itemCount món đồ',
-                                  style: GoogleFonts.inter(
-                                    color: const Color(0xFF5F597C),
-                                    fontSize: 12,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isSelected)
-                                    Icon(Icons.check_circle_rounded,
-                                        color: AppTheme.primaryLight, size: 22)
-                                  else
-                                    const Icon(Icons.radio_button_unchecked,
-                                        color: Colors.white24, size: 20),
-                                  if (!col.isDefault) ...[
-                                    const SizedBox(width: 4),
-                                    PopupMenuButton<String>(
-                                      icon: const Icon(Icons.more_vert_rounded,
-                                          color: Colors.white54, size: 20),
-                                      color: AppTheme.darkCard,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                        side: BorderSide(
-                                            color:
-                                                Colors.white.withOpacity(0.1)),
+                                    if (col.isDefault)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.primaryColor
+                                              .withOpacity(0.12),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          'Mặc định',
+                                          style: GoogleFonts.inter(
+                                            color: AppTheme.primaryColor,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
-                                      onSelected: (action) {
-                                        if (action == 'edit') {
-                                          Navigator.pop(modalCtx);
-                                          showCreateOrEditWardrobeDialog(
-                                              context,
-                                              existing: col);
-                                        } else if (action == 'delete') {
-                                          _confirmDeleteWardrobe(
-                                              context, provider, col);
-                                        }
-                                      },
-                                      itemBuilder: (_) => [
-                                        PopupMenuItem(
-                                          value: 'edit',
-                                          child: Row(
-                                            children: [
-                                              const Icon(Icons.edit_outlined,
-                                                  color: Colors.white70,
-                                                  size: 18),
-                                              const SizedBox(width: 10),
-                                              Text('Đổi tên & Icon',
-                                                  style: GoogleFonts.inter(
-                                                      color: Colors.white)),
-                                            ],
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          value: 'delete',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.delete_outline,
-                                                  color: AppTheme.accentColor,
-                                                  size: 18),
-                                              const SizedBox(width: 10),
-                                              Text('Xóa tủ đồ này',
-                                                  style: GoogleFonts.inter(
-                                                      color: AppTheme
-                                                          .accentColor)),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
                                   ],
-                                ],
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    col.description.isNotEmpty
+                                        ? '$itemCount món đồ • ${col.description}'
+                                        : '$itemCount món đồ',
+                                    style: GoogleFonts.inter(
+                                      color: const Color(0xFF5F597C),
+                                      fontSize: 12,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (isSelected)
+                                      Icon(Icons.check_circle_rounded,
+                                          color: AppTheme.primaryLight,
+                                          size: 22)
+                                    else
+                                      const Icon(Icons.radio_button_unchecked,
+                                          color: Colors.white24, size: 20),
+                                    if (!col.isDefault) ...[
+                                      const SizedBox(width: 4),
+                                      PopupMenuButton<String>(
+                                        icon: const Icon(
+                                            Icons.more_vert_rounded,
+                                            color: Colors.white54,
+                                            size: 20),
+                                        color: AppTheme.darkCard,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          side: BorderSide(
+                                              color: Colors.white
+                                                  .withOpacity(0.1)),
+                                        ),
+                                        onSelected: (action) {
+                                          if (action == 'edit') {
+                                            Navigator.pop(modalCtx);
+                                            showCreateOrEditWardrobeDialog(
+                                                context,
+                                                existing: col);
+                                          } else if (action == 'delete') {
+                                            _confirmDeleteWardrobe(
+                                                context, provider, col);
+                                          }
+                                        },
+                                        itemBuilder: (_) => [
+                                          PopupMenuItem(
+                                            value: 'edit',
+                                            child: Row(
+                                              children: [
+                                                const Icon(Icons.edit_outlined,
+                                                    color: Colors.white70,
+                                                    size: 18),
+                                                const SizedBox(width: 10),
+                                                Text('Đổi tên & Icon',
+                                                    style: GoogleFonts.inter(
+                                                        color: Colors.white)),
+                                              ],
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            value: 'delete',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.delete_outline,
+                                                    color: AppTheme.accentColor,
+                                                    size: 18),
+                                                const SizedBox(width: 10),
+                                                Text('Xóa tủ đồ này',
+                                                    style: GoogleFonts.inter(
+                                                        color: AppTheme
+                                                            .accentColor)),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                onTap: () {
+                                  provider.switchWardrobe(col.id);
+                                  Navigator.pop(modalCtx);
+                                },
                               ),
-                              onTap: () {
-                                provider.switchWardrobe(col.id);
-                                Navigator.pop(modalCtx);
-                              },
                             ),
-                          ),
-                        );
+                          );
                         },
                       ),
                     ),
@@ -743,16 +755,54 @@ class WardrobeScreen extends StatelessWidget {
     String selectedIcon = existing?.icon ?? '💼';
 
     final presetSuggestions = [
-      {'name': 'Tủ Đồ Đi Làm / Công Sở', 'icon': '💼', 'desc': 'Vest, sơ mi, quần âu & chân váy'},
-      {'name': 'Tủ Đồ Du Lịch & Nghỉ Dưỡng', 'icon': '🏖️', 'desc': 'Đầm maxi, đồ bơi & phong cách nhiệt đới'},
-      {'name': 'Tủ Đồ Thu Đông Ấm Áp', 'icon': '❄️', 'desc': 'Áo len, áo dạ & áo phao giữ ấm'},
-      {'name': 'Tủ Đồ Tiệc & Sự Kiện', 'icon': '💃', 'desc': 'Đầm dạ hội, trang phục sang trọng'},
-      {'name': 'Tủ Đồ Gym & Thể Thao', 'icon': '🏋️', 'desc': 'Đồ tập, thể thao năng động & sneaker'},
-      {'name': 'Tủ Đồ Đi Học & Campus', 'icon': '🎓', 'desc': 'Polo, jean, hoodie trẻ trung'},
+      {
+        'name': 'Tủ Đồ Đi Làm / Công Sở',
+        'icon': '💼',
+        'desc': 'Vest, sơ mi, quần âu & chân váy'
+      },
+      {
+        'name': 'Tủ Đồ Du Lịch & Nghỉ Dưỡng',
+        'icon': '🏖️',
+        'desc': 'Đầm maxi, đồ bơi & phong cách nhiệt đới'
+      },
+      {
+        'name': 'Tủ Đồ Thu Đông Ấm Áp',
+        'icon': '❄️',
+        'desc': 'Áo len, áo dạ & áo phao giữ ấm'
+      },
+      {
+        'name': 'Tủ Đồ Tiệc & Sự Kiện',
+        'icon': '💃',
+        'desc': 'Đầm dạ hội, trang phục sang trọng'
+      },
+      {
+        'name': 'Tủ Đồ Gym & Thể Thao',
+        'icon': '🏋️',
+        'desc': 'Đồ tập, thể thao năng động & sneaker'
+      },
+      {
+        'name': 'Tủ Đồ Đi Học & Campus',
+        'icon': '🎓',
+        'desc': 'Polo, jean, hoodie trẻ trung'
+      },
     ];
 
     final availableIcons = [
-      '🏠', '💼', '🏖️', '❄️', '💃', '🏋️', '🎓', '👗', '👔', '👟', '🎒', '✨', '🔥', '🌸', '🕶️'
+      '🏠',
+      '💼',
+      '🏖️',
+      '❄️',
+      '💃',
+      '🏋️',
+      '🎓',
+      '👗',
+      '👔',
+      '👟',
+      '🎒',
+      '✨',
+      '🔥',
+      '🌸',
+      '🕶️'
     ];
 
     showModalBottomSheet(
@@ -821,13 +871,15 @@ class WardrobeScreen extends StatelessWidget {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: presetSuggestions.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 8),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 8),
                             itemBuilder: (ctx, i) {
                               final p = presetSuggestions[i];
                               return ActionChip(
                                 backgroundColor: Colors.white,
                                 side: BorderSide(
-                                    color: AppTheme.primaryColor.withOpacity(0.2)),
+                                    color:
+                                        AppTheme.primaryColor.withOpacity(0.2)),
                                 label: Text(
                                   '${p['icon']} ${p['name']!.split('/')[0].replaceAll('Tủ Đồ ', '')}',
                                   style: GoogleFonts.inter(
@@ -864,7 +916,8 @@ class WardrobeScreen extends StatelessWidget {
                         children: availableIcons.map((icon) {
                           final isSelected = selectedIcon == icon;
                           return GestureDetector(
-                            onTap: () => setModalState(() => selectedIcon = icon),
+                            onTap: () =>
+                                setModalState(() => selectedIcon = icon),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 150),
                               width: 42,
@@ -877,7 +930,8 @@ class WardrobeScreen extends StatelessWidget {
                                 border: Border.all(
                                   color: isSelected
                                       ? AppTheme.primaryColor
-                                      : const Color(0xFF8174DB).withOpacity(0.15),
+                                      : const Color(0xFF8174DB)
+                                          .withOpacity(0.15),
                                   width: isSelected ? 2 : 1,
                                 ),
                               ),
@@ -893,14 +947,15 @@ class WardrobeScreen extends StatelessWidget {
                       // Nhập Tên Tủ Đồ
                       TextField(
                         controller: nameCtrl,
-                        style: GoogleFonts.inter(color: const Color(0xFF2C2849)),
+                        style:
+                            GoogleFonts.inter(color: const Color(0xFF2C2849)),
                         decoration: InputDecoration(
                           labelText: 'Tên Tủ Đồ',
                           hintText: 'Ví dụ: Tủ Đồ Đi Làm, Tủ Đồ Mùa Hè...',
                           labelStyle:
                               GoogleFonts.inter(color: const Color(0xFF5F597C)),
-                          hintStyle: GoogleFonts.inter(
-                              color: const Color(0xFF9E99B8)),
+                          hintStyle:
+                              GoogleFonts.inter(color: const Color(0xFF9E99B8)),
                           prefixIcon: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 10),
@@ -911,18 +966,18 @@ class WardrobeScreen extends StatelessWidget {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: AppTheme.primaryColor.withOpacity(0.15)),
+                            borderSide: BorderSide(
+                                color: AppTheme.primaryColor.withOpacity(0.15)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: AppTheme.primaryColor.withOpacity(0.15)),
+                            borderSide: BorderSide(
+                                color: AppTheme.primaryColor.withOpacity(0.15)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: AppTheme.primaryColor, width: 1.5),
+                            borderSide: BorderSide(
+                                color: AppTheme.primaryColor, width: 1.5),
                           ),
                         ),
                       ),
@@ -931,32 +986,35 @@ class WardrobeScreen extends StatelessWidget {
                       // Nhập Mô tả Tủ Đồ
                       TextField(
                         controller: descCtrl,
-                        style: GoogleFonts.inter(color: AppTheme.darkTextPrimary),
+                        style:
+                            GoogleFonts.inter(color: AppTheme.darkTextPrimary),
                         decoration: InputDecoration(
                           labelText: 'Mô tả ngắn (tùy chọn)',
-                          hintText: 'Ví dụ: Quần áo thanh lịch cho ngày làm việc...',
-                          labelStyle:
-                              GoogleFonts.inter(color: AppTheme.darkTextSecondary),
+                          hintText:
+                              'Ví dụ: Quần áo thanh lịch cho ngày làm việc...',
+                          labelStyle: GoogleFonts.inter(
+                              color: AppTheme.darkTextSecondary),
                           hintStyle: GoogleFonts.inter(
-                              color: AppTheme.darkTextSecondary.withOpacity(0.7)),
+                              color:
+                                  AppTheme.darkTextSecondary.withOpacity(0.7)),
                           prefixIcon: Icon(Icons.notes_rounded,
                               color: AppTheme.primaryColor, size: 20),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: AppTheme.primaryColor.withOpacity(0.15)),
+                            borderSide: BorderSide(
+                                color: AppTheme.primaryColor.withOpacity(0.15)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: AppTheme.primaryColor.withOpacity(0.15)),
+                            borderSide: BorderSide(
+                                color: AppTheme.primaryColor.withOpacity(0.15)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: AppTheme.primaryColor, width: 1.5),
+                            borderSide: BorderSide(
+                                color: AppTheme.primaryColor, width: 1.5),
                           ),
                         ),
                       ),
@@ -980,7 +1038,8 @@ class WardrobeScreen extends StatelessWidget {
                             if (name.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Text('Vui lòng nhập tên tủ đồ'),
+                                  content:
+                                      const Text('Vui lòng nhập tên tủ đồ'),
                                   backgroundColor: AppTheme.accentColor,
                                 ),
                               );
@@ -1116,11 +1175,26 @@ class _WardrobeBody extends StatelessWidget {
 
     final filterOptions = [
       {'key': null, 'label': 'Tất cả ($totalCount)'},
-      {'key': WardrobeCategory.tops, 'label': 'Áo (${counts[WardrobeCategory.tops] ?? 0})'},
-      {'key': WardrobeCategory.bottoms, 'label': 'Quần (${counts[WardrobeCategory.bottoms] ?? 0})'},
-      {'key': WardrobeCategory.dresses, 'label': 'Đầm (${counts[WardrobeCategory.dresses] ?? 0})'},
-      {'key': WardrobeCategory.outerwear, 'label': 'Áo khoác (${counts[WardrobeCategory.outerwear] ?? 0})'},
-      {'key': WardrobeCategory.shoes, 'label': 'Giày (${counts[WardrobeCategory.shoes] ?? 0})'},
+      {
+        'key': WardrobeCategory.tops,
+        'label': 'Áo (${counts[WardrobeCategory.tops] ?? 0})'
+      },
+      {
+        'key': WardrobeCategory.bottoms,
+        'label': 'Quần (${counts[WardrobeCategory.bottoms] ?? 0})'
+      },
+      {
+        'key': WardrobeCategory.dresses,
+        'label': 'Đầm (${counts[WardrobeCategory.dresses] ?? 0})'
+      },
+      {
+        'key': WardrobeCategory.outerwear,
+        'label': 'Áo khoác (${counts[WardrobeCategory.outerwear] ?? 0})'
+      },
+      {
+        'key': WardrobeCategory.shoes,
+        'label': 'Giày (${counts[WardrobeCategory.shoes] ?? 0})'
+      },
     ];
 
     return SizedBox(
@@ -1142,7 +1216,9 @@ class _WardrobeBody extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.primaryColor : const Color(0xFF8E8EA0),
+                color: isSelected
+                    ? AppTheme.primaryColor
+                    : const Color(0xFF8E8EA0),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -1232,7 +1308,8 @@ class _WardrobeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNetworkImage = item.imageUrl.startsWith('http://') || item.imageUrl.startsWith('https://');
+    final isNetworkImage = item.imageUrl.startsWith('http://') ||
+        item.imageUrl.startsWith('https://');
 
     return GestureDetector(
       onTap: onTap,
@@ -1247,7 +1324,8 @@ class _WardrobeCard extends StatelessWidget {
             children: [
               // Top lavender header bar with Title & Score
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -1264,7 +1342,8 @@ class _WardrobeCard extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: const Color(0xFF383350),
                         borderRadius: BorderRadius.circular(10),

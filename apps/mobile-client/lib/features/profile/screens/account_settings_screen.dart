@@ -105,6 +105,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
       final prefs = await SharedPreferences.getInstance();
       final email = authProvider.user?.email.trim().toLowerCase();
       if (email != null) {
+        await prefs.setString(
+            'user_custom_name_$email', _nameController.text.trim());
         await prefs.setString('user_gender_$email', _selectedGender);
         if (_selectedBirthDate != null) {
           await prefs.setString(
@@ -255,20 +257,27 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     color: Color(0xFFF7F5FC),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.camera_alt_rounded, color: AppTheme.primaryColor),
+                  child: Icon(Icons.camera_alt_rounded,
+                      color: AppTheme.primaryColor),
                 ),
-                title: Text('Chụp ảnh từ Máy ảnh', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppTheme.darkTextPrimary)),
+                title: Text('Chụp ảnh từ Máy ảnh',
+                    style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.darkTextPrimary)),
                 onTap: () async {
                   Navigator.pop(sheetCtx);
                   final picker = ImagePicker();
-                  final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+                  final XFile? image = await picker.pickImage(
+                      source: ImageSource.camera, imageQuality: 85);
                   if (!mounted) return;
                   if (image != null) {
-                    await Provider.of<AuthProvider>(context, listen: false).updateAvatar(image.path);
+                    await Provider.of<AuthProvider>(context, listen: false)
+                        .updateAvatar(image.path);
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('📸 Cập nhật ảnh đại diện thành công!', style: GoogleFonts.inter()),
+                        content: Text('📸 Cập nhật ảnh đại diện thành công!',
+                            style: GoogleFonts.inter()),
                         backgroundColor: AppTheme.primaryColor,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -283,20 +292,27 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     color: Color(0xFFF7F5FC),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.photo_library_rounded, color: AppTheme.primaryColor),
+                  child: Icon(Icons.photo_library_rounded,
+                      color: AppTheme.primaryColor),
                 ),
-                title: Text('Chọn từ Thư viện ảnh', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppTheme.darkTextPrimary)),
+                title: Text('Chọn từ Thư viện ảnh',
+                    style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.darkTextPrimary)),
                 onTap: () async {
                   Navigator.pop(sheetCtx);
                   final picker = ImagePicker();
-                  final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+                  final XFile? image = await picker.pickImage(
+                      source: ImageSource.gallery, imageQuality: 85);
                   if (!mounted) return;
                   if (image != null) {
-                    await Provider.of<AuthProvider>(context, listen: false).updateAvatar(image.path);
+                    await Provider.of<AuthProvider>(context, listen: false)
+                        .updateAvatar(image.path);
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('🖼️ Cập nhật ảnh đại diện thành công!', style: GoogleFonts.inter()),
+                        content: Text('🖼️ Cập nhật ảnh đại diện thành công!',
+                            style: GoogleFonts.inter()),
                         backgroundColor: AppTheme.primaryColor,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -456,7 +472,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               decoration: BoxDecoration(
                 color: AppTheme.darkCard,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
+                border: Border.all(
+                    color: AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -478,7 +495,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                           label: Text(g),
                           selected: isSelected,
                           selectedColor: AppTheme.primaryColor,
-                          backgroundColor: AppTheme.darkTextSecondary.withValues(alpha: 0.05),
+                          backgroundColor: AppTheme.darkTextSecondary
+                              .withValues(alpha: 0.05),
                           labelStyle: TextStyle(
                             color: isSelected
                                 ? Colors.white
@@ -519,8 +537,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 decoration: BoxDecoration(
                   color: AppTheme.darkCard,
                   borderRadius: BorderRadius.circular(16),
-                  border:
-                      Border.all(color: AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
+                  border: Border.all(
+                      color: AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -594,7 +612,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.accentColor.withOpacity(0.3)),
+                border:
+                    Border.all(color: AppTheme.accentColor.withOpacity(0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,7 +661,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.accentColor,
-                        side: BorderSide(color: AppTheme.accentColor.withOpacity(0.5)),
+                        side: BorderSide(
+                            color: AppTheme.accentColor.withOpacity(0.5)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -650,7 +670,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       icon: const Icon(Icons.delete_forever_rounded, size: 18),
                       label: Text(
                         'Reset Tất Cả Quần Áo (0 món đồ)',
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       onPressed: () => _confirmResetWardrobe(context),
                     ),
@@ -672,7 +693,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppTheme.accentColor, size: 24),
+            Icon(Icons.warning_amber_rounded,
+                color: AppTheme.accentColor, size: 24),
             const SizedBox(width: 10),
             Text(
               'Reset Tủ Đồ Trắng?',
@@ -686,24 +708,28 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
         ),
         content: Text(
           'Thao tác này sẽ xóa sạch tất cả quần áo trong tủ đồ của bạn và chuyển tài khoản về trạng thái tủ đồ trắng (0 món đồ).\n\nBạn có chắc chắn muốn reset không?',
-          style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF5F597C), height: 1.4),
+          style: GoogleFonts.inter(
+              fontSize: 14, color: const Color(0xFF5F597C), height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text(
               'Hủy',
-              style: GoogleFonts.inter(color: const Color(0xFF5F597C), fontWeight: FontWeight.bold),
+              style: GoogleFonts.inter(
+                  color: const Color(0xFF5F597C), fontWeight: FontWeight.bold),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.accentColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () async {
               Navigator.pop(dialogCtx);
-              await Provider.of<WardrobeProvider>(context, listen: false).clearAllItems();
+              await Provider.of<WardrobeProvider>(context, listen: false)
+                  .clearAllItems();
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -713,14 +739,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     ),
                     backgroundColor: AppTheme.primaryColor,
                     behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                 );
               }
             },
             child: Text(
               'Xác Nhận Reset',
-              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -842,7 +870,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           Text(
             'Tài Khoản Liên Kết 🌐',
             style: GoogleFonts.outfit(
-                fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.darkTextPrimary),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.darkTextPrimary),
           ),
           const SizedBox(height: 6),
           Text(
@@ -953,7 +983,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text('HỦY BỎ',
                 style: GoogleFonts.inter(
-                    color: AppTheme.darkTextPrimary.withValues(alpha: 0.70), fontWeight: FontWeight.bold)),
+                    color: AppTheme.darkTextPrimary.withValues(alpha: 0.70),
+                    fontWeight: FontWeight.bold)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1047,7 +1078,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               backgroundColor: isLinked
                   ? AppTheme.primaryColor.withValues(alpha: 0.1)
                   : AppTheme.primaryColor,
-              foregroundColor: isLinked ? AppTheme.darkTextSecondary : Colors.white,
+              foregroundColor:
+                  isLinked ? AppTheme.darkTextSecondary : Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -1262,8 +1294,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                           isVip
                               ? Icons.stars_rounded
                               : Icons.star_border_rounded,
-                          color:
-                              isVip ? const Color(0xFFD4AF37) : AppTheme.darkTextSecondary,
+                          color: isVip
+                              ? const Color(0xFFD4AF37)
+                              : AppTheme.darkTextSecondary,
                           size: 24,
                         ),
                       ),
@@ -1307,7 +1340,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       border: Border.all(
                         color: isVip
                             ? Colors.greenAccent.withValues(alpha: 0.3)
-                            : AppTheme.darkTextSecondary.withValues(alpha: 0.15),
+                            : AppTheme.darkTextSecondary
+                                .withValues(alpha: 0.15),
                       ),
                     ),
                     child: Text(
@@ -1315,7 +1349,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       style: GoogleFonts.outfit(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: isVip ? Colors.green : AppTheme.darkTextSecondary,
+                        color:
+                            isVip ? Colors.green : AppTheme.darkTextSecondary,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -1416,7 +1451,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   suffixIcon: _couponController.text.isNotEmpty
                       ? IconButton(
                           icon: Icon(Icons.clear_rounded,
-                              color: AppTheme.darkTextPrimary.withValues(alpha: 0.38), size: 18),
+                              color: AppTheme.darkTextPrimary
+                                  .withValues(alpha: 0.38),
+                              size: 18),
                           onPressed: () {
                             setState(() {
                               _couponController.clear();
@@ -1430,18 +1467,20 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        BorderSide(color: AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
+                    borderSide: BorderSide(
+                        color:
+                            AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        BorderSide(color: AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
+                    borderSide: BorderSide(
+                        color:
+                            AppTheme.darkTextSecondary.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(
-                        color: AppTheme.primaryLight, width: 1.5),
+                    borderSide:
+                        BorderSide(color: AppTheme.primaryLight, width: 1.5),
                   ),
                 ),
                 onChanged: (_) => setState(() {}),
@@ -1488,7 +1527,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
-                                  color: AppTheme.darkTextPrimary, strokeWidth: 2),
+                                  color: AppTheme.darkTextPrimary,
+                                  strokeWidth: 2),
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1534,7 +1574,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       child: RichText(
                         text: TextSpan(
                           style: GoogleFonts.inter(
-                              fontSize: 12, color: AppTheme.darkTextPrimary.withValues(alpha: 0.70)),
+                              fontSize: 12,
+                              color: AppTheme.darkTextPrimary
+                                  .withValues(alpha: 0.70)),
                           children: [
                             const TextSpan(text: 'Nhập mã '),
                             TextSpan(
@@ -1789,6 +1831,3 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
     );
   }
 }
-
-
-
