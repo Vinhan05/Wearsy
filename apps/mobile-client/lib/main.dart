@@ -10,6 +10,7 @@ import 'features/home/screens/main_navigation_screen.dart';
 import 'features/outfits/providers/outfit_provider.dart';
 import 'features/wardrobe/providers/wardrobe_provider.dart';
 
+import 'core/localization/localization.dart';
 import 'core/theme/theme_provider.dart';
 
 void main() async {
@@ -26,15 +27,17 @@ class WearsyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WardrobeProvider()),
         ChangeNotifierProvider(create: (_) => OutfitProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, LanguageProvider>(
+        builder: (context, themeProvider, languageProvider, child) {
           return MaterialApp(
             title: 'WEARSY - Smart Wardrobe',
             debugShowCheckedModeBanner: false,
+            locale: languageProvider.currentLocale,
             theme: themeProvider.currentThemeData,
             darkTheme: themeProvider.currentThemeData,
             themeMode: ThemeMode.light,

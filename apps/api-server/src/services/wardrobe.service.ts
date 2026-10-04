@@ -132,18 +132,13 @@ export class WardrobeService {
     userId?: string,
   ): Promise<string> {
     if (userId && userId.length > 10) return userId;
-    const cleanEmail = (email || 'demo@wearsy.app').trim().toLowerCase();
-    let user = await this.userRepo.findOne({ where: { email: cleanEmail } });
+    if (!email || !email.trim()) {
+      throw new BadRequestException('Email hoặc User ID là bắt buộc!');
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await this.userRepo.findOne({ where: { email: cleanEmail } });
     if (!user) {
-      user = this.userRepo.create({
-        email: cleanEmail,
-        password_hash: 'SSO_AUTO_ACCOUNT',
-        full_name: cleanEmail.split('@')[0],
-        role: 'USER',
-        is_vip: false,
-        is_active: true,
-      });
-      await this.userRepo.save(user);
+      throw new BadRequestException('Không tìm thấy người dùng với email này!');
     }
     return user.id;
   }

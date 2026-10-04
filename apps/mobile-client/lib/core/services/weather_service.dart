@@ -109,31 +109,86 @@ class WeatherService {
 
   static final CityLocation defaultCity = popularCities[0];
 
-  /// Tự động định vị vị trí hiện tại qua IP mạng
+  static String _formatCityName(String rawCity) {
+    final lower = rawCity.toLowerCase();
+    if (lower.contains('ho chi minh') || lower.contains('saigon')) {
+      return 'TP. Hồ Chí Minh';
+    }
+    if (lower.contains('hanoi') || lower.contains('ha noi')) {
+      return 'Hà Nội';
+    }
+    if (lower.contains('da nang')) {
+      return 'Đà Nẵng';
+    }
+    if (lower.contains('da lat')) {
+      return 'Đà Lạt';
+    }
+    if (lower.contains('can tho')) {
+      return 'Cần Thơ';
+    }
+    if (lower.contains('nha trang')) {
+      return 'Nha Trang';
+    }
+    if (lower.contains('hai phong')) {
+      return 'Hải Phòng';
+    }
+    if (lower.contains('vung tau')) {
+      return 'Vũng Tàu';
+    }
+    if (lower.contains('hue')) {
+      return 'Huế';
+    }
+    return rawCity;
+  }
+
+  /// Tự động định vị vị trí hiện tại qua IP mạng (HTTPS)
   static Future<CityLocation> detectCurrentLocation() async {
+    // 1. Thử service ipwho.is (HTTPS, miễn phí)
     try {
       final response = await http
-          .get(Uri.parse('http://ip-api.com/json'))
+          .get(Uri.parse('https://ipwho.is/'))
           .timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data['status'] == 'success') {
-          final String city = data['city'] ?? 'Vị trí của bạn';
-          final double lat = (data['lat'] as num).toDouble();
-          final double lon = (data['lon'] as num).toDouble();
+        if (data['success'] == true) {
+          final String rawCity = data['city'] ?? data['region'] ?? 'Vị trí của bạn';
+          final double lat = (data['latitude'] as num).toDouble();
+          final double lon = (data['longitude'] as num).toDouble();
           return CityLocation(
-            name: city,
+            name: _formatCityName(rawCity),
             lat: lat,
             lon: lon,
-            region: 'Vị trí hiện tại (GPS/IP)',
+            region: 'Vị trí hiện tại (Realtime IP)',
             icon: '📍',
           );
         }
       }
-    } catch (_) {
-      // Fallback nếu không định vị được
-    }
+    } catch (_) {}
+
+    // 2. Fallback try ipapi.co
+    try {
+      final response = await http
+          .get(Uri.parse('https://ipapi.co/json/'))
+          .timeout(const Duration(seconds: 4));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['city'] != null) {
+          final String rawCity = data['city'];
+          final double lat = (data['latitude'] as num).toDouble();
+          final double lon = (data['longitude'] as num).toDouble();
+          return CityLocation(
+            name: _formatCityName(rawCity),
+            lat: lat,
+            lon: lon,
+            region: 'Vị trí hiện tại (Realtime IP)',
+            icon: '📍',
+          );
+        }
+      }
+    } catch (_) {}
+
     return defaultCity;
   }
 

@@ -8,6 +8,8 @@ import '../../../core/services/smart_shopping_ai_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
+import '../../wardrobe/services/wardrobe_service.dart';
+import '../../fitting_room/screens/virtual_fitting_room_screen.dart';
 
 class SmartShoppingScreen extends StatefulWidget {
   final String? initialUrl;
@@ -100,13 +102,66 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
     if (_selectedProduct == null) return;
     final provider = Provider.of<WardrobeProvider>(context, listen: false);
 
+    // Bắt buộc tách nền AI trước khi lưu vào tủ đồ
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          backgroundColor: const Color(0xFF1E1C30),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Row(
+            children: [
+              const SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  'Đang dùng AI xóa phông nền trang phục...',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    String finalImageUrl = _selectedProduct!.imageUrl;
+    try {
+      final wardrobeService = WardrobeService();
+      final bgRemovedUrl =
+          await wardrobeService.removeBackgroundFromUrl(finalImageUrl);
+      if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
+        finalImageUrl = bgRemovedUrl;
+      }
+    } catch (e) {
+      debugPrint('[SmartShopping] Lỗi xóa nền: $e');
+    }
+
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
     final newItem = WardrobeItemModel(
       id: 'w_shop_${DateTime.now().millisecondsSinceEpoch}',
       name: _selectedProduct!.title,
       category: _selectedProduct!.category,
       color: _selectedProduct!.color,
       brand: _selectedProduct!.brand,
-      imageUrl: _selectedProduct!.imageUrl,
+      imageUrl: finalImageUrl,
       tags: _selectedProduct!.tags,
       aiMatchScore: _analysisResult?.compatibilityScore ?? 9.0,
     );
@@ -122,7 +177,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '🎉 Đã thêm "${newItem.name}" vào Tủ Đồ của bạn!',
+                  '🎉 Đã xóa nền & thêm "${newItem.name}" vào Tủ Đồ!',
                   style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -221,7 +276,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                 Text(
                   'Check Tương Thích Tủ Đồ',
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: AppTheme.darkTextPrimary,
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
                   ),
@@ -257,7 +312,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
           Text(
             'Link sản phẩm muốn mua 🔗',
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: AppTheme.darkTextPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 15,
             ),
@@ -268,19 +323,20 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               Expanded(
                 child: TextField(
                   controller: _urlController,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  style: TextStyle(color: AppTheme.darkTextPrimary, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Dán link Shopee, TikTok, Lazada, Zara...',
-                    hintStyle:
-                        const TextStyle(color: Colors.white38, fontSize: 13),
+                    hintStyle: TextStyle(
+                        color: AppTheme.darkTextSecondary.withOpacity(0.7),
+                        fontSize: 13),
                     filled: true,
                     fillColor: AppTheme.darkSurface,
                     prefixIcon: Icon(Icons.link_rounded,
                         color: AppTheme.primaryLight, size: 20),
                     suffixIcon: _urlController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.close_rounded,
-                                color: Colors.white38, size: 18),
+                            icon: Icon(Icons.close_rounded,
+                                color: AppTheme.darkTextSecondary, size: 18),
                             onPressed: () {
                               _urlController.clear();
                               setState(() {
@@ -309,20 +365,21 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   height: 48,
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.08),
+                    color: AppTheme.primaryLight.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withOpacity(0.12)),
+                    border: Border.all(
+                        color: AppTheme.primaryLight.withOpacity(0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.content_paste_rounded,
-                          color: AppTheme.primaryLight, size: 18),
+                          color: AppTheme.primaryColor, size: 18),
                       const SizedBox(width: 6),
                       Text(
                         'Dán',
                         style: GoogleFonts.inter(
-                          color: Colors.white,
+                          color: AppTheme.primaryColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -336,10 +393,11 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            height: 46,
+            height: 48,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
+                elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -349,7 +407,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               label: Text(
                 'Kiểm Tra Tương Thích Với AI',
                 style: GoogleFonts.outfit(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -391,7 +449,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
           Text(
             'Sẵn Sàng Phân Tích Món Đồ',
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: AppTheme.darkTextPrimary,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -435,7 +493,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             'WEARSY AI đang so sánh sản phẩm với tủ đồ của bạn...',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: AppTheme.darkTextPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 15,
             ),
@@ -545,7 +603,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.outfit(
-                            color: Colors.white,
+                            color: AppTheme.darkTextPrimary,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
@@ -576,12 +634,12 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               // ── Edit button ──
               SizedBox(
                 width: double.infinity,
-                height: 36,
+                height: 38,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppTheme.primaryLight,
+                    foregroundColor: AppTheme.primaryColor,
                     side: BorderSide(
-                        color: AppTheme.primaryLight.withOpacity(0.5)),
+                        color: AppTheme.primaryColor.withOpacity(0.6)),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -613,6 +671,50 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
         // Suggested Outfits with Wardrobe Items
         _buildSuggestedOutfitsSection(result),
         const SizedBox(height: 24),
+
+        // Try on mannequin button
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppTheme.primaryColor,
+              side: BorderSide(color: AppTheme.primaryColor, width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            icon: const Icon(Icons.accessibility_new_rounded),
+            label: Text(
+              'ƯỚM THỬ LÊN MA-NƠ-CANH VỚI TỦ ĐỒ 👗',
+              style: GoogleFonts.outfit(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onPressed: () {
+              final prospectiveItem = WardrobeItemModel(
+                id: 'shopee_temp_${DateTime.now().millisecondsSinceEpoch}',
+                name: prod.title,
+                category: prod.category,
+                color: prod.color,
+                brand: prod.brand,
+                imageUrl: prod.imageUrl,
+                tags: prod.tags,
+                aiMatchScore: result.compatibilityScore,
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => VirtualFittingRoomScreen(
+                    initialProduct: prospectiveItem,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
 
         // Save to wardrobe button
         SizedBox(
@@ -682,7 +784,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   Text(
                     'Độ Tương Thích Tủ Đồ',
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: AppTheme.darkTextPrimary,
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -730,9 +832,10 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   child: Text(
                     result.recommendationReason,
                     style: GoogleFonts.inter(
-                      color: Colors.white70,
+                      color: AppTheme.darkTextPrimary,
                       fontSize: 12,
-                      height: 1.3,
+                      fontWeight: FontWeight.w500,
+                      height: 1.35,
                     ),
                   ),
                 ),
@@ -795,7 +898,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                     Text(
                       'Bánh Xe Màu Sắc (Color Wheel)',
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: AppTheme.darkTextPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
@@ -837,7 +940,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                     Text(
                       'Phom Dáng & Phối Lớp (Layering)',
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: AppTheme.darkTextPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
@@ -878,7 +981,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               style: GoogleFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: AppTheme.darkTextPrimary,
               ),
             ),
           ],
@@ -902,7 +1005,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                       child: Text(
                         outfit.title,
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: AppTheme.darkTextPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1163,6 +1266,49 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 8),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            'Trắng',
+                            'Đen',
+                            'Xám',
+                            'Xanh Navy',
+                            'Be',
+                            'Xanh Rêu',
+                            'Nâu',
+                            'Hồng',
+                            'Đỏ',
+                          ].map((c) {
+                            final isSel = colorCtrl.text.trim().toLowerCase() ==
+                                c.toLowerCase();
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: ChoiceChip(
+                                label: Text(c,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isSel
+                                          ? Colors.white
+                                          : Colors.white70,
+                                      fontWeight: isSel
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    )),
+                                selected: isSel,
+                                selectedColor: AppTheme.primaryColor,
+                                backgroundColor: Colors.white.withOpacity(0.08),
+                                onSelected: (_) {
+                                  setSheetState(() {
+                                    colorCtrl.text = c;
+                                  });
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
                       const SizedBox(height: 14),
 

@@ -88,6 +88,39 @@ class ApiClient {
     }
   }
 
+  Future<dynamic> postMultipart(
+    String endpoint,
+    File file, {
+    String fieldName = 'image',
+    Map<String, String>? fields,
+  }) async {
+    final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+    try {
+      final token = await TokenStorage.getToken();
+      final request = http.MultipartRequest('POST', url);
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
+      request.files
+          .add(await http.MultipartFile.fromPath(fieldName, file.path));
+      final streamedResponse = await _client.send(request);
+      final response = await http.Response.fromStream(streamedResponse);
+      return _processResponse(response);
+    } on SocketException {
+      throw ApiException(
+        statusCode: 503,
+        message:
+            'Không thể kết nối đến máy chủ WEARSY. Vui lòng kiểm tra mạng.',
+      );
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException(statusCode: 500, message: 'Đã xảy ra lỗi: $e');
+    }
+  }
+
   Future<dynamic> put(String endpoint, {Map<String, dynamic>? body}) async {
     final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
     try {

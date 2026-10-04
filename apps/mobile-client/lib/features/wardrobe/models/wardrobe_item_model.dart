@@ -76,12 +76,32 @@ class WardrobeItemModel {
   final String wardrobeId;
 
   static String sanitizeImageUrl(String url) {
-    if (url.contains('m8310ffh8t8516')) {
-      return 'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0vmtrp190x9f2';
+    if (url.trim().isEmpty) return url;
+
+    // Ảnh mẫu polo nam hoặc các mẫu Shopee polo chưa tách nền
+    if (url.contains('mtjanmyn2adj03') ||
+        url.contains('m8310ffh8t8516') ||
+        url.contains('lxk0s90z8x0665') ||
+        url.contains('vn-11134207-7ras8-m0vmtrp190x9f2') ||
+        url.contains('sg-11134201-824g8-mptkw6sgly4r4c')) {
+      return 'https://res.cloudinary.com/bvxcghig/image/upload/e_background_removal/v1/wearsy/wardrobe_items/yek4pytbpifbaihhg4ql.png';
     }
-    if (url.contains('lxk0s90z8x0665')) {
-      return 'https://down-vn.img.susercontent.com/file/sg-11134201-824g8-mptkw6sgly4r4c';
+
+    // Nếu là URL Cloudinary nhưng chưa có e_background_removal
+    if (url.contains('res.cloudinary.com') &&
+        url.contains('/image/upload/') &&
+        !url.contains('e_background_removal')) {
+      return url.replaceFirst(
+          '/image/upload/', '/image/upload/e_background_removal/');
     }
+
+    // Nếu là URL web bên ngoài (Shopee, Unsplash...) chưa được tách nền
+    if (url.startsWith('http') &&
+        !url.contains('e_background_removal') &&
+        !url.contains('cloudinary.com/bvxcghig/image/fetch/')) {
+      return 'https://res.cloudinary.com/bvxcghig/image/fetch/f_png,e_background_removal/$url';
+    }
+
     return url;
   }
 

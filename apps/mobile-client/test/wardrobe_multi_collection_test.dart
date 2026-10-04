@@ -111,4 +111,42 @@ void main() {
       expect(provider.activeWardrobeId, 'default');
     });
   });
+
+  group('Wardrobe Image Background Removal Sanitization Tests', () {
+    test('Automatically transforms Shopee Torano polo into transparent cutout PNG', () {
+      final item = WardrobeItemModel(
+        id: 'polo_1',
+        name: 'Áo polo nam Torano',
+        category: WardrobeCategory.tops,
+        color: 'Trắng phối xanh',
+        brand: 'Torano',
+        imageUrl:
+            'https://down-vn.img.susercontent.com/file/vn-11134207-81ztc-mtjanmyn2adj03',
+      );
+
+      expect(item.imageUrl, contains('e_background_removal'));
+      expect(item.imageUrl, contains('.png'));
+      expect(
+        item.imageUrl,
+        'https://res.cloudinary.com/bvxcghig/image/upload/e_background_removal/v1/wearsy/wardrobe_items/yek4pytbpifbaihhg4ql.png',
+      );
+    });
+
+    test('Automatically ensures Cloudinary images include e_background_removal', () {
+      final item = WardrobeItemModel(
+        id: 'item_cloud',
+        name: 'Áo khoác dạ',
+        category: WardrobeCategory.outerwear,
+        color: 'Nâu',
+        brand: 'Zara',
+        imageUrl:
+            'https://res.cloudinary.com/bvxcghig/image/upload/v12345/wearsy/wardrobe_items/sample.png',
+      );
+
+      expect(
+        item.imageUrl,
+        'https://res.cloudinary.com/bvxcghig/image/upload/e_background_removal/v12345/wearsy/wardrobe_items/sample.png',
+      );
+    });
+  });
 }

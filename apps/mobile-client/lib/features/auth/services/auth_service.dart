@@ -481,7 +481,7 @@ class AuthService {
   }
 
   Future<UserModel> getProfile() async {
-    final email = await TokenStorage.getUserEmail() ?? 'demo@wearsy.app';
+    final email = await TokenStorage.getUserEmail() ?? '';
     final cleanEmail = email.trim().toLowerCase();
     final fullName = await TokenStorage.getUserName() ?? 'Người Dùng WEARSY';
 
@@ -570,7 +570,7 @@ class AuthService {
       final storedEmail = await TokenStorage.getUserEmail();
       final emailToUse = user.email.isNotEmpty
           ? user.email
-          : (storedEmail ?? 'demo@wearsy.app');
+          : (storedEmail ?? '');
       final cleanEmail = emailToUse.trim().toLowerCase();
       final jsonStr = jsonEncode(user.toJson());
       await prefs.setString('saved_user_profile_$cleanEmail', jsonStr);

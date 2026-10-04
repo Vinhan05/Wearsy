@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
+import '../../../core/localization/localization.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/widgets/user_avatar.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
@@ -89,6 +90,62 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
         });
       }
     } catch (_) {}
+  }
+
+  void _showVipModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.diamond_rounded,
+                    color: Color(0xFF8A6728), size: 28),
+                const SizedBox(width: 10),
+                Text(
+                  'WEARSY VIP PASS',
+                  style: GoogleFonts.outfit(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Mở khóa trọn bộ tính năng AI Stylist không giới hạn, phối đồ đa bối cảnh thời gian thực và tự động quản lý tủ đồ chuẩn studio.',
+              style: GoogleFonts.inter(
+                fontSize: 13.5,
+                color: const Color(0xFF4B5563),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF8A6728),
+                minimumSize: const Size.fromHeight(48),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+              ),
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Kích hoạt VIP ngay (Trải nghiệm)',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _saveProfile() async {
@@ -186,14 +243,23 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   @override
   Widget build(BuildContext context) {
     Provider.of<ThemeProvider>(context); // Listen to Theme changes
+    final langProvider = Provider.of<LanguageProvider>(context);
     final user = Provider.of<AuthProvider>(context).user;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Cài Đặt Tài Khoản',
+          langProvider.isVietnamese ? 'Cài Đặt Tài Khoản' : 'Account Settings',
           style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
         ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12.0),
+            child: Center(
+              child: LanguageToggleButton(style: LanguageToggleStyle.compact),
+            ),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppTheme.primaryLight,
@@ -202,10 +268,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           unselectedLabelColor: AppTheme.darkTextSecondary,
           labelStyle:
               GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
-          tabs: const [
-            Tab(icon: Icon(Icons.person_rounded, size: 20), text: 'Thông Tin'),
-            Tab(icon: Icon(Icons.lock_rounded, size: 20), text: 'Mật Khẩu'),
-            Tab(icon: Icon(Icons.link_rounded, size: 20), text: 'Liên Kết'),
+          tabs: [
+            Tab(
+              icon: const Icon(Icons.person_rounded, size: 20),
+              text: langProvider.isVietnamese ? 'Thông Tin' : 'Profile',
+            ),
+            Tab(
+              icon: const Icon(Icons.lock_rounded, size: 20),
+              text: langProvider.isVietnamese ? 'Mật Khẩu' : 'Password',
+            ),
+            Tab(
+              icon: const Icon(Icons.link_rounded, size: 20),
+              text: langProvider.isVietnamese ? 'Liên Kết' : 'Linked',
+            ),
           ],
         ),
       ),
@@ -229,6 +304,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   Future<void> _pickAvatarImage() async {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final isEn = langProvider.isEnglish;
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.darkCard,
@@ -242,7 +319,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Cập nhật Ảnh đại diện 📸',
+                isEn ? 'Update Profile Picture 📸' : 'Cập nhật Ảnh đại diện 📸',
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -260,7 +337,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   child: Icon(Icons.camera_alt_rounded,
                       color: AppTheme.primaryColor),
                 ),
-                title: Text('Chụp ảnh từ Máy ảnh',
+                title: Text(
+                    isEn ? 'Take Photo from Camera' : 'Chụp ảnh từ Máy ảnh',
                     style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.darkTextPrimary)),
@@ -276,7 +354,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('📸 Cập nhật ảnh đại diện thành công!',
+                        content: Text(
+                            isEn
+                                ? '📸 Profile picture updated successfully!'
+                                : '📸 Cập nhật ảnh đại diện thành công!',
                             style: GoogleFonts.inter()),
                         backgroundColor: AppTheme.primaryColor,
                         behavior: SnackBarBehavior.floating,
@@ -295,7 +376,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   child: Icon(Icons.photo_library_rounded,
                       color: AppTheme.primaryColor),
                 ),
-                title: Text('Chọn từ Thư viện ảnh',
+                title: Text(
+                    isEn ? 'Choose from Photo Library' : 'Chọn từ Thư viện ảnh',
                     style: GoogleFonts.inter(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.darkTextPrimary)),
@@ -311,7 +393,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     if (!mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('🖼️ Cập nhật ảnh đại diện thành công!',
+                        content: Text(
+                            isEn
+                                ? '🖼️ Profile picture updated successfully!'
+                                : '🖼️ Cập nhật ảnh đại diện thành công!',
                             style: GoogleFonts.inter()),
                         backgroundColor: AppTheme.primaryColor,
                         behavior: SnackBarBehavior.floating,
@@ -328,15 +413,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   Widget _buildProfileTab(dynamic user) {
-    final hasAvatar = user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty;
-    ImageProvider? avatarProvider;
-    if (hasAvatar) {
-      if (user.avatarUrl!.startsWith('http')) {
-        avatarProvider = NetworkImage(user.avatarUrl!);
-      } else {
-        avatarProvider = FileImage(File(user.avatarUrl!));
-      }
-    }
+    final langProvider = Provider.of<LanguageProvider>(context);
+    final isEn = langProvider.isEnglish;
+    final wardrobeProvider = Provider.of<WardrobeProvider>(context);
+    final totalItems = wardrobeProvider.allItemsAcrossAllWardrobes.length;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -348,23 +428,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             Center(
               child: Stack(
                 children: [
-                  CircleAvatar(
+                  const UserAvatar(
                     radius: 46,
-                    backgroundColor:
-                        AppTheme.primaryColor.withValues(alpha: 0.2),
-                    backgroundImage: avatarProvider,
-                    child: !hasAvatar
-                        ? Text(
-                            (user?.fullName.isNotEmpty == true)
-                                ? user!.fullName[0].toUpperCase()
-                                : 'W',
-                            style: GoogleFonts.outfit(
-                              fontSize: 42,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryColor,
-                            ),
-                          )
-                        : null,
                   ),
                   Positioned(
                     bottom: 0,
@@ -393,10 +458,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             // Họ và tên
             _buildInputField(
               controller: _nameController,
-              label: 'Họ và Tên',
+              label: isEn ? 'Full Name' : 'Họ và Tên',
               icon: Icons.badge_rounded,
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Vui lòng nhập họ tên'
+                  ? (isEn ? 'Please enter full name' : 'Vui lòng nhập họ tên')
                   : null,
             ),
             const SizedBox(height: 16),
@@ -419,14 +484,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Địa chỉ Email',
+                          isEn ? 'Email Address' : 'Địa chỉ Email',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             color: AppTheme.darkTextSecondary,
                           ),
                         ),
                         Text(
-                          user?.email ?? 'demo@wearsy.app',
+                          user?.email ?? '',
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -452,7 +517,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                             color: Colors.greenAccent, size: 12),
                         const SizedBox(width: 4),
                         Text(
-                          'Đã xác thực',
+                          isEn ? 'Verified' : 'Đã xác thực',
                           style: GoogleFonts.inter(
                               fontSize: 11,
                               color: Colors.greenAccent,
@@ -479,7 +544,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Giới tính',
+                    isEn ? 'Gender' : 'Giới tính',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       color: AppTheme.darkTextSecondary,
@@ -487,12 +552,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   ),
                   const SizedBox(height: 8),
                   Row(
-                    children: ['Nam', 'Nữ', 'Khác'].map((g) {
-                      final isSelected = _selectedGender == g;
+                    children: [
+                      {'key': 'Nam', 'label': isEn ? 'Male' : 'Nam'},
+                      {'key': 'Nữ', 'label': isEn ? 'Female' : 'Nữ'},
+                      {'key': 'Khác', 'label': isEn ? 'Other' : 'Khác'},
+                    ].map((g) {
+                      final key = g['key']!;
+                      final label = g['label']!;
+                      final isSelected = _selectedGender == key;
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: ChoiceChip(
-                          label: Text(g),
+                          label: Text(label),
                           selected: isSelected,
                           selectedColor: AppTheme.primaryColor,
                           backgroundColor: AppTheme.darkTextSecondary
@@ -506,7 +577,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                                 : FontWeight.normal,
                           ),
                           onSelected: (val) {
-                            if (val) setState(() => _selectedGender = g);
+                            if (val) setState(() => _selectedGender = key);
                           },
                         ),
                       );
@@ -550,7 +621,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Ngày sinh',
+                            isEn ? 'Date of Birth' : 'Ngày sinh',
                             style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: AppTheme.darkTextSecondary),
@@ -559,7 +630,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                             _selectedBirthDate != null
                                 ? DateFormat('dd/MM/yyyy')
                                     .format(_selectedBirthDate!)
-                                : 'Chưa thiết lập',
+                                : (isEn ? 'Not set' : 'Chưa thiết lập'),
                             style: GoogleFonts.inter(
                                 fontSize: 14,
                                 color: AppTheme.darkTextPrimary,
@@ -595,13 +666,81 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       )
                     : const Icon(Icons.save_rounded, color: Colors.white),
                 label: Text(
-                  'Lưu Thay Đổi',
+                  isEn ? 'Save Changes' : 'Lưu Thay Đổi',
                   style: GoogleFonts.outfit(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
                 onPressed: _isSavingProfile ? null : _saveProfile,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Wearsy VIP Upgrade Banner (Chuyển vào Cài đặt)
+            GestureDetector(
+              onTap: () => _showVipModal(context),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF8A6728), Color(0xFF6E521C)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF8A6728).withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 18, vertical: 16),
+                child: Row(
+                  children: [
+                    const Icon(Icons.diamond_rounded,
+                        size: 34, color: Colors.white),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isEn ? 'UPGRADE' : 'NÂNG CẤP',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          Text(
+                            'Wearsy VIP',
+                            style: GoogleFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            isEn
+                                ? 'Unlock advanced personalized experience.'
+                                : 'Mở khóa trải nghiệm cá nhân hóa nâng cao.',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              color: Colors.white.withOpacity(0.85),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios_rounded,
+                        size: 16, color: Colors.white),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 28),
@@ -635,7 +774,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Reset Tủ Đồ (Tài Khoản Trắng)',
+                              isEn
+                                  ? 'Reset Wardrobe (Empty Account)'
+                                  : 'Reset Tủ Đồ (Tài Khoản Trắng)',
                               style: GoogleFonts.outfit(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -643,7 +784,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                               ),
                             ),
                             Text(
-                              'Xóa tất cả trang phục để bắt đầu lại với tủ đồ trống hoàn toàn.',
+                              isEn
+                                  ? 'Delete all clothing items to start fresh with an empty wardrobe.'
+                                  : 'Xóa tất cả trang phục để bắt đầu lại với tủ đồ trống hoàn toàn.',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: AppTheme.darkTextSecondary,
@@ -669,7 +812,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       ),
                       icon: const Icon(Icons.delete_forever_rounded, size: 18),
                       label: Text(
-                        'Reset Tất Cả Quần Áo (0 món đồ)',
+                        isEn
+                            ? 'Reset All Clothes ($totalItems items)'
+                            : 'Reset Tất Cả Quần Áo ($totalItems món đồ)',
                         style: GoogleFonts.outfit(
                             fontWeight: FontWeight.bold, fontSize: 14),
                       ),
@@ -686,6 +831,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   void _confirmResetWardrobe(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final isEn = langProvider.isEnglish;
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
@@ -697,7 +844,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 color: AppTheme.accentColor, size: 24),
             const SizedBox(width: 10),
             Text(
-              'Reset Tủ Đồ Trắng?',
+              isEn ? 'Reset Empty Wardrobe?' : 'Reset Tủ Đồ Trắng?',
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -707,7 +854,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           ],
         ),
         content: Text(
-          'Thao tác này sẽ xóa sạch tất cả quần áo trong tủ đồ của bạn và chuyển tài khoản về trạng thái tủ đồ trắng (0 món đồ).\n\nBạn có chắc chắn muốn reset không?',
+          isEn
+              ? 'This action will delete all clothes in your wardrobe and reset your account to an empty wardrobe (0 items).\n\nAre you sure you want to reset?'
+              : 'Thao tác này sẽ xóa sạch tất cả quần áo trong tủ đồ của bạn và chuyển tài khoản về trạng thái tủ đồ trắng (0 món đồ).\n\nBạn có chắc chắn muốn reset không?',
           style: GoogleFonts.inter(
               fontSize: 14, color: const Color(0xFF5F597C), height: 1.4),
         ),
@@ -715,7 +864,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text(
-              'Hủy',
+              isEn ? 'Cancel' : 'Hủy',
               style: GoogleFonts.inter(
                   color: const Color(0xFF5F597C), fontWeight: FontWeight.bold),
             ),
@@ -734,7 +883,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      '✨ Đã reset tủ đồ thành công! Tài khoản của bạn hiện là tủ đồ trắng (0 quần áo).',
+                      isEn
+                          ? '✨ Wardrobe reset successfully! Your account now has an empty wardrobe (0 clothes).'
+                          : '✨ Đã reset tủ đồ thành công! Tài khoản của bạn hiện là tủ đồ trắng (0 quần áo).',
                       style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                     ),
                     backgroundColor: AppTheme.primaryColor,
@@ -746,7 +897,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               }
             },
             child: Text(
-              'Xác Nhận Reset',
+              isEn ? 'Confirm Reset' : 'Xác Nhận Reset',
               style: GoogleFonts.outfit(
                   color: Colors.white, fontWeight: FontWeight.bold),
             ),
@@ -757,6 +908,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   Widget _buildPasswordTab() {
+    final langProvider = Provider.of<LanguageProvider>(context);
+    final isEn = langProvider.isEnglish;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Form(
@@ -765,7 +918,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bảo Mật & Mật Khẩu 🔒',
+              isEn ? 'Security & Password 🔒' : 'Bảo Mật & Mật Khẩu 🔒',
               style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -773,7 +926,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             const SizedBox(height: 6),
             Text(
-              'Mật khẩu mới phải có tối thiểu 6 ký tự để bảo vệ tủ đồ và dữ liệu thời trang của bạn.',
+              isEn
+                  ? 'New password must be at least 6 characters long to protect your wardrobe and style data.'
+                  : 'Mật khẩu mới phải có tối thiểu 6 ký tự để bảo vệ tủ đồ và dữ liệu thời trang của bạn.',
               style: GoogleFonts.inter(
                   fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
             ),
@@ -782,28 +937,28 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             // Mật khẩu hiện tại
             _buildPasswordField(
               controller: _oldPasswordController,
-              label: 'Mật khẩu hiện tại',
+              label: isEn ? 'Current Password' : 'Mật khẩu hiện tại',
               obscureText: _obscureOldPassword,
               onToggleVisibility: () =>
                   setState(() => _obscureOldPassword = !_obscureOldPassword),
               validator: (v) =>
-                  (v == null || v.isEmpty) ? 'Vui lòng nhập mật khẩu cũ' : null,
+                  (v == null || v.isEmpty) ? (isEn ? 'Please enter current password' : 'Vui lòng nhập mật khẩu cũ') : null,
             ),
             const SizedBox(height: 16),
 
             // Mật khẩu mới
             _buildPasswordField(
               controller: _newPasswordController,
-              label: 'Mật khẩu mới',
+              label: isEn ? 'New Password' : 'Mật khẩu mới',
               obscureText: _obscureNewPassword,
               onToggleVisibility: () =>
                   setState(() => _obscureNewPassword = !_obscureNewPassword),
               validator: (v) {
                 if (v == null || v.length < 6) {
-                  return 'Mật khẩu mới tối thiểu 6 ký tự';
+                  return isEn ? 'New password must be at least 6 characters' : 'Mật khẩu mới tối thiểu 6 ký tự';
                 }
                 if (v == _oldPasswordController.text) {
-                  return 'Mật khẩu mới không được trùng mật khẩu cũ';
+                  return isEn ? 'New password cannot match old password' : 'Mật khẩu mới không được trùng mật khẩu cũ';
                 }
                 return null;
               },
@@ -813,13 +968,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             // Xác nhận mật khẩu mới
             _buildPasswordField(
               controller: _confirmPasswordController,
-              label: 'Xác nhận mật khẩu mới',
+              label: isEn ? 'Confirm New Password' : 'Xác nhận mật khẩu mới',
               obscureText: _obscureConfirmPassword,
               onToggleVisibility: () => setState(
                   () => _obscureConfirmPassword = !_obscureConfirmPassword),
               validator: (v) {
                 if (v != _newPasswordController.text) {
-                  return 'Mật khẩu xác nhận không khớp';
+                  return isEn ? 'Password confirmation does not match' : 'Mật khẩu xác nhận không khớp';
                 }
                 return null;
               },
@@ -846,7 +1001,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     : const Icon(Icons.check_circle_rounded,
                         color: Colors.white),
                 label: Text(
-                  'Cập Nhật Mật Khẩu',
+                  isEn ? 'Update Password' : 'Cập Nhật Mật Khẩu',
                   style: GoogleFonts.outfit(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -862,13 +1017,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   Widget _buildLinkedAccountsTab(dynamic user) {
+    final langProvider = Provider.of<LanguageProvider>(context);
+    final isEn = langProvider.isEnglish;
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Tài Khoản Liên Kết 🌐',
+            isEn ? 'Linked Accounts 🌐' : 'Tài Khoản Liên Kết 🌐',
             style: GoogleFonts.outfit(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -876,7 +1033,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            'Liên kết tài khoản mạng xã hội để đăng nhập nhanh chóng bằng 1 cú chạm và đồng bộ an toàn.',
+            isEn
+                ? 'Link your social accounts for quick 1-tap sign in and secure syncing.'
+                : 'Liên kết tài khoản mạng xã hội để đăng nhập nhanh chóng bằng 1 cú chạm và đồng bộ an toàn.',
             style: GoogleFonts.inter(
                 fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
           ),
@@ -884,10 +1043,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
 
           // Google
           _buildLinkedCard(
-            title: 'Tài khoản Google',
+            title: isEn ? 'Google Account' : 'Tài khoản Google',
             subtitle: _isGoogleLinked
-                ? (user?.email ?? 'demo@wearsy.app')
-                : 'Chưa liên kết',
+                ? (user?.email ?? '')
+                : (isEn ? 'Not linked' : 'Chưa liên kết'),
             icon: Icons.g_mobiledata_rounded,
             iconColor: Colors.redAccent,
             isLinked: _isGoogleLinked,
@@ -910,7 +1069,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
 
           // Vùng Nguy Hiểm: Xóa tài khoản vĩnh viễn
           Text(
-            'Vùng Nguy Hiểm ⚠️',
+            isEn ? 'Danger Zone ⚠️' : 'Vùng Nguy Hiểm ⚠️',
             style: GoogleFonts.outfit(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -919,7 +1078,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            'Khi xóa tài khoản, toàn bộ dữ liệu gồm tủ đồ số, các outfit AI đã phối, sở thích phong cách và thông tin tài khoản của bạn sẽ bị xóa vĩnh viễn và không thể khôi phục.',
+            isEn
+                ? 'Deleting your account will permanently wipe all your digital wardrobe data, AI outfits, style history, and profile information.'
+                : 'Khi xóa tài khoản, toàn bộ dữ liệu gồm tủ đồ số, các outfit AI đã phối, sở thích phong cách và thông tin tài khoản của bạn sẽ bị xóa vĩnh viễn và không thể khôi phục.',
             style: GoogleFonts.inter(
                 fontSize: 13, color: AppTheme.darkTextSecondary, height: 1.4),
           ),
@@ -937,7 +1098,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               ),
               icon: const Icon(Icons.delete_forever_rounded, size: 22),
               label: Text(
-                'XÓA TÀI KHOẢN VĨNH VIỄN',
+                isEn ? 'DELETE ACCOUNT PERMANENTLY' : 'XÓA TÀI KHOẢN VĨNH VIỄN',
                 style: GoogleFonts.outfit(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -952,6 +1113,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   void _confirmDeleteAccount(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final isEn = langProvider.isEnglish;
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
@@ -964,7 +1127,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Xác nhận xóa tài khoản?',
+                isEn ? 'Confirm Delete Account?' : 'Xác nhận xóa tài khoản?',
                 style: GoogleFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontWeight: FontWeight.bold,
@@ -974,14 +1137,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
           ],
         ),
         content: Text(
-          'Hành động này KHÔNG THỂ hoàn tác! Toàn bộ tủ đồ thông minh, outfits, lịch sử phong cách và dữ liệu tài khoản của bạn sẽ bị xóa vĩnh viễn khỏi hệ thống.',
+          isEn
+              ? 'This action CANNOT be undone! All your smart wardrobe, outfits, style history and account data will be permanently removed from our servers.'
+              : 'Hành động này KHÔNG THỂ hoàn tác! Toàn bộ tủ đồ thông minh, outfits, lịch sử phong cách và dữ liệu tài khoản của bạn sẽ bị xóa vĩnh viễn khỏi hệ thống.',
           style: GoogleFonts.inter(
               color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx),
-            child: Text('HỦY BỎ',
+            child: Text(isEn ? 'CANCEL' : 'HỦY BỎ',
                 style: GoogleFonts.inter(
                     color: AppTheme.darkTextPrimary.withValues(alpha: 0.70),
                     fontWeight: FontWeight.bold)),
@@ -1003,8 +1168,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text(
-                          '🗑️ Tài khoản của bạn đã được xóa vĩnh viễn khỏi hệ thống.'),
+                      content: Text(
+                          isEn
+                              ? '🗑️ Your account has been permanently deleted.'
+                              : '🗑️ Tài khoản của bạn đã được xóa vĩnh viễn khỏi hệ thống.'),
                       backgroundColor: AppTheme.primaryColor,
                     ),
                   );
@@ -1012,14 +1179,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(authProvider.errorMessage ??
-                          'Xóa tài khoản thất bại.'),
+                          (isEn ? 'Failed to delete account.' : 'Xóa tài khoản thất bại.')),
                       backgroundColor: AppTheme.accentColor,
                     ),
                   );
                 }
               }
             },
-            child: Text('XÓA VĨNH VIỄN',
+            child: Text(isEn ? 'DELETE PERMANENTLY' : 'XÓA VĨNH VIỄN',
                 style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
           ),
         ],
@@ -1086,7 +1253,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             onPressed: onToggle,
             child: Text(
-              isLinked ? 'Hủy liên kết' : 'Liên kết',
+              isLinked
+                  ? (Provider.of<LanguageProvider>(context, listen: false).isEnglish
+                      ? 'Unlink'
+                      : 'Hủy liên kết')
+                  : (Provider.of<LanguageProvider>(context, listen: false).isEnglish
+                      ? 'Link'
+                      : 'Liên kết'),
               style:
                   GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
             ),
@@ -1097,11 +1270,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   void _showLinkToast(String provider, bool linked) {
+    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(linked
-            ? '✅ Đã liên kết tài khoản $provider'
-            : 'Đã hủy liên kết $provider'),
+            ? (isEn ? '✅ Linked $provider account' : '✅ Đã liên kết tài khoản $provider')
+            : (isEn ? 'Unlinked $provider account' : 'Đã hủy liên kết $provider')),
         backgroundColor: linked ? AppTheme.primaryColor : Colors.grey[800],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -1189,6 +1363,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   Widget _buildVipUpgradeSection(dynamic user) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final isVip = user != null && (user.hasActiveVip == true);
     final daysRemaining = user != null ? user.vipDaysRemaining : 0;
     final expiresAt = user?.vipExpiresAt;
@@ -1218,7 +1393,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Nâng Cấp Gói VIP ✨',
+                    isEn ? 'Upgrade VIP Plan ✨' : 'Nâng Cấp Gói VIP ✨',
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1226,7 +1401,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     ),
                   ),
                   Text(
-                    'Mở khóa toàn bộ đặc quyền AI Stylist và tủ đồ thời trang',
+                    isEn
+                        ? 'Unlock all AI Stylist privileges & smart wardrobe'
+                        : 'Mở khóa toàn bộ đặc quyền AI Stylist và tủ đồ thời trang',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       color: AppTheme.darkTextSecondary,
@@ -1314,8 +1491,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                           ),
                           Text(
                             isVip
-                                ? 'Còn $daysRemaining ngày sử dụng'
-                                : 'Tài khoản Tiêu chuẩn',
+                                ? (isEn
+                                    ? '$daysRemaining days remaining'
+                                    : 'Còn $daysRemaining ngày sử dụng')
+                                : (isEn
+                                    ? 'Standard Account'
+                                    : 'Tài khoản Tiêu chuẩn'),
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               color: isVip
@@ -1345,7 +1526,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       ),
                     ),
                     child: Text(
-                      isVip ? 'ĐANG KÍCH HOẠT' : 'CHƯA KÍCH HOẠT',
+                      isVip
+                          ? (isEn ? 'ACTIVE' : 'ĐANG KÍCH HOẠT')
+                          : (isEn ? 'INACTIVE' : 'CHƯA KÍCH HOẠT'),
                       style: GoogleFonts.outfit(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -1375,7 +1558,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Thời hạn VIP đến: ${DateFormat('dd/MM/yyyy - HH:mm').format(expiresAt)}',
+                          isEn
+                              ? 'VIP Expires: ${DateFormat('dd/MM/yyyy - HH:mm').format(expiresAt)}'
+                              : 'Thời hạn VIP đến: ${DateFormat('dd/MM/yyyy - HH:mm').format(expiresAt)}',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             color: AppTheme.darkTextPrimary,
@@ -1394,7 +1579,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
 
               // Đặc quyền VIP
               Text(
-                'Đặc quyền gói VIP:',
+                isEn ? 'VIP Privileges:' : 'Đặc quyền gói VIP:',
                 style: GoogleFonts.outfit(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -1403,16 +1588,24 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               ),
               const SizedBox(height: 10),
               _buildVipPerkItem(
-                  'Không giới hạn số lượng món đồ trong tủ đồ số'),
+                  isEn
+                      ? 'Unlimited items in digital wardrobe'
+                      : 'Không giới hạn số lượng món đồ trong tủ đồ số'),
               const SizedBox(height: 8),
               _buildVipPerkItem(
-                  'AI Stylist gợi ý phối đồ thông minh không giới hạn'),
+                  isEn
+                      ? 'Unlimited AI Stylist smart outfit suggestions'
+                      : 'AI Stylist gợi ý phối đồ thông minh không giới hạn'),
               const SizedBox(height: 8),
               _buildVipPerkItem(
-                  'Phân tích bảng màu cá nhân & vóc dáng chuyên sâu'),
+                  isEn
+                      ? 'Deep personal color palette & body shape analysis'
+                      : 'Phân tích bảng màu cá nhân & vóc dáng chuyên sâu'),
               const SizedBox(height: 8),
               _buildVipPerkItem(
-                  'Ưu tiên xử lý AI tốc độ cao & mẫu phối độc quyền'),
+                  isEn
+                      ? 'High-speed AI priority processing & exclusive templates'
+                      : 'Ưu tiên xử lý AI tốc độ cao & mẫu phối độc quyền'),
 
               const SizedBox(height: 20),
               Divider(color: AppTheme.darkTextPrimary.withValues(alpha: 0.12)),
@@ -1420,7 +1613,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
 
               // Ô nhập Coupon
               Text(
-                'Nhập mã Coupon ưu đãi:',
+                isEn ? 'Enter promo coupon code:' : 'Nhập mã Coupon ưu đãi:',
                 style: GoogleFonts.outfit(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -1437,7 +1630,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   letterSpacing: 1.2,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Nhập mã (VD: WEARSY)',
+                  hintText: isEn ? 'Enter code (e.g. WEARSY)' : 'Nhập mã (VD: WEARSY)',
                   hintStyle: GoogleFonts.inter(
                     color: AppTheme.darkTextPrimary.withValues(alpha: 0.38),
                     fontSize: 13,
@@ -1538,8 +1731,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                                 const SizedBox(width: 8),
                                 Text(
                                   isVip
-                                      ? 'GIA HẠN THÊM VIP 1 NĂM'
-                                      : 'KÍCH HOẠT VIP 1 NĂM',
+                                      ? (isEn
+                                          ? 'EXTEND VIP FOR 1 YEAR'
+                                          : 'GIA HẠN THÊM VIP 1 NĂM')
+                                      : (isEn
+                                          ? 'ACTIVATE 1 YEAR VIP'
+                                          : 'KÍCH HOẠT VIP 1 NĂM'),
                                   style: GoogleFonts.outfit(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
@@ -1578,7 +1775,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                               color: AppTheme.darkTextPrimary
                                   .withValues(alpha: 0.70)),
                           children: [
-                            const TextSpan(text: 'Nhập mã '),
+                            TextSpan(text: isEn ? 'Enter code ' : 'Nhập mã '),
                             TextSpan(
                               text: 'WEARSY',
                               style: GoogleFonts.outfit(
@@ -1586,8 +1783,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                                 color: const Color(0xFFFFD700),
                               ),
                             ),
-                            const TextSpan(
-                                text: ' để nhận ngay 1 năm VIP miễn phí!'),
+                            TextSpan(
+                                text: isEn
+                                    ? ' to get 1 year free VIP!'
+                                    : ' để nhận ngay 1 năm VIP miễn phí!'),
                           ],
                         ),
                       ),

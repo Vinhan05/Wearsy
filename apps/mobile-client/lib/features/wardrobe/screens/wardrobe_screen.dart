@@ -7,6 +7,7 @@ import '../models/wardrobe_item_model.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../providers/wardrobe_provider.dart';
+import '../../../core/localization/language_provider.dart';
 import 'add_item_screen.dart';
 import 'item_detail_screen.dart';
 import '../../shopping/screens/smart_shopping_screen.dart';
@@ -1140,7 +1141,14 @@ class _WardrobeBody extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     final provider = Provider.of<WardrobeProvider>(context);
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final activeWardrobe = provider.activeWardrobe;
+
+    final wardrobeName = (activeWardrobe.isDefault ||
+            activeWardrobe.id == 'default' ||
+            activeWardrobe.name == 'Tủ Đồ Hàng Ngày')
+        ? (isEn ? 'Daily Wardrobe' : 'Tủ Đồ Hàng Ngày')
+        : activeWardrobe.name;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -1149,7 +1157,7 @@ class _WardrobeBody extends StatelessWidget {
         child: Row(
           children: [
             Text(
-              activeWardrobe.name,
+              wardrobeName,
               style: GoogleFonts.outfit(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -1170,30 +1178,31 @@ class _WardrobeBody extends StatelessWidget {
 
   Widget _buildCategoryFilter(BuildContext context) {
     final provider = Provider.of<WardrobeProvider>(context);
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final counts = provider.itemCountByCategory;
     final totalCount = provider.allItems.length;
 
     final filterOptions = [
-      {'key': null, 'label': 'Tất cả ($totalCount)'},
+      {'key': null, 'label': isEn ? 'All ($totalCount)' : 'Tất cả ($totalCount)'},
       {
         'key': WardrobeCategory.tops,
-        'label': 'Áo (${counts[WardrobeCategory.tops] ?? 0})'
+        'label': '${isEn ? 'Tops' : 'Áo'} (${counts[WardrobeCategory.tops] ?? 0})'
       },
       {
         'key': WardrobeCategory.bottoms,
-        'label': 'Quần (${counts[WardrobeCategory.bottoms] ?? 0})'
+        'label': '${isEn ? 'Bottoms' : 'Quần'} (${counts[WardrobeCategory.bottoms] ?? 0})'
       },
       {
         'key': WardrobeCategory.dresses,
-        'label': 'Đầm (${counts[WardrobeCategory.dresses] ?? 0})'
+        'label': '${isEn ? 'Dresses' : 'Đầm'} (${counts[WardrobeCategory.dresses] ?? 0})'
       },
       {
         'key': WardrobeCategory.outerwear,
-        'label': 'Áo khoác (${counts[WardrobeCategory.outerwear] ?? 0})'
+        'label': '${isEn ? 'Outerwear' : 'Áo khoác'} (${counts[WardrobeCategory.outerwear] ?? 0})'
       },
       {
         'key': WardrobeCategory.shoes,
-        'label': 'Giày (${counts[WardrobeCategory.shoes] ?? 0})'
+        'label': '${isEn ? 'Shoes' : 'Giày'} (${counts[WardrobeCategory.shoes] ?? 0})'
       },
     ];
 
@@ -1379,19 +1388,23 @@ class _WardrobeCard extends StatelessWidget {
 
   Widget _buildItemImage(
       BuildContext context, WardrobeItemModel item, bool isNetworkImage) {
-    if (isNetworkImage) {
-      return Image.network(
-        item.imageUrl,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _buildFallbackCard(item),
-      );
-    }
-    return Image.file(
-      File(item.imageUrl),
-      width: double.infinity,
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _buildFallbackCard(item),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: isNetworkImage
+          ? Image.network(
+              item.imageUrl,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => _buildFallbackCard(item),
+            )
+          : Image.file(
+              File(item.imageUrl),
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => _buildFallbackCard(item),
+            ),
     );
   }
 

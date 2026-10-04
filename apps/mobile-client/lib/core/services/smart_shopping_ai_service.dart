@@ -435,7 +435,7 @@ class SmartShoppingAiService {
     }
 
     // 4. Nhận diện Màu Sắc (Color)
-    String color = 'Be';
+    String color = 'Trắng';
     if (textToAnalyze.contains('trắng') ||
         textToAnalyze.contains('trang') ||
         textToAnalyze.contains('white')) {
@@ -510,7 +510,7 @@ class SmartShoppingAiService {
       } else if (cat == WardrobeCategory.accessories) {
         color = 'Trắng';
       } else {
-        color = 'Be';
+        color = 'Trắng';
       }
     }
 
@@ -753,7 +753,7 @@ class SmartShoppingAiService {
       imageUrl: updatedImageUrl,
       title: updatedTitle,
       category: reParsed.category,
-      color: reParsed.color != 'Be' ? reParsed.color : product.color,
+      color: reParsed.color != 'Trắng' ? reParsed.color : product.color,
       price: reParsed.price != 350000 ? reParsed.price : product.price,
       tags: reParsed.tags.isNotEmpty ? reParsed.tags : product.tags,
     );

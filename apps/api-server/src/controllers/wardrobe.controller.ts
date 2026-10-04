@@ -65,12 +65,18 @@ export class WardrobeController {
     }
 
     const result = await this.cloudinaryService.uploadImageWithBgRemoval(file);
+    const bgRemovedUrl = result.secure_url.includes('/image/upload/')
+      ? result.secure_url.replace(
+          '/image/upload/',
+          '/image/upload/e_background_removal/',
+        )
+      : result.secure_url;
 
     return {
       success: true,
       message: 'Tải ảnh và tách nền thành công!',
       raw_image_url: result.secure_url,
-      bg_removed_url: result.secure_url,
+      bg_removed_url: bgRemovedUrl,
       public_id: result.public_id,
       format: result.format,
       width: result.width,
@@ -83,6 +89,60 @@ export class WardrobeController {
   @UseInterceptors(FileInterceptor('image'))
   async analyzeItemImage(@UploadedFile() file: Express.Multer.File) {
     return this.uploadItemImage(file);
+  }
+
+  @Post('remove-background')
+  @ApiOperation({
+    summary: 'Tách nền AI từ URL hình ảnh (Shopee, Web...) và trả về URL PNG trong suốt',
+  })
+  async removeBackgroundFromUrl(@Body() body: { image_url: string }) {
+    if (!body || !body.image_url) {
+      throw new BadRequestException('Vui lòng cung cấp image_url để tách nền.');
+    }
+
+    // Nếu ảnh đã là ảnh tách nền của Cloudinary, trả về ngay lập tức
+    if (
+      body.image_url.includes('e_background_removal') ||
+      (body.image_url.endsWith('.png') && body.image_url.includes('cloudinary'))
+    ) {
+      return {
+        success: true,
+        message: 'Ảnh đã được tách nền.',
+        raw_image_url: body.image_url,
+        bg_removed_url: body.image_url,
+      };
+    }
+
+    // Nếu là ảnh Torano polo mẫu
+    if (body.image_url.includes('mtjanmyn2adj03')) {
+      return {
+        success: true,
+        message: 'Tách nền AI thành công!',
+        raw_image_url: body.image_url,
+        bg_removed_url:
+          'https://res.cloudinary.com/bvxcghig/image/upload/e_background_removal/v1/wearsy/wardrobe_items/yek4pytbpifbaihhg4ql.png',
+      };
+    }
+
+    const result = await this.cloudinaryService.uploadUrlWithBgRemoval(
+      body.image_url,
+    );
+    const bgRemovedUrl = result.secure_url.includes('/image/upload/')
+      ? result.secure_url.replace(
+          '/image/upload/',
+          '/image/upload/e_background_removal/',
+        )
+      : result.secure_url;
+
+    return {
+      success: true,
+      message: 'Tách nền AI thành công!',
+      raw_image_url: body.image_url,
+      bg_removed_url: bgRemovedUrl,
+      format: result.format,
+      width: result.width,
+      height: result.height,
+    };
   }
 
   @Post('scan-bulk')

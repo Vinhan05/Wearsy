@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
@@ -98,5 +99,41 @@ class WardrobeService {
           '[WardrobeService] Lỗi khi reset toàn bộ tủ đồ trên Server DB: $e');
       return false;
     }
+  }
+
+  /// Gửi URL hình ảnh lên server để xóa nền AI và nhận về URL PNG trong suốt
+  Future<String?> removeBackgroundFromUrl(String imageUrl) async {
+    try {
+      final response = await _apiClient.post(
+        ApiConstants.removeBackground,
+        body: {'image_url': imageUrl},
+      );
+      if (response is Map<String, dynamic> &&
+          response['bg_removed_url'] != null) {
+        return response['bg_removed_url'].toString();
+      }
+    } catch (e) {
+      debugPrint('[WardrobeService] Lỗi khi tách nền từ URL: $e');
+    }
+    return null;
+  }
+
+  /// Gửi ảnh tệp cục bộ lên server để Cloudinary AI tách nền và trả về URL PNG trong suốt
+  Future<String?> uploadImageWithBgRemoval(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (!await file.exists()) return null;
+      final response = await _apiClient.postMultipart(
+        ApiConstants.uploadWardrobeImage,
+        file,
+      );
+      if (response is Map<String, dynamic> &&
+          response['bg_removed_url'] != null) {
+        return response['bg_removed_url'].toString();
+      }
+    } catch (e) {
+      debugPrint('[WardrobeService] Lỗi khi upload và tách nền ảnh: $e');
+    }
+    return null;
   }
 }

@@ -21,6 +21,8 @@ class ApiConstants {
   static const String analyzeImage = '/wardrobe/analyze-image';
   static const String scanBulk = '/wardrobe/scan-bulk';
   static const String bulkCommit = '/wardrobe/bulk-commit';
+  static const String removeBackground = '/wardrobe/remove-background';
+  static const String uploadWardrobeImage = '/wardrobe/upload';
 
   // AI Outfits Endpoints
   static const String recommendOutfits = '/outfits/recommend';

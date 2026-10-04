@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
@@ -36,8 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
     _enableSecureScreen();
   }
 
-  /// Chặn chụp màn hình trên Android (FLAG_SECURE)
+  /// Chặn chụp màn hình trên Android (FLAG_SECURE trong bản Release)
   Future<void> _enableSecureScreen() async {
+    if (!kReleaseMode) return;
     try {
       await FlutterWindowManagerPlus.addFlags(
           FlutterWindowManagerPlus.FLAG_SECURE);

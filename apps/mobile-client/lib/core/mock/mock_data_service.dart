@@ -2,14 +2,13 @@ import '../../../features/auth/models/user_model.dart';
 import '../../features/wardrobe/models/wardrobe_item_model.dart';
 import '../../features/outfits/models/outfit_model.dart';
 
-/// Mock data service — provides offline demo data for WEARSY app.
-/// Demo credentials: demo@wearsy.app / 123456
+/// Mock data service — provides offline preview fallback data for WEARSY app.
 class MockDataService {
   // ─── Auth ──────────────────────────────────────────────────────────────────
 
   static AuthSuccessData getMockAuthData({
-    String fullName = 'Nguyễn Văn Demo',
-    String email = 'demo@wearsy.app',
+    String fullName = 'Người Dùng WEARSY',
+    String email = '',
   }) {
     return AuthSuccessData(
       token: 'mock_token_wearsy_2024',

@@ -10,6 +10,7 @@ import '../../../core/services/clothing_ai_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/wardrobe_item_model.dart';
 import '../providers/wardrobe_provider.dart';
+import '../services/wardrobe_service.dart';
 
 class _FashionSample {
   final String title;
@@ -588,13 +589,80 @@ class _AddItemScreenState extends State<AddItemScreen>
   void _saveItem() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final finalImageUrl = _localImagePath ?? _currentImageUrl;
+    var finalImageUrl = _localImagePath ?? _currentImageUrl;
     final provider = Provider.of<WardrobeProvider>(context, listen: false);
     final targetWardrobeId = _selectedWardrobeId ?? provider.activeWardrobeId;
     final targetWardrobe = provider.collections.firstWhere(
       (c) => c.id == targetWardrobeId,
       orElse: () => provider.activeWardrobe,
     );
+
+    // Bắt buộc tách nền bằng AI nếu ảnh chưa được tách nền
+    final isAlreadyBgRemoved = finalImageUrl.contains('e_background_removal') ||
+        (finalImageUrl.contains('cloudinary') &&
+            finalImageUrl.endsWith('.png'));
+
+    if (!isAlreadyBgRemoved) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            backgroundColor: const Color(0xFF1E1C30),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    'Đang dùng AI xóa phông nền trang phục...',
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      try {
+        final wardrobeService = WardrobeService();
+        if (_localImagePath != null && _localImagePath!.isNotEmpty) {
+          final bgRemovedUrl = await wardrobeService
+              .uploadImageWithBgRemoval(_localImagePath!);
+          if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
+            finalImageUrl = bgRemovedUrl;
+          }
+        } else if (_currentImageUrl.isNotEmpty) {
+          final bgRemovedUrl = await wardrobeService
+              .removeBackgroundFromUrl(_currentImageUrl);
+          if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
+            finalImageUrl = bgRemovedUrl;
+          }
+        }
+      } catch (e) {
+        debugPrint('[AddItem] Lỗi xóa nền ảnh: $e');
+      }
+
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    }
 
     final newItem = WardrobeItemModel(
       id: widget.existingItem?.id ??

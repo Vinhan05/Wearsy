@@ -1,0 +1,148 @@
+key,screen,text,notes
+nav_home,Navigation,Home,Bottom navigation bar
+nav_wardrobe,Navigation,Wardrobe,Bottom navigation bar
+nav_outfits,Navigation,Outfits,Bottom navigation bar
+nav_color_score,Navigation,Color Score,Bottom navigation bar
+nav_shopping,Navigation,Shopping,Bottom navigation bar
+btn_save,Common,Save,Common action button
+btn_cancel,Common,Cancel,Common action button
+btn_confirm,Common,Confirm,Common action button
+btn_close,Common,Close,Common action button
+btn_delete,Common,Delete,Common action button
+btn_edit,Common,Edit,Common action button
+btn_retry,Common,Retry,Common action button
+btn_continue,Common,Continue,Common action button
+loading,Common,Loading...,Waiting state
+search_hint,Common,Search...,Search input placeholder
+no_data,Common,No data available,Empty state
+welcome_tagline,Auth,Your wardrobe smarter,Brand tagline
+welcome_title,Auth,Discover your personal style with WEARSY,Welcome screen title
+welcome_subtitle,Auth,Smart wardrobe management and AI-powered fashion styling,Welcome screen subtitle
+welcome_btn_start,Auth,Get Started,Start button
+login_title,Auth,Log In,Login screen title
+login_welcome,Auth,Welcome back!,Login greeting
+login_email_label,Auth,Email Address,Email label
+login_email_hint,Auth,Enter your email,Email placeholder
+login_password_label,Auth,Password,Password label
+login_password_hint,Auth,Enter your password,Password placeholder
+login_forgot_password,Auth,Forgot Password?,Forgot password link
+login_btn_submit,Auth,Log In,Login submit button
+login_or_continue_with,Auth,Or continue with,Divider text
+login_with_google,Auth,Continue with Google,Google OAuth button
+login_with_facebook,Auth,Continue with Facebook,Facebook OAuth button
+login_no_account,Auth,Don't have an account?,Prompt
+login_register_now,Auth,Register now,Link to register
+login_success,Auth,Login successful! Welcome to WEARSY.,Snackbar notification
+login_lockout_1min,Auth,You entered incorrect password 5 times. Login is locked for 1 minute.,Security lockout warning
+login_lockout_5min,Auth,You entered incorrect password 10 times. Login is locked for 5 minutes.,Security lockout warning
+register_title,Auth,Create Account,Register title
+register_subtitle,Auth,Start your fashion journey today,Register subtitle
+register_fullname_label,Auth,Full Name,Full name label
+register_fullname_hint,Auth,Enter your full name,Full name placeholder
+register_confirm_password_label,Auth,Confirm Password,Confirm password label
+register_confirm_password_hint,Auth,Re-enter your password,Confirm password placeholder
+register_terms_agree,Auth,I agree to the Terms of Service and Privacy Policy,Terms checkbox
+register_btn_submit,Auth,Sign Up,Register submit button
+register_has_account,Auth,Already have an account?,Prompt
+register_login_now,Auth,Log In,Link to login
+register_success,Auth,Account created successfully!,Registration success
+forgot_password_title,Auth,Forgot Password,Forgot password title
+forgot_password_desc,Auth,Enter your email to receive a recovery code,Forgot password description
+forgot_password_btn_send,Auth,Send Verification Code,Send OTP button
+otp_title,Auth,OTP Verification,OTP verification title
+otp_desc,Auth,Please enter the 6-digit code sent to {email},Keep {email} placeholder
+otp_resend,Auth,Resend code in {seconds}s,Keep {seconds} placeholder
+home_greeting_morning,Home,Good morning {userName}! ☀️,Keep {userName} placeholder
+home_greeting_afternoon,Home,Good afternoon {userName}! 🌤️,Keep {userName} placeholder
+home_greeting_evening,Home,Good evening {userName}! 🌙,Keep {userName} placeholder
+home_weather_title,Home,Today's Weather,Weather section title
+home_weather_temp,Home,{temp}°C {weatherDesc},Keep {temp} and {weatherDesc}
+home_weather_advice,Home,Ideal weather for light and breezy outfits.,AI weather fashion tip
+home_today_outfit_title,Home,Today's Outfit Recommendation,Outfit suggestion title
+home_view_all,Home,View all,View all button
+home_my_wardrobe_summary,Home,Wardrobe Overview,Wardrobe section title
+home_total_items,Home,{count} items,Keep {count} placeholder
+home_recent_outfits,Home,Recent Styles,Recent styles section
+wardrobe_title,Wardrobe,My Wardrobe,Wardrobe screen title
+wardrobe_tab_all,Wardrobe,All,Category filter
+wardrobe_cat_tops,Wardrobe,Tops,Category tops
+wardrobe_cat_bottoms,Wardrobe,Bottoms,Category bottoms
+wardrobe_cat_dresses,Wardrobe,Dresses,Category dresses
+wardrobe_cat_shoes,Wardrobe,Shoes,Category shoes
+wardrobe_cat_accessories,Wardrobe,Accessories,Category accessories
+wardrobe_cat_bags,Wardrobe,Bags,Category bags
+wardrobe_cat_outerwear,Wardrobe,Outerwear,Category outerwear
+wardrobe_empty_msg,Wardrobe,Your wardrobe is empty. Add your first item!,Empty wardrobe state
+wardrobe_btn_add_item,Wardrobe,Add New Item,Add item button
+wardrobe_btn_create_capsule,Wardrobe,Create Capsule,Create capsule button
+wardrobe_capsule_name_hint,Wardrobe,Enter capsule name...,Capsule name placeholder
+wardrobe_delete_capsule_confirm,Wardrobe,Are you sure you want to delete capsule "{name}"?,Keep {name} placeholder
+wardrobe_item_detail_title,Wardrobe,Item Details,Item detail screen title
+wardrobe_item_name,Wardrobe,Item Name,Item name label
+wardrobe_item_brand,Wardrobe,Brand,Brand label
+wardrobe_item_category,Wardrobe,Category,Category label
+wardrobe_item_color,Wardrobe,Color,Color label
+wardrobe_item_material,Wardrobe,Material,Material label
+wardrobe_item_size,Wardrobe,Size,Size label
+wardrobe_item_season,Wardrobe,Season,Season label
+wardrobe_item_occasion,Wardrobe,Occasion,Occasion label
+wardrobe_item_wear_count,Wardrobe,Times worn: {count},Keep {count} placeholder
+wardrobe_item_last_worn,Wardrobe,Last worn: {date},Keep {date} placeholder
+wardrobe_item_delete_confirm,Wardrobe,Are you sure you want to delete this item?,Delete confirmation
+wardrobe_add_item_title,Wardrobe,Add Item,Add item screen title
+wardrobe_add_take_photo,Wardrobe,Take Photo,Camera option
+wardrobe_add_choose_gallery,Wardrobe,Choose from Gallery,Gallery option
+wardrobe_ai_analyzing,Wardrobe,AI is detecting material style and colors...,AI detection loading
+wardrobe_ai_completed,Wardrobe,Recognition completed!,AI detection success
+outfit_title,Outfits,Outfits & AI Stylist,Outfit screen title
+outfit_tab_suggested,Outfits,AI Suggestions,Suggested tab
+outfit_tab_my_outfits,Outfits,My Outfits,My outfits tab
+outfit_tab_mix_match,Outfits,Mix & Match,Mix & Match tab
+outfit_btn_create,Outfits,Create New Outfit,Create outfit button
+outfit_occasion_work,Outfits,Work,Work occasion
+outfit_occasion_casual,Outfits,Casual,Casual occasion
+outfit_occasion_party,Outfits,Party & Events,Party occasion
+outfit_occasion_date,Outfits,Date Night,Date night occasion
+outfit_occasion_sport,Outfits,Sport,Sport occasion
+outfit_score_label,Outfits,Style Score,Style score label
+outfit_score_desc,Outfits,{score}/100 - Great color harmony and outfit proportion!,Keep {score} placeholder
+outfit_save_success,Outfits,Outfit saved successfully!,Outfit saved snackbar
+outfit_share,Outfits,Share this outfit,Share button
+color_score_title,ColorScore,Color Score,Color score screen title
+color_score_subtitle,ColorScore,Analyze color compatibility between outfit items,Color score description
+color_score_palette_title,ColorScore,Personal Color Palette,Palette section title
+color_score_contrast,ColorScore,Contrast: {contrastLevel},Keep {contrastLevel}
+color_score_harmony,ColorScore,Harmony: {harmonyLevel},Keep {harmonyLevel}
+color_score_ai_tip,ColorScore,AI Stylist Tip: {tipText},Keep {tipText}
+shopping_title,Shopping,Smart Shopping,Shopping screen title
+shopping_subtitle,Shopping,Items recommended to complete your wardrobe,Shopping description
+shopping_why_recommend,Shopping,Why recommended,Recommendation reason title
+shopping_why_recommend_desc,Shopping,Pairs perfectly with {itemCount} items in your wardrobe,Keep {itemCount} placeholder
+shopping_btn_buy_now,Shopping,Buy Now,Buy now button
+shopping_btn_add_cart,Shopping,Add to Cart,Add to cart button
+shopping_cart_title,Shopping,Shopping Cart,Cart title
+shopping_cart_empty,Shopping,Your cart is empty,Empty cart state
+shopping_total,Shopping,Total,Total amount
+shopping_btn_checkout,Shopping,Proceed to Checkout,Checkout button
+profile_title,Profile,Profile,Profile screen title
+profile_edit,Profile,Edit Profile,Edit profile button
+profile_style_preference,Profile,Style Preferences,Style preference section
+settings_title,Profile,Settings,Settings screen title
+settings_theme,Profile,App Theme,Theme settings
+settings_language,Profile,Language,Language settings
+settings_language_dialog_title,Profile,Select Language,Language selection dialog title
+settings_notifications,Profile,Notifications,Notifications settings
+settings_security,Profile,Security & Password,Security settings
+settings_privacy,Profile,Privacy Policy,Privacy policy
+settings_terms,Profile,Terms of Service,Terms of service
+settings_help_support,Profile,Help & Support,Help and support
+settings_about,Profile,About WEARSY,About WEARSY
+settings_version,Profile,Version {version},Keep {version} placeholder
+settings_logout,Profile,Log Out,Logout button
+settings_logout_confirm,Profile,Are you sure you want to log out?,Logout confirmation dialog
+error_network,Errors,No Internet connection. Please check your network.,Network error
+error_server,Errors,System is busy. Please try again later.,Server error
+error_required_field,Errors,This field cannot be empty.,Field required error
+error_invalid_email,Errors,Invalid email address format.,Email validation error
+error_password_too_short,Errors,Password must be at least 6 characters.,Password length error
+error_password_not_match,Errors,Password confirmation does not match.,Password mismatch error

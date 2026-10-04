@@ -160,6 +160,7 @@ class WardrobeProvider with ChangeNotifier {
     _allItems = customItems;
     _isLoading = false;
     notifyListeners();
+    _saveItems();
 
     // 4. Đồng bộ 2 chiều với PostgreSQL Server Database
     try {

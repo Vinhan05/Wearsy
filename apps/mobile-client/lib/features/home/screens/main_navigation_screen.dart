@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/localization/localization.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../outfits/providers/outfit_provider.dart';
@@ -47,8 +48,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to ThemeProvider so whole navigation shell & tabs react immediately
+    // Listen to ThemeProvider and LanguageProvider so navigation shell reacts immediately
     Provider.of<ThemeProvider>(context);
+    Provider.of<LanguageProvider>(context);
 
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
@@ -56,75 +58,78 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.primaryColor.withOpacity(0.08),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SafeArea(
+      extendBody: true,
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: Container(
+          height: 68,
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F0F12),
+            borderRadius: BorderRadius.circular(38),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            padding: const EdgeInsets.symmetric(horizontal: 14.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // 1. Trang chủ
+                // 1. Home
                 _buildNavItem(
                   index: 0,
-                  icon: Icons.home_rounded,
-                  label: 'Trang chủ',
+                  icon: _currentIndex == 0
+                      ? Icons.home_rounded
+                      : Icons.home_outlined,
                 ),
-                // 2. Tủ Đồ
+                // 2. Wardrobe (Tủ đồ)
                 _buildNavItem(
                   index: 1,
-                  icon: Icons.checkroom_rounded,
-                  label: 'Tủ Đồ',
+                  icon: _currentIndex == 1
+                      ? Icons.checkroom_rounded
+                      : Icons.checkroom_outlined,
                 ),
-                // 3. Center Add (+) Button
+                // 3. Center White Plus Button (+)
                 GestureDetector(
                   onTap: () {
                     WardrobeScreen.showAddOptionsModal(context);
                   },
                   child: Container(
-                    width: 52,
-                    height: 52,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.primaryGradient,
+                    width: 48,
+                    height: 48,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primaryColor.withOpacity(0.35),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
                     child: const Icon(
                       Icons.add_rounded,
-                      color: Colors.white,
-                      size: 30,
+                      color: Colors.black,
+                      size: 28,
                     ),
                   ),
                 ),
-                // 4. Phối đồ AI
+                // 4. Outfits AI (Grid icon)
                 _buildNavItem(
                   index: 2,
-                  icon: Icons.auto_awesome_rounded,
-                  label: 'Phối đồ AI',
+                  icon: Icons.grid_view_rounded,
                 ),
-                // 5. Hồ Sơ
+                // 5. Profile (Cá nhân)
                 _buildNavItem(
                   index: 3,
-                  icon: Icons.person_rounded,
-                  label: 'Hồ Sơ',
+                  icon: _currentIndex == 3
+                      ? Icons.person_rounded
+                      : Icons.person_outline_rounded,
                 ),
               ],
             ),
@@ -137,7 +142,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget _buildNavItem({
     required int index,
     required IconData icon,
-    required String label,
   }) {
     final isSelected = _currentIndex == index;
     return InkWell(
@@ -146,31 +150,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _currentIndex = index;
         });
       },
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(24),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: isSelected
-                  ? AppTheme.primaryColor
-                  : AppTheme.darkTextSecondary.withOpacity(0.7),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected
-                    ? AppTheme.primaryColor
-                    : AppTheme.darkTextSecondary.withOpacity(0.7),
-              ),
-            ),
-          ],
+        padding: const EdgeInsets.all(12.0),
+        child: Icon(
+          icon,
+          size: 26,
+          color: isSelected ? AppTheme.primaryLight : Colors.white60,
         ),
       ),
     );

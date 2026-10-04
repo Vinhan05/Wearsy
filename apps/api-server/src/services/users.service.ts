@@ -79,20 +79,15 @@ export class UsersService {
   }
 
   async getProfile(email?: string) {
-    const cleanEmail = (email || 'demo@wearsy.app').trim().toLowerCase();
-    let user = await this.userRepository.findOne({
+    if (!email || !email.trim()) {
+      throw new BadRequestException('Email người dùng là bắt buộc!');
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await this.userRepository.findOne({
       where: { email: cleanEmail },
     });
     if (!user) {
-      user = this.userRepository.create({
-        email: cleanEmail,
-        full_name: cleanEmail.split('@')[0],
-        password_hash: 'SSO_AUTO_ACCOUNT',
-        role: 'USER',
-        is_vip: false,
-        is_active: true,
-      });
-      await this.userRepository.save(user);
+      throw new BadRequestException('Không tìm thấy tài khoản người dùng!');
     }
     return {
       id: user.id,
@@ -109,26 +104,19 @@ export class UsersService {
     email: string,
     data: { full_name?: string; avatar_url?: string },
   ) {
-    const cleanEmail = (email || 'demo@wearsy.app').trim().toLowerCase();
-    let user = await this.userRepository.findOne({
+    if (!email || !email.trim()) {
+      throw new BadRequestException('Email người dùng là bắt buộc!');
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await this.userRepository.findOne({
       where: { email: cleanEmail },
     });
     if (!user) {
-      user = this.userRepository.create({
-        email: cleanEmail,
-        full_name: data.full_name || cleanEmail.split('@')[0],
-        avatar_url: data.avatar_url || null,
-        password_hash: 'SSO_AUTO_ACCOUNT',
-        role: 'USER',
-        is_vip: false,
-        is_active: true,
-      });
-      await this.userRepository.save(user);
-    } else {
-      if (data.full_name) user.full_name = data.full_name.trim();
-      if (data.avatar_url !== undefined) user.avatar_url = data.avatar_url;
-      await this.userRepository.save(user);
+      throw new BadRequestException('Không tìm thấy tài khoản người dùng!');
     }
+    if (data.full_name) user.full_name = data.full_name.trim();
+    if (data.avatar_url !== undefined) user.avatar_url = data.avatar_url;
+    await this.userRepository.save(user);
 
     return {
       id: user.id,

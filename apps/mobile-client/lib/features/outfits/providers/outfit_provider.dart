@@ -117,6 +117,20 @@ class OutfitProvider with ChangeNotifier {
     }
   }
 
+  Future<void> addOutfit(OutfitModel outfit) async {
+    _outfits = [outfit, ..._outfits];
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final email =
+          (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+      final storageKey = _getStorageKey(email);
+      final customJson = prefs.getStringList(storageKey) ?? [];
+      final updatedJson = [jsonEncode(outfit.toJson()), ...customJson];
+      await prefs.setStringList(storageKey, updatedJson);
+    } catch (_) {}
+  }
+
   void toggleFavorite(String outfitId) {
     final index = _outfits.indexWhere((o) => o.id == outfitId);
     if (index != -1) {
@@ -164,6 +178,9 @@ class OutfitProvider with ChangeNotifier {
     }
   }
 
+  /// Thêm outfit tùy chỉnh được tạo từ Ma-nơ-canh hoặc Phòng thử đồ
+  Future<void> addCustomOutfit(OutfitModel outfit) => addOutfitFromChat(outfit);
+
   /// Lấy danh sách các món đồ cho một outfit từ tủ đồ người dùng
   List<WardrobeItemModel> getItemsForOutfit(OutfitModel outfit,
       [List<WardrobeItemModel>? userWardrobeItems]) {
@@ -173,18 +190,35 @@ class OutfitProvider with ChangeNotifier {
     final matched = <WardrobeItemModel>[];
     for (final id in outfit.itemIds) {
       final found = available.firstWhere(
-        (i) => i.id == id,
+        (i) => i.id == id || (id.isNotEmpty && i.id.contains(id)),
         orElse: () => mockItems.firstWhere(
           (m) => m.id == id,
-          orElse: () => WardrobeItemModel(
-            id: id,
-            name: 'Trang phục #$id',
-            category: WardrobeCategory.tops,
-            color: 'Đen',
-            brand: 'WEARSY',
-            imageUrl:
-                'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=600&auto=format&fit=crop',
-          ),
+          orElse: () {
+            final idx = outfit.itemIds.indexOf(id);
+            WardrobeCategory cat = WardrobeCategory.tops;
+            String img =
+                'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop';
+            String name = 'Áo Thời Trang';
+            if (idx == 1) {
+              cat = WardrobeCategory.bottoms;
+              img =
+                  'https://images.unsplash.com/photo-1542272604-780c96856592?q=80&w=600&auto=format&fit=crop';
+              name = 'Quần Dáng Chuẩn';
+            } else if (idx == 2) {
+              cat = WardrobeCategory.shoes;
+              img =
+                  'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=600&auto=format&fit=crop';
+              name = 'Giày Thời Trang';
+            }
+            return WardrobeItemModel(
+              id: id,
+              name: name,
+              category: cat,
+              color: 'Tự nhiên',
+              brand: 'WEARSY',
+              imageUrl: img,
+            );
+          },
         ),
       );
       if (!matched.any((m) => m.id == found.id)) {

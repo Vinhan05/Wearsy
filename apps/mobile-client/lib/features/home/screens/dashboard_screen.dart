@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/services/weather_service.dart';
+import '../../../shared/widgets/user_avatar.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../outfits/providers/outfit_provider.dart';
-import '../../outfits/screens/ai_stylist_chat_screen.dart';
-import '../../color_score/screens/color_score_screen.dart';
-import '../../wardrobe/providers/wardrobe_provider.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../outfits/models/outfit_model.dart';
+import '../../outfits/screens/outfit_detail_screen.dart';
+import '../../fitting_room/screens/virtual_fitting_room_screen.dart';
 import '../../../core/theme/theme_provider.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/language_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   final void Function(int index)? onSwitchTab;
@@ -21,7 +22,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   WeatherData? _weatherData;
   CityLocation _selectedCity = WeatherService.defaultCity;
-  String _selectedTrendingCategory = 'Tất Cả';
+  final Set<String> _favoriteOutfits = {'smart_casual_1', 'chic_minimal_2'};
 
   @override
   void initState() {
@@ -30,7 +31,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _fetchWeather([CityLocation? city]) async {
-    final targetCity = city ?? _selectedCity;
+    CityLocation targetCity;
+    if (city != null) {
+      targetCity = city;
+    } else {
+      targetCity = await WeatherService.detectCurrentLocation();
+    }
     final data = await WeatherService.fetchRealtimeWeather(
       lat: targetCity.lat,
       lon: targetCity.lon,
@@ -47,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _showCityPickerBottomSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.lightBackground,
+      backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -64,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.3),
+                    color: Colors.black12,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -75,19 +81,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.darkTextPrimary,
+                  color: const Color(0xFF111827),
                 ),
               ),
               const SizedBox(height: 12),
+              ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                leading: const Text('📍', style: TextStyle(fontSize: 24)),
+                title: Text(
+                  'Vị trí hiện tại (Định vị tự động)',
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryLight,
+                  ),
+                ),
+                subtitle: Text(
+                  'Tự động lấy vị trí Realtime qua IP/GPS',
+                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[600]),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _fetchWeather(null);
+                },
+              ),
+              const Divider(color: Colors.black12, height: 1),
               ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.45,
+                  maxHeight: MediaQuery.of(context).size.height * 0.4,
                 ),
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: WeatherService.popularCities.length,
-                  separatorBuilder: (_, __) => Divider(
-                      color: AppTheme.primaryColor.withOpacity(0.1), height: 1),
+                  separatorBuilder: (_, __) =>
+                      const Divider(color: Colors.black12, height: 1),
                   itemBuilder: (context, index) {
                     final city = WeatherService.popularCities[index];
                     final isSelected = city.name == _selectedCity.name;
@@ -98,18 +125,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text(city.icon, style: const TextStyle(fontSize: 24)),
                       title: Text(
                         city.name,
-                        style: GoogleFonts.outfit(
-                          fontSize: 16,
+                        style: GoogleFonts.inter(
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.w500,
                           color: isSelected
-                              ? AppTheme.primaryColor
-                              : AppTheme.darkTextPrimary,
+                              ? AppTheme.primaryLight
+                              : const Color(0xFF111827),
                         ),
                       ),
                       trailing: isSelected
                           ? Icon(Icons.check_circle_rounded,
-                              color: AppTheme.primaryColor, size: 20)
+                              color: AppTheme.primaryLight)
                           : null,
                       onTap: () {
                         Navigator.pop(ctx);
@@ -119,7 +145,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 12),
             ],
           ),
         );
@@ -127,229 +152,66 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _showTrendingDetailModal(
-      BuildContext context, Map<String, String> item) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppTheme.lightBackground,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+  void _openFittingRoomWithLook({
+    required String title,
+    required String subtitle,
+    required String imageAsset,
+  }) {
+    final outfit = OutfitModel(
+      id: 'look_${DateTime.now().millisecondsSinceEpoch}',
+      name: title,
+      aiReason: subtitle,
+      occasion: OutfitOccasion.casual,
+      weatherSuitable: ['Xuân Hè'],
+      aiScore: 9.8,
+      coverImageUrl: imageAsset,
+      itemIds: [],
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OutfitDetailScreen(outfit: outfit),
       ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        item['image']!,
-                        width: 90,
-                        height: 110,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              item['category'] ?? 'Trending',
-                              style: GoogleFonts.outfit(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            item['title']!,
-                            style: GoogleFonts.outfit(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.darkTextPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Điểm phối màu AI: 🌟 ${item['score'] ?? '9.5'}',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              color: AppTheme.darkTextSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MultiProvider(
-                            providers: [
-                              ChangeNotifierProvider.value(
-                                  value: Provider.of<OutfitProvider>(context,
-                                      listen: false)),
-                              ChangeNotifierProvider.value(
-                                  value: Provider.of<WardrobeProvider>(context,
-                                      listen: false)),
-                              ChangeNotifierProvider.value(
-                                  value: Provider.of<AuthProvider>(context,
-                                      listen: false)),
-                            ],
-                            child: const AiStylistChatScreen(),
-                          ),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                    ),
-                    icon: const Icon(Icons.auto_awesome_rounded,
-                        color: Colors.white, size: 20),
-                    label: Text(
-                      'Tạo Outfit Với AI Stylist',
-                      style: GoogleFonts.outfit(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<ThemeProvider>(context); // Listen to Theme changes
-    final user = Provider.of<AuthProvider>(context).user;
+    Provider.of<ThemeProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+    final displayName =
+        (user?.fullName != null && user!.fullName.trim().isNotEmpty)
+            ? user.fullName.split(' ').last
+            : 'Vân Anh';
 
     return Scaffold(
-      backgroundColor: AppTheme.lightBackground,
+      backgroundColor: Colors.white,
       body: SafeArea(
+        bottom: false,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Header: logo + title left | Avatar circle right
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        padding: const EdgeInsets.all(2),
-                        child: Image.asset(
-                          'assets/images/logo_icon.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'wearsy',
-                            style: GoogleFonts.outfit(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w800,
-                              color: AppTheme.darkTextPrimary,
-                              height: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Trợ lý Thời trang & Tủ đồ Thông minh AI',
-                            style: GoogleFonts.inter(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w500,
-                              color: AppTheme.darkTextSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () => widget.onSwitchTab?.call(3),
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryLight,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.person_rounded,
-                        color: Colors.white,
-                        size: 26,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // 1. Top Bar: Wearsy Logo + Notification & Profile Icons
+              _buildTopBar(context),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // Hero AI Outfit Card matching home.png exactly
-              _buildAIBanner(context, user?.fullName ?? 'Văn A'),
+              // 2. Greeting: "Xin chào, Vân Anh 👋"
+              _buildGreeting(displayName),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // Stats Row: 3 white cards (Tủ Đồ / 123, AI Outfit / 324, Điểm Màu / 9.8)
-              _buildStatsRow(context),
+              // 3. Hero Section: "Hôm nay mặc gì?" + 3D Mannequin
+              _buildHeroSection(context),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-              // Trending Section matching home.png exactly
-              _buildTrendingSection(context),
-
-              const SizedBox(height: 24),
+              // 4. Section: "Gợi ý cho bạn"
+              _buildSuggestedOutfitsSection(context),
             ],
           ),
         ),
@@ -357,433 +219,481 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildAIBanner(BuildContext context, String userName) {
+  Widget _buildTopBar(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Brand Title
+        Text(
+          'Wearsy',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+            color: const Color(0xFF111827),
+          ),
+        ),
+        // Action Icons
+        Row(
+          children: [
+            // Notification Bell
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.notifications_none_rounded,
+                    size: 22, color: Color(0xFF111827)),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('✨ Không có thông báo mới'),
+                      behavior: SnackBarBehavior.floating,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            // Profile Avatar
+            UserAvatar(
+              radius: 20,
+              showBorder: true,
+              borderColor: const Color(0xFFE5E7EB),
+              borderWidth: 1.2,
+              onTap: () => widget.onSwitchTab?.call(3), // Switch to profile tab
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGreeting(String name) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+    return RichText(
+      text: TextSpan(
+        style: GoogleFonts.outfit(
+          fontSize: 16,
+          color: const Color(0xFF6B7280),
+        ),
+        children: [
+          TextSpan(text: isEn ? 'Hello, ' : 'Xin chào, '),
+          TextSpan(
+            text: '$name 👋',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF111827),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroSection(BuildContext context) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+    final tempStr = _weatherData != null
+        ? '${_weatherData!.temperature.round()}°C'
+        : '29°C';
+    final cityStr = _selectedCity.name;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.lavenderCard,
+        color: const Color(0xFFFAFAFC),
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
       ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MultiProvider(
-                  providers: [
-                    ChangeNotifierProvider.value(
-                      value:
-                          Provider.of<OutfitProvider>(context, listen: false),
-                    ),
-                    ChangeNotifierProvider.value(
-                      value:
-                          Provider.of<WardrobeProvider>(context, listen: false),
-                    ),
-                    ChangeNotifierProvider.value(
-                      value: Provider.of<AuthProvider>(context, listen: false),
-                    ),
-                  ],
-                  child: const AiStylistChatScreen(),
-                ),
-              ),
-            );
-          },
-          borderRadius: BorderRadius.circular(24),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 16),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left Content
+              Expanded(
+                flex: 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        'Xin chào $userName',
-                        style: GoogleFonts.outfit(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.darkTextPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      isEn ? 'What to\nwear today?' : 'Hôm nay\nmặc gì?',
+                      style: GoogleFonts.outfit(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        height: 1.15,
+                        color: const Color(0xFF111827),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(height: 8),
+                    Text(
+                      isEn
+                          ? 'AI Fashion Assistant &\nSmart Wardrobe'
+                          : 'Trợ lý thời trang &\ntủ đồ thông minh AI',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        height: 1.35,
+                        color: const Color(0xFF6B7280),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    // Action button: "Phối đồ AI"
                     GestureDetector(
-                      onTap: () {
-                        _showCityPickerBottomSheet();
-                      },
+                      onTap: () => widget.onSwitchTab?.call(2), // Switch to AI tab
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
+                            horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryLight.withOpacity(0.35),
+                          color: const Color(0xFF18181B),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            const Icon(Icons.auto_awesome,
+                                size: 14, color: Colors.white),
+                            const SizedBox(width: 6),
                             Text(
-                              '⛅ ${_weatherData != null ? '${_weatherData!.temperature.toStringAsFixed(0)}°C' : '27°C'} ${_selectedCity.name.contains('Hồ Chí Minh') ? 'TP.HCM' : _selectedCity.name} ▾',
+                              isEn ? 'AI Stylist' : 'Phối đồ AI',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.darkTextPrimary,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    // Clothing item pills
+                    _buildClothingPill('👕', isEn ? 'White T-Shirt' : 'Áo thun trắng'),
+                    const SizedBox(height: 6),
+                    _buildClothingPill('👖', isEn ? 'Denim Shorts' : 'Short denim'),
+                    const SizedBox(height: 6),
+                    _buildClothingPill('👟', isEn ? 'White Sneakers' : 'Sneaker trắng'),
                   ],
                 ),
+              ),
 
-                const SizedBox(height: 16),
-
-                Row(
+              // Right Content: Weather Badge & 3D Mannequin Pedestal
+              Expanded(
+                flex: 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      'Outfit gợi ý hôm nay',
-                      style: GoogleFonts.outfit(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.darkTextPrimary,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Icon(Icons.auto_awesome_rounded,
-                        color: AppTheme.primaryLight, size: 20),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  'Thời tiết ${_selectedCity.name} hôm nay rất đẹp (${_weatherData?.temperature ?? 28.9}°C), hoàn hảo cho mọi phong cách dạo phố, công sở hoặc cà phê cuối tuần.',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: AppTheme.darkTextSecondary,
-                    height: 1.4,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Inner recipe box
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.lavenderSurface,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Công thức phối đồ:',
-                            style: GoogleFonts.outfit(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.darkTextPrimary,
+                    // Weather Floating Badge
+                    GestureDetector(
+                      onTap: _showCityPickerBottomSheet,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Hỏi AI ngay',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primaryColor,
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text('⛅',
+                                    style: TextStyle(fontSize: 13)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  tempStr,
+                                  style: GoogleFonts.outfit(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    color: const Color(0xFF111827),
+                                  ),
                                 ),
-                              ),
-                              Icon(Icons.arrow_forward_rounded,
-                                  color: AppTheme.primaryColor, size: 14),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        _getDynamicFormulaText(
-                            _weatherData?.temperature ?? 28.0),
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppTheme.darkTextSecondary,
-                          height: 1.4,
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.location_on_outlined,
+                                    size: 11, color: Color(0xFF6B7280)),
+                                const SizedBox(width: 2),
+                                Text(
+                                  cityStr,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 10,
+                                    color: const Color(0xFF6B7280),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 6),
+                    // 3D Mannequin Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/mannequin_hero.jpg',
+                        height: 220,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
-      ),
-    );
-  }
 
-  String _getDynamicFormulaText(double temp) {
-    if (temp > 30.0) {
-      return 'Áo thun cotton thoáng mát + Quần short linen/jeans + Sneaker nhẹ nhàng + Kính mát phong cách';
-    } else if (temp < 24.0) {
-      return 'Áo khoác Cardigan/Blazer + Áo thun cổ tròn + Quần jeans slim-fit + Giày boots/sneaker cao cổ';
-    } else {
-      return 'Áo thun cotton cao cấp + Áo sơ mi khoác ngoài + Quần jeans slim-fit + Giày retro sneaker';
-    }
-  }
+          const SizedBox(height: 14),
 
-  Widget _buildStatsRow(BuildContext context) {
-    final wardrobeProvider = Provider.of<WardrobeProvider>(context);
-    final outfitProvider = Provider.of<OutfitProvider>(context);
-
-    final allItems = wardrobeProvider.allItemsAcrossAllWardrobes;
-    final wardrobeCount = allItems.length.toString();
-
-    final aiOutfitCount = outfitProvider.outfits.length.toString();
-
-    final double avgScore = allItems.isEmpty
-        ? 0.0
-        : (allItems.fold(0.0, (sum, item) => sum + item.aiMatchScore) /
-            allItems.length);
-    final colorScoreStr = avgScore == 0.0 ? '0' : avgScore.toStringAsFixed(1);
-
-    return Row(
-      children: [
-        Expanded(
-          child: _StatCard(
-            label: 'Tủ Đồ',
-            count: wardrobeCount,
-            onTap: () => widget.onSwitchTab?.call(1),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _StatCard(
-            label: 'AI Outfit',
-            count: aiOutfitCount,
-            onTap: () => widget.onSwitchTab?.call(2),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _StatCard(
-            label: 'Điểm Màu',
-            count: colorScoreStr,
+          // Bottom Arrow Action Bar
+          GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => MultiProvider(
-                    providers: [
-                      ChangeNotifierProvider.value(
-                        value: Provider.of<WardrobeProvider>(context,
-                            listen: false),
-                      ),
-                      ChangeNotifierProvider.value(
-                        value:
-                            Provider.of<OutfitProvider>(context, listen: false),
-                      ),
-                    ],
-                    child: const ColorScoreScreen(),
-                  ),
+                  builder: (_) => const VirtualFittingRoomScreen(),
                 ),
               );
             },
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFF18181B),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(Icons.arrow_forward_rounded,
+                      color: Colors.white, size: 20),
+                  SizedBox(width: 18),
+                ],
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildTrendingSection(BuildContext context) {
-    final filterOptions = ['Tất Cả', 'Smart Casual', 'Street Wear'];
+  Widget _buildClothingPill(String icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 12)),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF374151),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    final allTrendingItems = [
+  Widget _buildSuggestedOutfitsSection(BuildContext context) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+    final outfitItems = [
       {
-        'title': 'Suit Nam Lịch Lãm',
-        'category': 'Smart Casual',
-        'score': '9.8',
-        'image':
-            'https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=600&auto=format&fit=crop',
+        'id': 'smart_casual_1',
+        'title': isEn ? 'Smart Casual' : 'Smart casual',
+        'subtitle': isEn
+            ? 'Black Blazer • Trousers • Tote bag'
+            : 'Blazer đen • Quần tây • Tote bag',
+        'image': 'assets/images/outfit_smart_casual.jpg',
       },
       {
-        'title': 'Áo Thun & Mũ Fedora',
-        'category': 'Street Wear',
-        'score': '9.5',
-        'image':
-            'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop',
+        'id': 'chic_minimal_2',
+        'title': isEn ? 'Minimalist Chic' : 'Chic tối giản',
+        'subtitle': isEn
+            ? 'White Shirt • Black Skirt • Shoulder Bag'
+            : 'Sơ mi trắng • Váy đen • Túi đeo',
+        'image': 'assets/images/outfit_chic_minimal.jpg',
       },
       {
-        'title': 'Áo Len Cổ Lọ Nữ',
-        'category': 'Smart Casual',
-        'score': '9.6',
-        'image':
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+        'id': 'smart_casual_detail',
+        'title': 'Overshirt & Chinos',
+        'subtitle': isEn
+            ? 'Overshirt • Navy Chinos • Sneakers'
+            : 'Áo overshirt • Chino navy • Sneaker',
+        'image': 'assets/images/outfit_detail_mannequin.jpg',
       },
       {
-        'title': 'Denim Jacket Năng Động',
-        'category': 'Street Wear',
-        'score': '9.4',
-        'image':
-            'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop',
+        'id': 'summer_casual',
+        'title': isEn ? 'Summer Casual' : 'Năng động phố hè',
+        'subtitle': isEn
+            ? 'White Tee • Denim Shorts • Tote bag'
+            : 'Áo thun trắng • Short denim • Tote bag',
+        'image': 'assets/images/mannequin_hero.jpg',
       },
     ];
-
-    final displayedItems = _selectedTrendingCategory == 'Tất Cả'
-        ? allTrendingItems
-        : allTrendingItems
-            .where((item) => item['category'] == _selectedTrendingCategory)
-            .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Trending',
-          style: GoogleFonts.outfit(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.darkTextPrimary,
-          ),
+        // Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              isEn ? 'Recommended for you' : 'Gợi ý cho bạn',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF111827),
+              ),
+            ),
+            GestureDetector(
+              onTap: () => widget.onSwitchTab?.call(2),
+              child: Text(
+                isEn ? 'See all' : 'Xem tất cả',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF6B7280),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 14),
 
-        // Filter Pills
-        Row(
-          children: filterOptions.map((opt) {
-            final isSelected = opt == _selectedTrendingCategory;
-            return Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedTrendingCategory = opt;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppTheme.primaryLight.withOpacity(0.35)
-                        : AppTheme.lavenderCard.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isSelected
-                          ? AppTheme.primaryColor.withOpacity(0.4)
-                          : Colors.transparent,
-                    ),
-                  ),
-                  child: Text(
-                    opt,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.w500,
-                      color: isSelected
-                          ? AppTheme.darkTextPrimary
-                          : AppTheme.darkTextSecondary,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-
-        const SizedBox(height: 18),
-
-        // Grid of Photos
+        // 2-Column Grid
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: displayedItems.length,
+          itemCount: outfitItems.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
-            childAspectRatio: 0.82,
+            mainAxisSpacing: 18,
+            childAspectRatio: 0.64,
           ),
           itemBuilder: (context, index) {
-            final item = displayedItems[index];
+            final item = outfitItems[index];
+            final isFav = _favoriteOutfits.contains(item['id']);
+
             return GestureDetector(
-              onTap: () => _showTrendingDetailModal(context, item),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  item['image']!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: AppTheme.lavenderCard,
-                    child: Icon(
-                      Icons.image_not_supported_rounded,
-                      color: AppTheme.primaryLight,
+              onTap: () {
+                _openFittingRoomWithLook(
+                  title: item['title']!,
+                  subtitle: item['subtitle']!,
+                  imageAsset: item['image']!,
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Card with Image & Favorite Button
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.asset(
+                                item['image']!,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                          // Heart Button
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (isFav) {
+                                    _favoriteOutfits.remove(item['id']);
+                                  } else {
+                                    _favoriteOutfits.add(item['id']!);
+                                  }
+                                });
+                              },
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  isFav
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                  size: 18,
+                                  color: isFav
+                                      ? Colors.redAccent
+                                      : const Color(0xFF374151),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  // Title
+                  Text(
+                    item['title']!,
+                    style: GoogleFonts.inter(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF111827),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  // Subtitle
+                  Text(
+                    item['subtitle']!,
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF6B7280),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             );
           },
         ),
       ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String count;
-  final VoidCallback onTap;
-
-  const _StatCard({
-    required this.label,
-    required this.count,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Column(
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.darkTextSecondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              count,
-              style: GoogleFonts.outfit(
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                color: AppTheme.darkTextPrimary,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

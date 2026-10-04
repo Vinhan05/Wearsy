@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../auth/providers/auth_provider.dart';
-import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../models/outfit_model.dart';
 import '../providers/outfit_provider.dart';
-import '../widgets/layering_canvas_2d_widget.dart';
-import '../widgets/smart_fit_card.dart';
+import '../../fitting_room/screens/virtual_fitting_room_screen.dart';
+import '../../../core/theme/theme_provider.dart';
+import '../../../core/theme/app_theme.dart';
 
 class OutfitDetailScreen extends StatefulWidget {
   final OutfitModel outfit;
@@ -18,202 +16,444 @@ class OutfitDetailScreen extends StatefulWidget {
 }
 
 class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
-  // 0: Khung phối đồ 2D (Layering Canvas), 1: Ảnh Lookbook phong cách
-  int _viewMode = 0;
-
-  late double _heightCm;
-  late double _weightKg;
-  late String _gender;
-  WardrobeItemModel? _highlightedItem;
+  late List<Map<String, String>> _items;
+  bool _isSaved = false;
 
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
-    final bm = user?.bodyMeasurements;
-
-    final rawH = (bm?['height'] as num?)?.toDouble() ?? 172.0;
-    final rawW = (bm?['weight'] as num?)?.toDouble() ?? 65.0;
-
-    _heightCm = rawH > 50 ? rawH : 165.0;
-    _weightKg = rawW > 20 ? rawW : 55.0;
-
-    final fullName = user?.fullName.toLowerCase() ?? '';
-    final email = user?.email.toLowerCase() ?? '';
-    if (fullName.contains('ngọc') ||
-        fullName.contains('thảo') ||
-        fullName.contains('lan') ||
-        email.contains('female')) {
-      _gender = 'Nữ';
-    } else {
-      _gender = 'Nam';
-    }
+    _items = [
+      {'name': 'Áo overshirt', 'icon': '🧥', 'color': 'Be sữa'},
+      {'name': 'Áo thun trắng', 'icon': '👕', 'color': 'Trắng trơn'},
+      {'name': 'Quần chino navy', 'icon': '👖', 'color': 'Xanh navy'},
+      {'name': 'Sneaker trắng', 'icon': '👟', 'color': 'Trắng da'},
+      {'name': 'Túi đeo chéo', 'icon': '👜', 'color': 'Đen da'},
+    ];
   }
 
-  void _onMeasurementsChanged(double newH, double newW) {
-    setState(() {
-      _heightCm = newH;
-      _weightKg = newW;
-    });
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  void _replaceItem(int index) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Chọn món đồ thay thế cho "${_items[index]['name']}"',
+              style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF111827),
+              ),
+            ),
+            const SizedBox(height: 14),
+            ListTile(
+              leading: const Text('👕', style: TextStyle(fontSize: 24)),
+              title: const Text('Áo Polo trơn tối giản'),
+              subtitle: const Text('Torano • Trắng ngà'),
+              trailing: Icon(Icons.swap_horiz_rounded, color: AppTheme.primaryLight),
+              onTap: () {
+                setState(() {
+                  _items[index] = {
+                    'name': 'Áo Polo trơn tối giản',
+                    'icon': '👕',
+                    'color': 'Trắng ngà'
+                  };
+                });
+                Navigator.pop(ctx);
+              },
+            ),
+            ListTile(
+              leading: const Text('👖', style: TextStyle(fontSize: 24)),
+              title: const Text('Quần tây xếp ly relaxed'),
+              subtitle: const Text('Zara • Đen xám'),
+              trailing: Icon(Icons.swap_horiz_rounded, color: AppTheme.primaryLight),
+              onTap: () {
+                setState(() {
+                  _items[index] = {
+                    'name': 'Quần tây xếp ly relaxed',
+                    'icon': '👖',
+                    'color': 'Đen xám'
+                  };
+                });
+                Navigator.pop(ctx);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _saveOutfit() {
+    setState(() => _isSaved = true);
+    final provider = Provider.of<OutfitProvider>(context, listen: false);
+    provider.addOutfit(widget.outfit);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          '✨ Đã cập nhật thể trạng: ${_heightCm.toInt()}cm, ${_weightKg.toInt()}kg! Layering Canvas & Smart Fit đã tự động thích ứng.',
-          style: GoogleFonts.inter(fontSize: 12),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_rounded, color: Colors.greenAccent),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '✨ Đã lưu outfit "${widget.outfit.name}" vào Bộ sưu tập yêu thích!',
+                style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
         ),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: const Color(0xFF8A6728),
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<OutfitProvider>(context);
-    final items = provider.getItemsForOutfit(widget.outfit);
-
-    // Lấy trạng thái yêu thích mới nhất
-    final currentOutfit = provider.outfits.firstWhere(
-      (o) => o.id == widget.outfit.id,
-      orElse: () => widget.outfit,
-    );
+    Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
-      appBar: AppBar(
-        backgroundColor: AppTheme.darkBackground,
-        elevation: 0,
-        title: Text(
-          'Chi Tiết Outfit & Smart Fit',
-          style: GoogleFonts.outfit(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              currentOutfit.isFavorite
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_border_rounded,
-              color: currentOutfit.isFavorite
-                  ? AppTheme.accentColor
-                  : Colors.white,
-            ),
-            onPressed: () => provider.toggleFavorite(currentOutfit.id),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ─── Thanh chuyển chế độ: 2D Canvas vs Lookbook Photo ─────────────
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: AppTheme.darkCard,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-              ),
-              child: Row(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Top Bar: Back Button & Weather Badge
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: _buildModeTab(
-                      index: 0,
-                      label: '🎨 2D Layering Canvas',
-                      isActive: _viewMode == 0,
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                      ),
+                      child: const Icon(Icons.arrow_back_rounded,
+                          size: 20, color: Color(0xFF111827)),
                     ),
                   ),
-                  Expanded(
-                    child: _buildModeTab(
-                      index: 1,
-                      label: '📸 Ảnh Lookbook',
-                      isActive: _viewMode == 1,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('⛅', style: TextStyle(fontSize: 13)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '29°C • Đà Nẵng',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF374151),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
 
-            // ─── Phần hiển thị chính: 2D Canvas hoặc Lookbook Image ───────────
-            if (_viewMode == 0) ...[
-              LayeringCanvas2DWidget(
-                items: items,
-                heightCm: _heightCm,
-                weightKg: _weightKg,
-                gender: _gender,
-                onItemTap: (item) {
-                  setState(() => _highlightedItem = item);
-                },
+              const SizedBox(height: 18),
+
+              // Title: "Outfit dành cho bạn"
+              Text(
+                'Outfit dành cho bạn',
+                style: GoogleFonts.outfit(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF111827),
+                ),
               ),
-            ] else ...[
+
+              const SizedBox(height: 6),
+
+              // Subtitle & "Đổi outfit" Button
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.outfit.name.isNotEmpty
+                              ? widget.outfit.name
+                              : 'Smart casual',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF374151),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Gọn gàng, hiện đại và phù hợp cho nhiều hoàn cảnh trong ngày.',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: const Color(0xFF6B7280),
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _items.shuffle();
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('✨ Đã làm mới gợi ý phối đồ!'),
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.sync_rounded,
+                              size: 14, color: Color(0xFF374151)),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Đổi outfit',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF374151),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 18),
+
+              // Full-Body 3D Mannequin Preview Container
               Container(
-                height: 320,
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                width: double.infinity,
+                height: 380,
                 decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
+                ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          'assets/images/outfit_detail_mannequin.jpg',
+                          height: 360,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    // Expand/Fitting Room Button
+                    Positioned(
+                      bottom: 14,
+                      right: 14,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const VirtualFittingRoomScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 6,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(Icons.open_in_full_rounded,
+                              size: 18, color: Color(0xFF111827)),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        currentOutfit.coverImageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: AppTheme.darkSurface,
-                          child: Icon(
-                            Icons.auto_awesome_rounded,
-                            color: AppTheme.primaryLight,
-                            size: 80,
+              ),
+
+              const SizedBox(height: 24),
+
+              // Section: "Chi tiết outfit"
+              Text(
+                'Chi tiết outfit',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF111827),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // List of 5 outfit items
+              Column(
+                children: List.generate(_items.length, (idx) {
+                  final itm = _items[idx];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFAFAFC),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: Row(
+                      children: [
+                        // Thumbnail Icon Container
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border:
+                                Border.all(color: const Color(0xFFE5E7EB)),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(itm['icon']!,
+                              style: const TextStyle(fontSize: 18)),
+                        ),
+                        const SizedBox(width: 12),
+                        // Item Details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                itm['name']!,
+                                style: GoogleFonts.inter(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF111827),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                itm['color']!,
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  color: const Color(0xFF6B7280),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.7),
-                              ],
+                        // [Thay] Action Button
+                        GestureDetector(
+                          onTap: () => _replaceItem(idx),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border:
+                                  Border.all(color: AppTheme.primaryLight),
+                            ),
+                            child: Text(
+                              'Thay',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryLight,
+                              ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Bottom Button: "Lưu outfit"
+              GestureDetector(
+                onTap: _isSaved ? null : _saveOutfit,
+                child: Container(
+                  width: double.infinity,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: _isSaved
+                        ? const Color(0xFF6E521C)
+                        : const Color(0xFF8A6728),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF8A6728).withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                      Positioned(
-                        left: 16,
-                        bottom: 16,
-                        right: 16,
-                        child: Text(
-                          currentOutfit.name,
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        _isSaved
+                            ? Icons.bookmark_added_rounded
+                            : Icons.bookmark_outline_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _isSaved ? 'Đã lưu outfit' : 'Lưu outfit',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ],
@@ -221,410 +461,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 ),
               ),
             ],
-
-            // ─── THẺ TƯ VẤN SMART FIT (DƯỚI KHUNG CANVAS) ─────────────────────
-            SmartFitCard(
-              outfit: currentOutfit,
-              currentHeightCm: _heightCm,
-              currentWeightKg: _weightKg,
-              gender: _gender,
-              onMeasurementsChanged: _onMeasurementsChanged,
-            ),
-
-            // ─── Thông tin Outfit & Lý do Stylist ────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                      color: AppTheme.primaryColor.withOpacity(0.25)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.psychology_rounded,
-                            color: AppTheme.primaryLight, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Lý Do Phối Đồ Của Stylist AI',
-                          style: GoogleFonts.outfit(
-                            color: AppTheme.primaryLight,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      currentOutfit.aiReason,
-                      style: GoogleFonts.inter(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 13,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.wb_sunny_outlined,
-                            color: AppTheme.warningColor, size: 16),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Thời tiết phù hợp: ',
-                          style: GoogleFonts.inter(
-                              color: Colors.white60, fontSize: 12),
-                        ),
-                        Text(
-                          currentOutfit.weatherSuitable.join(' · '),
-                          style: GoogleFonts.inter(
-                            color: AppTheme.warningColor,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // ─── Danh sách các món đồ chi tiết theo từng tầng Layer ───────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Các Món Đồ Phối Lớp (${items.length} món)',
-                        style: GoogleFonts.outfit(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        'Z-Index 1 ➔ 4',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: AppTheme.primaryLight,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (items.isEmpty)
-                    _buildItemsFromIds(currentOutfit.itemIds)
-                  else
-                    ...items.map(
-                      (item) => _DetailedItemRow(
-                        item: item,
-                        isHighlighted: _highlightedItem?.id == item.id,
-                        onTap: () {
-                          setState(() {
-                            _highlightedItem =
-                                _highlightedItem?.id == item.id ? null : item;
-                          });
-                        },
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            // ─── Nút hành động chính ──────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: SizedBox(
-                height: 52,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                    elevation: 6,
-                    shadowColor: AppTheme.primaryColor.withOpacity(0.5),
-                  ),
-                  icon: const Icon(Icons.check_circle_rounded,
-                      color: Colors.white),
-                  label: Text(
-                    'Mặc Outfit Này Hôm Nay',
-                    style: GoogleFonts.outfit(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            const Icon(Icons.auto_awesome,
-                                color: Colors.amber, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '✨ Tuyệt vời! Bạn đã chọn mặc "${currentOutfit.name}" cho hôm nay!',
-                                style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ],
-                        ),
-                        backgroundColor: AppTheme.darkCard,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: AppTheme.primaryLight),
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white70,
-                  side: BorderSide(color: Colors.white.withOpacity(0.15)),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                ),
-                icon: const Icon(Icons.share_rounded, size: 18),
-                label: Text(
-                  'Chia Sẻ Phong Cách Này',
-                  style: GoogleFonts.inter(
-                      fontSize: 13, fontWeight: FontWeight.w600),
-                ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content:
-                          Text('🔗 Đã sao chép liên kết chia sẻ bộ phối đồ!'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModeTab({
-    required int index,
-    required String label,
-    required bool isActive,
-  }) {
-    return GestureDetector(
-      onTap: () => setState(() => _viewMode = index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: isActive ? AppTheme.primaryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: GoogleFonts.inter(
-              color: isActive ? Colors.white : Colors.white60,
-              fontSize: 12.5,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildItemsFromIds(List<String> itemIds) {
-    return Column(
-      children: itemIds
-          .map((id) => Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppTheme.darkCard,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.checkroom_rounded,
-                        color: AppTheme.primaryLight, size: 20),
-                    const SizedBox(width: 12),
-                    Text('Món đồ #$id',
-                        style: GoogleFonts.inter(color: Colors.white)),
-                  ],
-                ),
-              ))
-          .toList(),
-    );
-  }
-}
-
-class _DetailedItemRow extends StatelessWidget {
-  final WardrobeItemModel item;
-  final bool isHighlighted;
-  final VoidCallback onTap;
-
-  const _DetailedItemRow({
-    required this.item,
-    required this.isHighlighted,
-    required this.onTap,
-  });
-
-  String _getLayerBadge(int layerOrder) {
-    switch (layerOrder) {
-      case 1:
-        return 'Lớp 1: Nền (Base)';
-      case 2:
-        return 'Lớp 2: Khoác ngoài (Outer)';
-      case 3:
-        return 'Lớp 3: Giày (Shoes)';
-      case 4:
-        return 'Lớp 4: Phụ kiện (Acc)';
-      default:
-        return 'Layer $layerOrder';
-    }
-  }
-
-  Color _getLayerColor(int layerOrder) {
-    switch (layerOrder) {
-      case 1:
-        return AppTheme.primaryLight;
-      case 2:
-        return AppTheme.accentColor;
-      case 3:
-        return Colors.amber;
-      case 4:
-        return Colors.tealAccent;
-      default:
-        return Colors.white54;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final layerColor = _getLayerColor(item.layerOrder);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppTheme.darkCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isHighlighted
-                ? AppTheme.primaryLight
-                : Colors.white.withOpacity(0.06),
-            width: isHighlighted ? 1.8 : 1.0,
-          ),
-          boxShadow: isHighlighted
-              ? [
-                  BoxShadow(
-                    color: AppTheme.primaryLight.withOpacity(0.2),
-                    blurRadius: 10,
-                  )
-                ]
-              : null,
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                item.imageUrl,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 60,
-                  height: 60,
-                  color: AppTheme.darkSurface,
-                  child: Center(
-                    child: Text(item.category.icon,
-                        style: const TextStyle(fontSize: 24)),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: layerColor.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(6),
-                          border:
-                              Border.all(color: layerColor.withOpacity(0.3)),
-                        ),
-                        child: Text(
-                          _getLayerBadge(item.layerOrder),
-                          style: GoogleFonts.inter(
-                            color: layerColor,
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '• ${item.color}',
-                        style: GoogleFonts.inter(
-                            color: Colors.white54, fontSize: 11),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    item.name,
-                    style: GoogleFonts.outfit(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${item.brand} • ${item.category.displayName}',
-                    style:
-                        GoogleFonts.inter(color: Colors.white60, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios_rounded,
-                color: Colors.white24, size: 14),
-          ],
         ),
       ),
     );
