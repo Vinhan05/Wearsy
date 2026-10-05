@@ -11,6 +11,7 @@ import '../providers/outfit_provider.dart';
 import 'outfit_detail_screen.dart';
 import '../../../core/services/smart_fit_ai_service.dart';
 import '../../../core/theme/app_theme.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 // Data Models
 enum _ChatSender { user, ai }
@@ -35,9 +36,14 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
   final List<_ChatMessage> _messages = [];
   bool _isLoading = false;
 
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
+  bool _speechAvailable = false;
+
   @override
   void initState() {
     super.initState();
+    _initSpeech();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _messages.add(_ChatMessage(
@@ -49,8 +55,78 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     });
   }
 
+  void _initSpeech() async {
+    try {
+      _speechAvailable = await _speech.initialize(
+        onStatus: (status) {
+          if (status == 'done' || status == 'notListening') {
+            if (mounted) setState(() => _isListening = false);
+          }
+        },
+        onError: (_) {
+          if (mounted) setState(() => _isListening = false);
+        },
+      );
+      if (mounted) setState(() {});
+    } catch (_) {
+      _speechAvailable = false;
+    }
+  }
+
+  void _listenVoicePrompt() async {
+    if (_isListening) {
+      await _speech.stop();
+      if (mounted) setState(() => _isListening = false);
+      return;
+    }
+
+    if (!_speechAvailable) {
+      try {
+        _speechAvailable = await _speech.initialize(
+          onStatus: (status) {
+            if (status == 'done' || status == 'notListening') {
+              if (mounted) setState(() => _isListening = false);
+            }
+          },
+          onError: (_) {
+            if (mounted) setState(() => _isListening = false);
+          },
+        );
+      } catch (_) {
+        _speechAvailable = false;
+      }
+    }
+
+    if (_speechAvailable) {
+      if (mounted) setState(() => _isListening = true);
+      await _speech.listen(
+        localeId: 'vi_VN',
+        onResult: (result) {
+          if (mounted) {
+            setState(() {
+              _promptCtrl.text = result.recognizedWords;
+              _promptCtrl.selection = TextSelection.fromPosition(
+                TextPosition(offset: _promptCtrl.text.length),
+              );
+            });
+          }
+        },
+      );
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Không thể khởi động micro hoặc thiết bị không hỗ trợ nhận diện giọng nói.'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
+    _speech.stop();
     _promptCtrl.dispose();
     _scrollCtrl.dispose();
     super.dispose();
@@ -606,10 +682,13 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
           const SizedBox(height: 12),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             decoration: BoxDecoration(
               color: AppTheme.lavenderCard,
               borderRadius: BorderRadius.circular(24),
+              border: _isListening
+                  ? Border.all(color: Colors.redAccent.withOpacity(0.6), width: 1.5)
+                  : null,
             ),
             child: Row(
               children: [
@@ -621,17 +700,36 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                       color: AppTheme.darkTextPrimary,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Nhập dịp đi chơi, đi làm, dự tiệc...',
+                      hintText: _isListening
+                          ? '🎙️ Đang lắng nghe giọng nói...'
+                          : 'Nhập dịp đi chơi, đi làm, dự tiệc...',
                       hintStyle: GoogleFonts.inter(
                         fontSize: 13.5,
-                        color: AppTheme.darkTextSecondary,
+                        color: _isListening ? Colors.redAccent : AppTheme.darkTextSecondary,
+                        fontWeight: _isListening ? FontWeight.w500 : FontWeight.normal,
                       ),
                       border: InputBorder.none,
                     ),
                     onSubmitted: (_) => _sendPrompt(),
                   ),
                 ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  decoration: BoxDecoration(
+                    color: _isListening ? Colors.redAccent.withOpacity(0.15) : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    tooltip: _isListening ? 'Đang ghi âm (chạm để dừng)' : 'Nhập bằng giọng nói',
+                    icon: Icon(
+                      _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+                      color: _isListening ? Colors.redAccent : AppTheme.primaryColor,
+                    ),
+                    onPressed: _listenVoicePrompt,
+                  ),
+                ),
                 IconButton(
+                  tooltip: 'Gửi',
                   icon: Icon(Icons.send_rounded, color: AppTheme.primaryColor),
                   onPressed: () => _sendPrompt(),
                 ),
