@@ -132,7 +132,7 @@ void main() {
       );
     });
 
-    test('Automatically ensures Cloudinary images include e_background_removal', () {
+    test('Preserves clean Cloudinary images without forcing broken add-on transformations', () {
       final item = WardrobeItemModel(
         id: 'item_cloud',
         name: 'Áo khoác dạ',
@@ -145,7 +145,7 @@ void main() {
 
       expect(
         item.imageUrl,
-        'https://res.cloudinary.com/bvxcghig/image/upload/e_background_removal/v12345/wearsy/wardrobe_items/sample.png',
+        'https://res.cloudinary.com/bvxcghig/image/upload/v12345/wearsy/wardrobe_items/sample.png',
       );
     });
   });

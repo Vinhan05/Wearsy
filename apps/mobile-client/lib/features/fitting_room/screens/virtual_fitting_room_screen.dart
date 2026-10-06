@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
+import '../../wardrobe/services/wardrobe_service.dart';
 import '../../outfits/providers/outfit_provider.dart';
 import '../../outfits/models/outfit_model.dart';
 import '../widgets/mannequin_2d_widget.dart';
@@ -75,6 +76,30 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
           break;
       }
     });
+    _ensureBgRemoved(item);
+  }
+
+  Future<void> _ensureBgRemoved(WardrobeItemModel item) async {
+    final url = item.imageUrl;
+    if (url.isEmpty || url.contains('e_background_removal') || (url.contains('cloudinary') && url.endsWith('.png'))) {
+      return;
+    }
+    try {
+      final wardrobeService = WardrobeService();
+      final bgRemovedUrl = await wardrobeService.removeBackgroundFromUrl(url);
+      if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty && mounted) {
+        setState(() {
+          final updatedItem = item.copyWith(imageUrl: bgRemovedUrl);
+          if (_selectedTop?.id == item.id) _selectedTop = updatedItem;
+          if (_selectedBottom?.id == item.id) _selectedBottom = updatedItem;
+          if (_selectedOuterwear?.id == item.id) _selectedOuterwear = updatedItem;
+          if (_selectedShoes?.id == item.id) _selectedShoes = updatedItem;
+          if (_selectedAccessories?.id == item.id) _selectedAccessories = updatedItem;
+        });
+      }
+    } catch (e) {
+      debugPrint('[FittingRoom] Background removal error: $e');
+    }
   }
 
   void _resetMannequin() {

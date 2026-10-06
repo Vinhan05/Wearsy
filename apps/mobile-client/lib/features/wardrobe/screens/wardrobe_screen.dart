@@ -8,6 +8,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../providers/wardrobe_provider.dart';
 import '../../../core/localization/language_provider.dart';
+import '../../../core/utils/tag_localization.dart';
 import 'add_item_screen.dart';
 import 'item_detail_screen.dart';
 import '../../shopping/screens/smart_shopping_screen.dart';
@@ -25,6 +26,7 @@ class WardrobeScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
         return SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
@@ -44,7 +46,7 @@ class WardrobeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chọn Phương Thức Nhập Đồ',
+                  isEn ? 'Choose Entry Method' : 'Chọn Phương Thức Nhập Đồ',
                   style: GoogleFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontSize: 18,
@@ -93,7 +95,7 @@ class WardrobeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Chụp ảnh từ Camera',
+                                isEn ? 'Take Photo from Camera' : 'Chụp ảnh từ Camera',
                                 style: GoogleFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
@@ -102,7 +104,9 @@ class WardrobeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Chụp trực tiếp trang phục thật của bạn, AI sẽ tự động phân tích.',
+                                isEn
+                                    ? 'Take real photos of your clothes, AI will automatically analyze.'
+                                    : 'Chụp trực tiếp trang phục thật của bạn, AI sẽ tự động phân tích.',
                                 style: GoogleFonts.inter(
                                   color: const Color(0xFF5F597C),
                                   fontSize: 12,
@@ -158,7 +162,7 @@ class WardrobeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Chọn ảnh từ Thư viện',
+                                isEn ? 'Choose Photo from Gallery' : 'Chọn ảnh từ Thư viện',
                                 style: GoogleFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
@@ -167,7 +171,9 @@ class WardrobeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Tải ảnh quần áo có sẵn từ bộ sưu tập điện thoại của bạn.',
+                                isEn
+                                    ? 'Upload available clothing photos from your phone gallery.'
+                                    : 'Tải ảnh quần áo có sẵn từ bộ sưu tập điện thoại của bạn.',
                                 style: GoogleFonts.inter(
                                   color: const Color(0xFF5F597C),
                                   fontSize: 12,
@@ -222,7 +228,7 @@ class WardrobeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Dán link mua sắm (Smart Shopping)',
+                                isEn ? 'Paste Shopping Link (Smart Shopping)' : 'Dán link mua sắm (Smart Shopping)',
                                 style: GoogleFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
@@ -231,7 +237,9 @@ class WardrobeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Dán link Shopee, TikTok, Zara... để AI kiểm tra tương thích trước khi mua.',
+                                isEn
+                                    ? 'Paste link from Shopee, TikTok, Zara... to check AI compatibility before buying.'
+                                    : 'Dán link Shopee, TikTok, Zara... để AI kiểm tra tương thích trước khi mua.',
                                 style: GoogleFonts.inter(
                                   color: const Color(0xFF5F597C),
                                   fontSize: 12,
@@ -264,6 +272,7 @@ class WardrobeScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (modalCtx) {
+        final isEn = Provider.of<LanguageProvider>(modalCtx).isEnglish;
         return Consumer<WardrobeProvider>(
           builder: (context, provider, _) {
             final collections = provider.collections;
@@ -296,7 +305,7 @@ class WardrobeScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              'Bộ Sưu Tập Tủ Đồ',
+                              isEn ? 'Wardrobe Collections' : 'Bộ Sưu Tập Tủ Đồ',
                               style: GoogleFonts.outfit(
                                 color: const Color(0xFF2C2849),
                                 fontSize: 20,
@@ -333,7 +342,9 @@ class WardrobeScreen extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      'Tạo các tủ đồ riêng biệt cho Công sở, Du lịch, Mùa đông...',
+                      isEn
+                          ? 'Create separate wardrobes for Work, Travel, Winter...'
+                          : 'Tạo các tủ đồ riêng biệt cho Công sở, Du lịch, Mùa đông...',
                       style: GoogleFonts.inter(
                         color: const Color(0xFF5F597C),
                         fontSize: 13,
@@ -377,7 +388,7 @@ class WardrobeScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              '+ Tạo Tủ Đồ Mới',
+                              isEn ? '+ Create New Wardrobe' : '+ Tạo Tủ Đồ Mới',
                               style: GoogleFonts.outfit(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -439,7 +450,7 @@ class WardrobeScreen extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        col.name,
+                                        TagLocalization.getLocalizedWardrobeName(col.name, isEn),
                                         style: GoogleFonts.outfit(
                                           color: const Color(0xFF2C2849),
                                           fontWeight: isSelected
@@ -460,7 +471,7 @@ class WardrobeScreen extends StatelessWidget {
                                               BorderRadius.circular(6),
                                         ),
                                         child: Text(
-                                          'Mặc định',
+                                          isEn ? 'Default' : 'Mặc định',
                                           style: GoogleFonts.inter(
                                             color: AppTheme.primaryColor,
                                             fontSize: 10,

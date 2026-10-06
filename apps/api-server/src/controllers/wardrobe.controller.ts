@@ -65,12 +65,7 @@ export class WardrobeController {
     }
 
     const result = await this.cloudinaryService.uploadImageWithBgRemoval(file);
-    const bgRemovedUrl = result.secure_url.includes('/image/upload/')
-      ? result.secure_url.replace(
-          '/image/upload/',
-          '/image/upload/e_background_removal/',
-        )
-      : result.secure_url;
+    const bgRemovedUrl = result.secure_url;
 
     return {
       success: true,
@@ -127,12 +122,7 @@ export class WardrobeController {
     const result = await this.cloudinaryService.uploadUrlWithBgRemoval(
       body.image_url,
     );
-    const bgRemovedUrl = result.secure_url.includes('/image/upload/')
-      ? result.secure_url.replace(
-          '/image/upload/',
-          '/image/upload/e_background_removal/',
-        )
-      : result.secure_url;
+    const bgRemovedUrl = result.secure_url;
 
     return {
       success: true,

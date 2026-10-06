@@ -10,6 +10,7 @@ import '../../fitting_room/screens/virtual_fitting_room_screen.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/language_provider.dart';
+import '../../../core/utils/tag_localization.dart';
 
 class DashboardScreen extends StatefulWidget {
   final void Function(int index)? onSwitchTab;
@@ -59,6 +60,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
         return Container(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -77,7 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Chọn Vị Trí Thời Tiết 📍',
+                isEn ? 'Select Weather Location 📍' : 'Chọn Vị Trí Thời Tiết 📍',
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -90,14 +92,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 leading: const Text('📍', style: TextStyle(fontSize: 24)),
                 title: Text(
-                  'Vị trí hiện tại (Định vị tự động)',
+                  isEn
+                      ? 'Current Location (Auto Detect)'
+                      : 'Vị trí hiện tại (Định vị tự động)',
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryLight,
                   ),
                 ),
                 subtitle: Text(
-                  'Tự động lấy vị trí Realtime qua IP/GPS',
+                  isEn
+                      ? 'Auto-detect realtime location via IP/GPS'
+                      : 'Tự động lấy vị trí Realtime qua IP/GPS',
                   style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[600]),
                 ),
                 onTap: () {
@@ -124,7 +130,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       leading:
                           Text(city.icon, style: const TextStyle(fontSize: 24)),
                       title: Text(
-                        city.name,
+                        TagLocalization.getLocalizedCityName(city.name, isEn),
                         style: GoogleFonts.inter(
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.w500,
@@ -373,9 +379,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // Clothing item pills
                     _buildClothingPill('👕', isEn ? 'White T-Shirt' : 'Áo thun trắng'),
                     const SizedBox(height: 6),
-                    _buildClothingPill('👖', isEn ? 'Denim Shorts' : 'Short denim'),
+                    _buildClothingPill('👖', isEn ? 'Denim Shorts' : 'Quần short denim'),
                     const SizedBox(height: 6),
-                    _buildClothingPill('👟', isEn ? 'White Sneakers' : 'Sneaker trắng'),
+                    _buildClothingPill('👟', isEn ? 'White Sneakers' : 'Giày thể thao trắng'),
                   ],
                 ),
               ),
@@ -549,7 +555,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'title': isEn ? 'Summer Casual' : 'Năng động phố hè',
         'subtitle': isEn
             ? 'White Tee • Denim Shorts • Tote bag'
-            : 'Áo thun trắng • Short denim • Tote bag',
+            : 'Áo thun trắng • Quần short denim • Túi vải tote',
         'image': 'assets/images/mannequin_hero.jpg',
       },
     ];

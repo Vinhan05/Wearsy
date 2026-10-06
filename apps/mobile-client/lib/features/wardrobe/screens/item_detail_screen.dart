@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/wardrobe_item_model.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/language_provider.dart';
+import '../../../core/utils/tag_localization.dart';
 import '../providers/wardrobe_provider.dart';
 import 'add_item_screen.dart';
 
@@ -249,25 +251,26 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           orElse: () => provider.activeWardrobe,
                         );
 
+                        final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
                         return Row(
                           children: [
                             _InfoChip(
                               icon: Icons.palette_rounded,
-                              label: 'Màu sắc',
-                              value: item.color,
+                              label: isEn ? 'Color' : 'Màu sắc',
+                              value: TagLocalization.getColorName(item.color, isEn),
                               color: AppTheme.secondaryColor,
                             ),
                             const SizedBox(width: 8),
                             _InfoChip(
                               icon: Icons.category_rounded,
-                              label: 'Loại',
-                              value: item.category.displayName,
+                              label: isEn ? 'Category' : 'Loại',
+                              value: TagLocalization.getCategoryName(item.category, isEn),
                               color: AppTheme.primaryLight,
                             ),
                             const SizedBox(width: 8),
                             _InfoChip(
                               icon: Icons.door_sliding_outlined,
-                              label: 'Tủ đồ',
+                              label: isEn ? 'Wardrobe' : 'Tủ đồ',
                               value:
                                   '${curWardrobe.icon} ${curWardrobe.name.split(' ')[0]}',
                               color: Colors.amber,
@@ -291,39 +294,44 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Phong cách / Thẻ gợi ý',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.darkTextSecondary,
-                              ),
-                            ),
-                            if (_tags.isNotEmpty)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color:
-                                      AppTheme.primaryColor.withOpacity(0.25),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                      color: AppTheme.primaryLight
-                                          .withOpacity(0.4)),
-                                ),
-                                child: Text(
-                                  '${_tags.length} đã chọn',
+                        Builder(
+                          builder: (ctx) {
+                            final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  isEn ? 'Style / Tags' : 'Phong cách / Thẻ gợi ý',
                                   style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.primaryLight,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.darkTextSecondary,
                                   ),
                                 ),
-                              ),
-                          ],
+                                if (_tags.isNotEmpty)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          AppTheme.primaryColor.withOpacity(0.25),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: AppTheme.primaryLight
+                                              .withOpacity(0.4)),
+                                    ),
+                                    child: Text(
+                                      isEn ? '${_tags.length} selected' : '${_tags.length} đã chọn',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.primaryLight,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
                         ),
                         const SizedBox(height: 12),
 
@@ -334,7 +342,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           children: _popularTags.map((tag) {
                             final isSelected = _tags.contains(tag);
                             return FilterChip(
-                              label: Text(tag),
+                              label: Text(TagLocalization.getLocalizedTag(
+                                  tag,
+                                  Provider.of<LanguageProvider>(context).isEnglish)),
                               selected: isSelected,
                               showCheckmark: isSelected,
                               checkmarkColor: Colors.white,
@@ -393,7 +403,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
+                                        Provider.of<LanguageProvider>(context).isEnglish
+                                            ? 'Extended Styles (AI Recognized / Custom):'
+                                            : 'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
                                         style: GoogleFonts.inter(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
@@ -431,7 +443,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
-                                              tag,
+                                              TagLocalization.getLocalizedTag(
+                                                  tag,
+                                                  Provider.of<LanguageProvider>(context)
+                                                      .isEnglish),
                                               style: GoogleFonts.inter(
                                                 fontSize: 12,
                                                 color: Colors.white,
@@ -504,8 +519,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                   onSubmitted: (val) => _addCustomTag(val),
                                   decoration: InputDecoration(
                                     isDense: true,
-                                    hintText:
-                                        'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
+                                    hintText: Provider.of<LanguageProvider>(context)
+                                            .isEnglish
+                                        ? 'Add custom style (e.g. School, Y2K, Gym...)'
+                                        : 'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
                                     hintStyle: GoogleFonts.inter(
                                       fontSize: 12,
                                       color: AppTheme.darkTextSecondary
@@ -527,7 +544,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                   child: const Icon(Icons.add_rounded,
                                       size: 16, color: Colors.white),
                                 ),
-                                tooltip: 'Thêm phong cách',
+                                tooltip: Provider.of<LanguageProvider>(context)
+                                        .isEnglish
+                                    ? 'Add style'
+                                    : 'Thêm phong cách',
                                 onPressed: () =>
                                     _addCustomTag(_customTagController.text),
                               ),
@@ -541,152 +561,164 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   const SizedBox(height: 28),
 
                   // AI Outfit Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withOpacity(0.4),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
+                  Builder(
+                    builder: (ctx) {
+                      final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                      return Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 54,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.primaryGradient,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.primaryColor.withOpacity(0.4),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.auto_fix_high_rounded,
+                                    color: Colors.white),
+                                label: Text(
+                                  isEn ? 'Style Outfit with AI' : 'Phối Outfit Với AI',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        isEn
+                                            ? '✨ AI is finding matching outfits for ${item.name}...'
+                                            : '✨ AI đang tìm outfit phù hợp với ${item.name}...',
+                                        style: GoogleFonts.inter(),
+                                      ),
+                                      backgroundColor: AppTheme.primaryColor,
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // Edit Item button
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppTheme.primaryColor,
+                                side: BorderSide(
+                                    color: AppTheme.primaryColor, width: 1.5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              icon: const Icon(Icons.edit_rounded, size: 20),
+                              label: Text(
+                                isEn ? 'Edit Item' : 'Chỉnh sửa món đồ',
+                                style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => AddItemScreen(existingItem: item),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // Move Wardrobe button
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppTheme.primaryLight,
+                                side: BorderSide(
+                                    color: AppTheme.primaryLight.withOpacity(0.4)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              icon: const Icon(Icons.drive_file_move_outlined, size: 20),
+                              label: Text(
+                                isEn ? 'Move to Another Wardrobe' : 'Chuyển sang tủ đồ khác',
+                                style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+                              ),
+                              onPressed: () => _showMoveWardrobeSheet(context),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          // Delete button
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppTheme.accentColor,
+                                side: BorderSide(
+                                    color: AppTheme.accentColor.withOpacity(0.5)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              icon: const Icon(Icons.delete_outline_rounded),
+                              label: Text(
+                                isEn ? 'Delete Item' : 'Xóa khỏi tủ đồ',
+                                style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+                              ),
+                              onPressed: () {
+                                Provider.of<WardrobeProvider>(context, listen: false)
+                                    .removeItem(item.id);
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      isEn
+                                          ? '🗑️ Deleted ${item.name} from wardrobe'
+                                          : '🗑️ Đã xóa ${item.name} khỏi tủ đồ',
+                                      style: GoogleFonts.inter(),
+                                    ),
+                                    backgroundColor: AppTheme.accentColor,
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ],
-                      ),
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        icon: const Icon(Icons.auto_fix_high_rounded,
-                            color: Colors.white),
-                        label: Text(
-                          'Phối Outfit Với AI',
-                          style: GoogleFonts.outfit(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '✨ AI đang tìm outfit phù hợp với ${item.name}...',
-                                style: GoogleFonts.inter(),
-                              ),
-                              backgroundColor: AppTheme.primaryColor,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Edit Item button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.primaryColor,
-                        side: BorderSide(
-                            color: AppTheme.primaryColor, width: 1.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      icon: const Icon(Icons.edit_rounded, size: 20),
-                      label: Text(
-                        'Chỉnh sửa món đồ',
-                        style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AddItemScreen(existingItem: item),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Move Wardrobe button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.primaryLight,
-                        side: BorderSide(
-                            color: AppTheme.primaryLight.withOpacity(0.4)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      icon:
-                          const Icon(Icons.drive_file_move_outlined, size: 20),
-                      label: Text(
-                        'Chuyển sang tủ đồ khác',
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
-                      ),
-                      onPressed: () => _showMoveWardrobeSheet(context),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Delete button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.accentColor,
-                        side: BorderSide(
-                            color: AppTheme.accentColor.withOpacity(0.5)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      icon: const Icon(Icons.delete_outline_rounded),
-                      label: Text(
-                        'Xóa khỏi tủ đồ',
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
-                      ),
-                      onPressed: () {
-                        Provider.of<WardrobeProvider>(context, listen: false)
-                            .removeItem(item.id);
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '🗑️ Đã xóa ${item.name} khỏi tủ đồ',
-                              style: GoogleFonts.inter(),
-                            ),
-                            backgroundColor: AppTheme.accentColor,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      },
-                    ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 30),
                 ],
@@ -701,6 +733,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   void _showMoveWardrobeSheet(BuildContext context) {
     final provider = Provider.of<WardrobeProvider>(context, listen: false);
     final collections = provider.collections;
+    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showModalBottomSheet(
       context: context,
@@ -728,7 +761,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chọn Tủ Đồ Chuyển Đến 🚪',
+                  isEn ? 'Choose Target Wardrobe 🚪' : 'Chọn Tủ Đồ Chuyển Đến 🚪',
                   style: GoogleFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontSize: 18,
@@ -737,7 +770,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Chuyển "${widget.item.name}" sang bộ sưu tập tủ đồ khác:',
+                  isEn
+                      ? 'Move "${widget.item.name}" to another wardrobe collection:'
+                      : 'Chuyển "${widget.item.name}" sang bộ sưu tập tủ đồ khác:',
                   style: GoogleFonts.inter(
                     color: AppTheme.darkTextSecondary,
                     fontSize: 13,

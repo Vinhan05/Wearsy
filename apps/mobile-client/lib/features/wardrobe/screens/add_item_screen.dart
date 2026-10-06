@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/clothing_ai_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/language_provider.dart';
+import '../../../core/utils/tag_localization.dart';
 import '../models/wardrobe_item_model.dart';
 import '../providers/wardrobe_provider.dart';
 import '../services/wardrobe_service.dart';
@@ -444,20 +446,58 @@ class _AddItemScreenState extends State<AddItemScreen>
 
     setState(() => _isAnalyzing = true);
 
+    String effectivePath = pathToAnalyze;
+
+    // BẮT BUỘC 100% XÓA NỀN NGAY KHI TẢI ẢNH TỪ ĐIỆN THOẠI / URL LÊN APP
     try {
-      final result = await ClothingAiService.analyzeImage(pathToAnalyze);
+      final wardrobeService = WardrobeService();
+      if (_localImagePath != null && _localImagePath!.isNotEmpty) {
+        final bgRemovedUrl =
+            await wardrobeService.uploadImageWithBgRemoval(_localImagePath!);
+        if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
+          effectivePath = bgRemovedUrl;
+          if (mounted) {
+            setState(() {
+              _currentImageUrl = bgRemovedUrl;
+              _localImagePath = null; // Chuyển sang URL đã tách phông nền 100%
+            });
+          }
+        }
+      } else if (pathToAnalyze.startsWith('http') &&
+          !pathToAnalyze.contains('e_background_removal') &&
+          !pathToAnalyze.endsWith('.png')) {
+        final bgRemovedUrl =
+            await wardrobeService.removeBackgroundFromUrl(pathToAnalyze);
+        if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
+          effectivePath = bgRemovedUrl;
+          if (mounted) {
+            setState(() {
+              _currentImageUrl = bgRemovedUrl;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[AddItemScreen] Immediate background removal error: $e');
+    }
+
+    try {
+      final result = await ClothingAiService.analyzeImage(effectivePath);
 
       if (mounted) {
+        final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
         setState(() {
           _isAnalyzing = false;
-          _nameController.text = result.name;
+          _nameController.text = TagLocalization.getLocalizedName(result.name, isEn);
           _selectedCategory = result.category;
-          _colorController.text = result.color;
+          _colorController.text = TagLocalization.getColorName(result.color, isEn);
           _brandController.text = result.brand;
           _selectedTags = List.from(result.tags);
           _aiMatchScore = result.aiMatchScore;
           _aiAnalysisReason = result.aiReason;
         });
+
+        _recalculateAiScore();
 
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -473,7 +513,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '✨ Gemini AI đã nhận diện trang phục!',
+                        isEn
+                            ? '✨ Background removed & clothing recognized!'
+                            : '✨ AI đã tách 100% phông nền & nhận diện trang phục!',
                         style: GoogleFonts.outfit(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
@@ -481,7 +523,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${result.category.icon} ${result.category.displayName} • Màu ${result.color} • ${result.name}',
+                        '${result.category.icon} ${TagLocalization.getCategoryName(result.category, isEn)} • ${isEn ? "Color" : "Màu"} ${TagLocalization.getColorName(result.color, isEn)} • ${TagLocalization.getLocalizedName(result.name, isEn)}',
                         style: GoogleFonts.inter(
                             fontSize: 12, color: const Color(0xFFCFC3F5)),
                         maxLines: 1,
@@ -626,7 +668,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    'Đang dùng AI xóa phông nền trang phục...',
+                    'Đang tải ảnh lên hệ thống tủ đồ...',
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -720,6 +762,8 @@ class _AddItemScreenState extends State<AddItemScreen>
       return _buildCameraViewfinder();
     }
 
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
@@ -735,8 +779,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                 _nameController.text.isNotEmpty
                     ? _nameController.text
                     : (widget.existingItem != null
-                        ? 'Chỉnh Sửa Món Đồ'
-                        : 'Thêm Đồ Vào Tủ'),
+                        ? (isEn ? 'Edit Item' : 'Chỉnh Sửa Món Đồ')
+                        : (isEn ? 'Add New Item' : 'Thêm Đồ Vào Tủ')),
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -750,7 +794,7 @@ class _AddItemScreenState extends State<AddItemScreen>
         ),
         actions: [
           IconButton(
-            tooltip: 'Quét lại bằng AI',
+            tooltip: isEn ? 'Rescan with AI' : 'Quét lại bằng AI',
             icon: Icon(Icons.auto_awesome, color: AppTheme.primaryLight),
             onPressed: _isAnalyzing ? null : () => _triggerAIScan(),
           ),
@@ -776,7 +820,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               const SizedBox(height: 24),
 
               // Form fields
-              _buildSectionTitle('Thông Tin Trang Phục 🏷️'),
+              _buildSectionTitle(isEn ? 'Clothing Information 🏷️' : 'Thông Tin Trang Phục 🏷️'),
               const SizedBox(height: 14),
 
               if (_aiAnalysisReason != null &&
@@ -809,7 +853,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                             Row(
                               children: [
                                 Text(
-                                  'Gemini AI đã phân tích:',
+                                  isEn ? 'Gemini AI Analysis:' : 'Gemini AI đã phân tích:',
                                   style: GoogleFonts.outfit(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
@@ -826,7 +870,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
-                                    '${_selectedCategory.icon} ${_selectedCategory.displayName}',
+                                    '${_selectedCategory.icon} ${TagLocalization.getCategoryName(_selectedCategory, isEn)}',
                                     style: TextStyle(
                                         fontSize: 11,
                                         color: AppTheme.primaryColor,
@@ -837,7 +881,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _aiAnalysisReason!,
+                              TagLocalization.getLocalizedAiReason(_aiAnalysisReason!, isEn),
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: AppTheme.darkTextSecondary,
@@ -856,10 +900,10 @@ class _AddItemScreenState extends State<AddItemScreen>
               // Tên trang phục
               _buildTextField(
                 controller: _nameController,
-                label: 'Tên món đồ',
+                label: isEn ? 'Item Name' : 'Tên món đồ',
                 icon: Icons.checkroom_rounded,
                 validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'Vui lòng nhập tên món đồ'
+                    ? (isEn ? 'Please enter item name' : 'Vui lòng nhập tên món đồ')
                     : null,
               ),
               const SizedBox(height: 16),
@@ -875,7 +919,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               // Màu sắc chính (Đã bỏ ô Thương hiệu)
               _buildTextField(
                 controller: _colorController,
-                label: 'Màu sắc chính',
+                label: isEn ? 'Primary Color' : 'Màu sắc chính',
                 icon: Icons.palette_rounded,
               ),
               const SizedBox(height: 12),
@@ -918,7 +962,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                     icon:
                         const Icon(Icons.add_task_rounded, color: Colors.white),
                     label: Text(
-                      'LƯU VÀO TỦ ĐỒ',
+                      isEn ? 'SAVE TO WARDROBE' : 'LƯU VÀO TỦ ĐỒ',
                       style: GoogleFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -1007,13 +1051,20 @@ class _AddItemScreenState extends State<AddItemScreen>
                     Icon(Icons.auto_awesome,
                         color: AppTheme.primaryLight, size: 14),
                     const SizedBox(width: 6),
-                    Text(
-                      isLocal ? 'Ảnh từ thiết bị' : 'Ảnh mẫu WEARSY',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    Builder(
+                      builder: (ctx) {
+                        final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                        return Text(
+                          isLocal
+                              ? (isEn ? 'Device Photo' : 'Ảnh từ thiết bị')
+                              : (isEn ? 'Sample Photo' : 'Ảnh mẫu WEARSY'),
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1102,14 +1153,21 @@ class _AddItemScreenState extends State<AddItemScreen>
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Text(
-                          'AI đang bóc tách màu sắc & nhận diện dáng đồ...',
-                          style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        child: Builder(
+                          builder: (ctx) {
+                            final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                            return Text(
+                              isEn
+                                  ? 'AI is extracting colors & style features...'
+                                  : 'AI đang bóc tách màu sắc & nhận diện dáng đồ...',
+                              style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -1123,6 +1181,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   }
 
   Widget _buildSourceActionButtons() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Column(
       children: [
         Row(
@@ -1130,7 +1189,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             Expanded(
               child: _buildActionButton(
                 icon: Icons.photo_library_rounded,
-                label: 'Thư Viện Ảnh',
+                label: isEn ? 'Photo Library' : 'Thư Viện Ảnh',
                 color: AppTheme.secondaryColor,
                 onTap: _pickImageFromGallery,
               ),
@@ -1139,7 +1198,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             Expanded(
               child: _buildActionButton(
                 icon: Icons.camera_alt_rounded,
-                label: 'Chụp / Camera',
+                label: isEn ? 'Take / Camera' : 'Chụp / Camera',
                 color: AppTheme.primaryColor,
                 onTap: _pickImageFromCamera,
               ),
@@ -1152,7 +1211,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             Expanded(
               child: _buildActionButton(
                 icon: Icons.auto_fix_high_rounded,
-                label: 'Quét lại bằng AI',
+                label: isEn ? 'Rescan with AI' : 'Quét lại bằng AI',
                 color: AppTheme.primaryLight,
                 onTap: _isAnalyzing ? null : () => _triggerAIScan(),
               ),
@@ -1161,7 +1220,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             Expanded(
               child: _buildActionButton(
                 icon: Icons.link_rounded,
-                label: 'Nhập URL ảnh',
+                label: isEn ? 'Image URL' : 'Nhập URL ảnh',
                 color: AppTheme.warningColor,
                 onTap: _showUrlInputDialog,
               ),
@@ -1207,6 +1266,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   }
 
   Widget _buildGalleryCarousel() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final allDisplayList = <String>[
       ..._galleryImages,
       ..._defaultFashionPresets.map((e) => e.imageUrl),
@@ -1221,7 +1281,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             Row(
               children: [
                 Text(
-                  'Thư Viện Ảnh',
+                  isEn ? 'Photo Library' : 'Thư Viện Ảnh',
                   style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -1250,7 +1310,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               ],
             ),
             Text(
-              '${allDisplayList.length} ảnh',
+              isEn ? '${allDisplayList.length} photos' : '${allDisplayList.length} ảnh',
               style: GoogleFonts.inter(
                 fontSize: 12,
                 color: AppTheme.darkTextSecondary,
@@ -1293,7 +1353,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '+ Thêm ảnh\ntừ máy',
+                          isEn ? '+ Add photo\nfrom device' : '+ Thêm ảnh\ntừ máy',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.inter(
                             fontSize: 10,
@@ -1357,7 +1417,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                           left: 6,
                           right: 6,
                           child: Text(
-                            isLocal ? 'Ảnh của bạn' : _getPresetName(itemPath),
+                            isLocal
+                                ? (isEn ? 'Your Photo' : 'Ảnh của bạn')
+                                : _getPresetName(itemPath, isEn),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.inter(
@@ -1407,15 +1469,18 @@ class _AddItemScreenState extends State<AddItemScreen>
     );
   }
 
-  String _getPresetName(String url) {
+  String _getPresetName(String url, bool isEn) {
     for (final preset in _defaultFashionPresets) {
-      if (preset.imageUrl == url) return preset.title;
+      if (preset.imageUrl == url) {
+        return TagLocalization.getLocalizedName(preset.title, isEn);
+      }
     }
-    return 'Ảnh mẫu';
+    return isEn ? 'Sample Photo' : 'Ảnh mẫu';
   }
 
   Widget _buildWardrobeSelector() {
     final provider = Provider.of<WardrobeProvider>(context);
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final collections = provider.collections;
     final currentWardrobeId = _selectedWardrobeId ?? provider.activeWardrobeId;
 
@@ -1433,7 +1498,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Lưu vào Tủ Đồ 🚪',
+                isEn ? 'Save to Wardrobe 🚪' : 'Lưu vào Tủ Đồ 🚪',
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -1441,7 +1506,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 ),
               ),
               Text(
-                '${collections.length} tủ đồ',
+                isEn ? '${collections.length} wardrobes' : '${collections.length} tủ đồ',
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   color: AppTheme.primaryLight,
@@ -1457,7 +1522,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: collections.map((col) {
               final isSelected = col.id == currentWardrobeId;
               return ChoiceChip(
-                label: Text('${col.icon} ${col.name}'),
+                label: Text('${col.icon} ${TagLocalization.getLocalizedWardrobeName(col.name, isEn)}'),
                 selected: isSelected,
                 showCheckmark: isSelected,
                 checkmarkColor: Colors.white,
@@ -1487,6 +1552,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   }
 
   Widget _buildCategorySelector() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1498,7 +1564,7 @@ class _AddItemScreenState extends State<AddItemScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Danh mục phân loại',
+            isEn ? 'Category' : 'Danh mục phân loại',
             style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
@@ -1511,7 +1577,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: WardrobeCategory.values.map((cat) {
               final isSelected = _selectedCategory == cat;
               return ChoiceChip(
-                label: Text('${cat.icon} ${cat.displayName}'),
+                label: Text('${cat.icon} ${TagLocalization.getCategoryName(cat, isEn)}'),
                 selected: isSelected,
                 showCheckmark: isSelected,
                 checkmarkColor: Colors.white,
@@ -1530,7 +1596,10 @@ class _AddItemScreenState extends State<AddItemScreen>
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 ),
                 onSelected: (val) {
-                  if (val) setState(() => _selectedCategory = cat);
+                  if (val) {
+                    setState(() => _selectedCategory = cat);
+                    _recalculateAiScore();
+                  }
                 },
               );
             }).toList(),
@@ -1541,6 +1610,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   }
 
   Widget _buildColorPills() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -1558,7 +1628,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                     : Colors.grey.withOpacity(0.2),
               ),
               label: Text(
-                colorName,
+                TagLocalization.getColorName(colorName, isEn),
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   color: isSelected ? Colors.white : AppTheme.darkTextPrimary,
@@ -1567,6 +1637,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               ),
               onPressed: () {
                 setState(() => _colorController.text = colorName);
+                _recalculateAiScore();
               },
             ),
           );
@@ -1576,6 +1647,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   }
 
   Widget _buildTagSelector() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final customTags =
         _selectedTags.where((t) => !_popularTags.contains(t)).toList();
 
@@ -1593,7 +1665,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Phong cách / Thẻ gợi ý',
+                isEn ? 'Style / Tags' : 'Phong cách / Thẻ gợi ý',
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -1611,7 +1683,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                         color: AppTheme.primaryLight.withOpacity(0.4)),
                   ),
                   child: Text(
-                    '${_selectedTags.length} đã chọn',
+                    isEn ? '${_selectedTags.length} selected' : '${_selectedTags.length} đã chọn',
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -1630,7 +1702,8 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: _popularTags.map((tag) {
               final isSelected = _selectedTags.contains(tag);
               return FilterChip(
-                label: Text(tag),
+                label: Text(TagLocalization.getLocalizedTag(
+                    tag, isEn)),
                 selected: isSelected,
                 showCheckmark: isSelected,
                 checkmarkColor: Colors.white,
@@ -1675,7 +1748,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
+                  isEn
+                      ? 'Extended Styles (AI Recognized / Custom):'
+                      : 'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -1710,7 +1785,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        tag,
+                        TagLocalization.getLocalizedTag(
+                            tag, isEn),
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           color: Colors.white,
@@ -1773,8 +1849,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                     onSubmitted: (val) => _addCustomTag(val),
                     decoration: InputDecoration(
                       isDense: true,
-                      hintText:
-                          'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
+                      hintText: isEn
+                          ? 'Add custom style (e.g. School, Y2K, Gym...)'
+                          : 'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
                       hintStyle: GoogleFonts.inter(
                         fontSize: 12,
                         color: AppTheme.darkTextSecondary,
@@ -1794,7 +1871,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                     child: const Icon(Icons.add_rounded,
                         size: 16, color: Colors.white),
                   ),
-                  tooltip: 'Thêm phong cách',
+                  tooltip: isEn ? 'Add style' : 'Thêm phong cách',
                   onPressed: () => _addCustomTag(_customTagController.text),
                 ),
               ],
@@ -1805,7 +1882,49 @@ class _AddItemScreenState extends State<AddItemScreen>
     );
   }
 
+  void _recalculateAiScore() {
+    double baseScore = 8.5;
+    switch (_selectedCategory) {
+      case WardrobeCategory.tops:
+        baseScore += 0.7;
+        break;
+      case WardrobeCategory.bottoms:
+        baseScore += 0.6;
+        break;
+      case WardrobeCategory.outerwear:
+        baseScore += 0.8;
+        break;
+      case WardrobeCategory.shoes:
+        baseScore += 0.9;
+        break;
+      case WardrobeCategory.dresses:
+        baseScore += 0.7;
+        break;
+      case WardrobeCategory.accessories:
+        baseScore += 0.5;
+        break;
+    }
+    final color = _colorController.text.trim().toLowerCase();
+    if (color.contains('trắng') ||
+        color.contains('đen') ||
+        color.contains('be') ||
+        color.contains('xám')) {
+      baseScore += 0.3;
+    } else if (color.contains('navy') || color.contains('nâu')) {
+      baseScore += 0.2;
+    }
+    baseScore += (_selectedTags.length * 0.1).clamp(0.0, 0.4);
+
+    setState(() {
+      _aiMatchScore =
+          double.parse(baseScore.clamp(8.0, 9.9).toStringAsFixed(1));
+    });
+  }
+
   Widget _buildAiMatchBanner() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+    final outfitCount = ((_aiMatchScore * 1.5).round()).clamp(5, 15);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1835,7 +1954,9 @@ class _AddItemScreenState extends State<AddItemScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'AI Tương Thích Phong Cách: ${_aiMatchScore.toStringAsFixed(1)} / 10',
+                  isEn
+                      ? 'AI Style Compatibility: ${_aiMatchScore.toStringAsFixed(1)} / 10'
+                      : 'AI Tương Thích Phong Cách: ${_aiMatchScore.toStringAsFixed(1)} / 10',
                   style: GoogleFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -1844,7 +1965,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Món đồ này phối hợp mượt mà với hơn 8 outfits sẵn có trong tủ đồ số của bạn.',
+                  isEn
+                      ? 'This item seamlessly coordinates with $outfitCount+ outfits in your digital wardrobe.'
+                      : 'Món đồ này phối hợp mượt mà với hơn $outfitCount outfits sẵn có trong tủ đồ số của bạn.',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: AppTheme.darkTextSecondary,

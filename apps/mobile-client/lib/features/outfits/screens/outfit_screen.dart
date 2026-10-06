@@ -81,39 +81,46 @@ class _OutfitScreenState extends State<OutfitScreen> {
                     ],
                   ),
                   // History Button
-                  GestureDetector(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('🕒 Đang hiển thị lịch sử phối đồ gần nhất'),
-                          behavior: SnackBarBehavior.floating,
+                  Builder(
+                    builder: (ctx) {
+                      final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                      return GestureDetector(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(isEn
+                                  ? '🕒 Showing recent outfit history'
+                                  : '🕒 Đang hiển thị lịch sử phối đồ gần nhất'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: const Color(0xFFE5E7EB)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.access_time_rounded,
+                                  size: 14, color: Color(0xFF374151)),
+                              const SizedBox(width: 6),
+                              Text(
+                                isEn ? 'History' : 'Lịch sử',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF374151),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE5E7EB)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.access_time_rounded,
-                              size: 14, color: Color(0xFF374151)),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Lịch sử',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF374151),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ],
               ),

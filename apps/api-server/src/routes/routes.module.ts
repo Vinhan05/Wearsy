@@ -38,6 +38,7 @@ import {
   GamificationService,
   CloudinaryService,
   CloudinaryProvider,
+  BgRemovalService,
 } from '../services';
 
 @Module({
@@ -81,6 +82,7 @@ import {
     GamificationService,
     CloudinaryService,
     CloudinaryProvider,
+    BgRemovalService,
   ],
   exports: [
     AuthService,
@@ -92,6 +94,7 @@ import {
     ShoppingService,
     GamificationService,
     CloudinaryService,
+    BgRemovalService,
     JwtModule,
     TypeOrmModule,
   ],

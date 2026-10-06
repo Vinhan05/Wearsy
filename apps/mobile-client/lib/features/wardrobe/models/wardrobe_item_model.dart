@@ -87,21 +87,6 @@ class WardrobeItemModel {
       return 'https://res.cloudinary.com/bvxcghig/image/upload/e_background_removal/v1/wearsy/wardrobe_items/yek4pytbpifbaihhg4ql.png';
     }
 
-    // Nếu là URL Cloudinary nhưng chưa có e_background_removal
-    if (url.contains('res.cloudinary.com') &&
-        url.contains('/image/upload/') &&
-        !url.contains('e_background_removal')) {
-      return url.replaceFirst(
-          '/image/upload/', '/image/upload/e_background_removal/');
-    }
-
-    // Nếu là URL web bên ngoài (Shopee, Unsplash...) chưa được tách nền
-    if (url.startsWith('http') &&
-        !url.contains('e_background_removal') &&
-        !url.contains('cloudinary.com/bvxcghig/image/fetch/')) {
-      return 'https://res.cloudinary.com/bvxcghig/image/fetch/f_png,e_background_removal/$url';
-    }
-
     return url;
   }
 

@@ -2,12 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import * as streamifier from 'streamifier';
+import { BgRemovalService } from './bg-removal.service';
 
 @Injectable()
 export class CloudinaryService {
   private readonly logger = new Logger(CloudinaryService.name);
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly bgRemovalService: BgRemovalService,
+  ) {
     cloudinary.config(this.getCredentials());
   }
 
@@ -29,36 +33,57 @@ export class CloudinaryService {
     };
   }
 
-  /**
-   * Upload ảnh lên Cloudinary kèm tính năng tách nền AI (background_removal)
-   * và chuyển đổi sang định dạng PNG trong suốt.
-   */
-  async uploadImageWithBgRemoval(
-    file: Express.Multer.File,
+  private uploadBufferToCloudinary(
+    buffer: Buffer,
+    folder = 'wearsy/wardrobe_items',
+    format?: string,
   ): Promise<UploadApiResponse> {
     const creds = this.getCredentials();
     return new Promise((resolve, reject) => {
+      const options: any = { ...creds, folder };
+      if (format) options.format = format;
+
       const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          ...creds,
-          folder: 'wearsy/wardrobe_items',
-          background_removal: 'cloudinary_ai',
-          format: 'png',
-        },
+        options,
         (error, result) => {
           if (error) {
-            this.logger.error(
-              'Lỗi khi tải ảnh và tách nền trên Cloudinary:',
-              error,
-            );
+            this.logger.error('Lỗi khi tải ảnh lên Cloudinary:', error);
             return reject(error);
           }
           resolve(result as UploadApiResponse);
         },
       );
 
-      streamifier.createReadStream(file.buffer).pipe(uploadStream);
+      streamifier.createReadStream(buffer).pipe(uploadStream);
     });
+  }
+
+  /**
+   * Upload ảnh lên Cloudinary kèm tính năng tách nền AI Miễn phí 100% vĩnh viễn (Node.js AI)
+   * và lưu trữ dưới dạng PNG trong suốt.
+   */
+  async uploadImageWithBgRemoval(
+    file: Express.Multer.File,
+  ): Promise<UploadApiResponse> {
+    try {
+      this.logger.log('Đang chạy tách nền AI (Free 100%) cho file ảnh...');
+      const pngBuffer = await this.bgRemovalService.removeBackground(
+        file.buffer,
+      );
+      return await this.uploadBufferToCloudinary(
+        pngBuffer,
+        'wearsy/wardrobe_items',
+        'png',
+      );
+    } catch (bgError) {
+      this.logger.warn(
+        `Tách nền AI thất bại (${bgError.message}). Fallback sử dụng ảnh gốc tải lên Cloudinary.`,
+      );
+      return await this.uploadBufferToCloudinary(
+        file.buffer,
+        'wearsy/wardrobe_items',
+      );
+    }
   }
 
   /**
@@ -68,24 +93,7 @@ export class CloudinaryService {
     file: Express.Multer.File,
     folder = 'wearsy/general',
   ): Promise<UploadApiResponse> {
-    const creds = this.getCredentials();
-    return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { ...creds, folder },
-        (error, result) => {
-          if (error) {
-            this.logger.error(
-              'Lỗi tải ảnh thông thường lên Cloudinary:',
-              error,
-            );
-            return reject(error);
-          }
-          resolve(result as UploadApiResponse);
-        },
-      );
-
-      streamifier.createReadStream(file.buffer).pipe(uploadStream);
-    });
+    return await this.uploadBufferToCloudinary(file.buffer, folder);
   }
 
   /**
@@ -94,16 +102,21 @@ export class CloudinaryService {
   async uploadUrlWithBgRemoval(imageUrl: string): Promise<UploadApiResponse> {
     const creds = this.getCredentials();
     try {
-      const result = await cloudinary.uploader.upload(imageUrl, {
+      this.logger.log(`Đang chạy tách nền AI (Free 100%) cho URL: ${imageUrl}`);
+      const pngBuffer = await this.bgRemovalService.removeBackground(imageUrl);
+      return await this.uploadBufferToCloudinary(
+        pngBuffer,
+        'wearsy/wardrobe_items',
+        'png',
+      );
+    } catch (bgError) {
+      this.logger.warn(
+        `Tách nền AI từ URL thất bại (${bgError.message}). Fallback tải trực tiếp URL gốc lên Cloudinary.`,
+      );
+      return await cloudinary.uploader.upload(imageUrl, {
         ...creds,
         folder: 'wearsy/wardrobe_items',
-        background_removal: 'cloudinary_ai',
-        format: 'png',
       });
-      return result;
-    } catch (error) {
-      this.logger.error('Lỗi khi tách nền ảnh từ URL trên Cloudinary:', error);
-      throw error;
     }
   }
 }

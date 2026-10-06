@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../core/services/smart_shopping_ai_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/language_provider.dart';
+import '../../../core/utils/tag_localization.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../../wardrobe/services/wardrobe_service.dart';
@@ -240,6 +242,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
   }
 
   Widget _buildHeroBanner() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -274,7 +277,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Check Tương Thích Tủ Đồ',
+                  isEn ? 'Wardrobe Compatibility Check' : 'Check Tương Thích Tủ Đồ',
                   style: GoogleFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontSize: 17,
@@ -283,7 +286,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Dán link Shopee, TikTok Shop, Lazada, Zara... để AI đánh giá xem món đồ mới có phối được với tủ đồ của bạn không.',
+                  isEn
+                      ? 'Paste links from Shopee, TikTok Shop, Lazada, Zara... to let AI evaluate how well this item pairs with your digital wardrobe.'
+                      : 'Dán link Shopee, TikTok Shop, Lazada, Zara... để AI đánh giá xem món đồ mới có phối được với tủ đồ của bạn không.',
                   style: GoogleFonts.inter(
                     color: AppTheme.darkTextSecondary,
                     fontSize: 12,
@@ -299,6 +304,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
   }
 
   Widget _buildUrlInputSection() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -310,7 +316,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Link sản phẩm muốn mua 🔗',
+            isEn ? 'Product Link You Want to Buy 🔗' : 'Link sản phẩm muốn mua 🔗',
             style: GoogleFonts.outfit(
               color: AppTheme.darkTextPrimary,
               fontWeight: FontWeight.bold,
@@ -325,7 +331,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   controller: _urlController,
                   style: TextStyle(color: AppTheme.darkTextPrimary, fontSize: 13),
                   decoration: InputDecoration(
-                    hintText: 'Dán link Shopee, TikTok, Lazada, Zara...',
+                    hintText: isEn
+                        ? 'Paste link from Shopee, TikTok, Lazada, Zara...'
+                        : 'Dán link Shopee, TikTok, Lazada, Zara...',
                     hintStyle: TextStyle(
                         color: AppTheme.darkTextSecondary.withOpacity(0.7),
                         fontSize: 13),
@@ -377,7 +385,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                           color: AppTheme.primaryColor, size: 18),
                       const SizedBox(width: 6),
                       Text(
-                        'Dán',
+                        isEn ? 'Paste' : 'Dán',
                         style: GoogleFonts.inter(
                           color: AppTheme.primaryColor,
                           fontWeight: FontWeight.bold,
@@ -405,7 +413,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               icon:
                   const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
               label: Text(
-                'Kiểm Tra Tương Thích Với AI',
+                isEn ? 'Check Compatibility with AI ✨' : 'Kiểm Tra Tương Thích Với AI',
                 style: GoogleFonts.outfit(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -423,6 +431,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
   }
 
   Widget _buildEmptyPromptState() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
@@ -447,7 +456,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Sẵn Sàng Phân Tích Món Đồ',
+            isEn ? 'Ready to Analyze Item' : 'Sẵn Sàng Phân Tích Món Đồ',
             style: GoogleFonts.outfit(
               color: AppTheme.darkTextPrimary,
               fontSize: 16,
@@ -456,7 +465,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Dán đường link sản phẩm từ Shopee, TikTok Shop, Lazada hoặc Zara vào ô bên trên rồi bấm "Kiểm Tra Tương Thích Với AI".',
+            isEn
+                ? 'Paste a product link from Shopee, TikTok Shop, Lazada or Zara above then tap "Check Compatibility with AI".'
+                : 'Dán đường link sản phẩm từ Shopee, TikTok Shop, Lazada hoặc Zara vào ô bên trên rồi bấm "Kiểm Tra Tương Thích Với AI".',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               color: AppTheme.darkTextSecondary,
@@ -470,6 +481,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
   }
 
   Widget _buildLoadingState() {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
@@ -490,7 +502,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            'WEARSY AI đang so sánh sản phẩm với tủ đồ của bạn...',
+            isEn
+                ? 'WEARSY AI is comparing product with your wardrobe...'
+                : 'WEARSY AI đang so sánh sản phẩm với tủ đồ của bạn...',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
               color: AppTheme.darkTextPrimary,
@@ -500,7 +514,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Phân tích bánh xe màu sắc, phom dáng và khả năng tạo outfit.',
+            isEn
+                ? 'Analyzing color wheel, silhouette fit, and outfit compatibility.'
+                : 'Phân tích bánh xe màu sắc, phom dáng và khả năng tạo outfit.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               color: AppTheme.darkTextSecondary,
@@ -513,6 +529,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
   }
 
   Widget _buildAnalysisResultView(NumberFormat currencyFormatter) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final result = _analysisResult!;
     final prod = result.product;
 
@@ -619,7 +636,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Màu: ${prod.color} • ${prod.category.displayName}',
+                          '${isEn ? "Color" : "Màu"}: ${TagLocalization.getColorName(prod.color, isEn)} • ${TagLocalization.getCategoryName(prod.category, isEn)}',
                           style: GoogleFonts.inter(
                             color: AppTheme.darkTextSecondary,
                             fontSize: 11,
@@ -646,7 +663,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   ),
                   icon: const Icon(Icons.edit_rounded, size: 15),
                   label: Text(
-                    'Sửa thông tin sản phẩm',
+                    isEn ? 'Edit Product Info' : 'Sửa thông tin sản phẩm',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -686,20 +703,84 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             ),
             icon: const Icon(Icons.accessibility_new_rounded),
             label: Text(
-              'ƯỚM THỬ LÊN MA-NƠ-CANH VỚI TỦ ĐỒ 👗',
+              isEn
+                  ? 'TRY ON MANNEQUIN WITH WARDROBE 👗'
+                  : 'ƯỚM THỬ LÊN MA-NƠ-CANH VỚI TỦ ĐỒ 👗',
               style: GoogleFonts.outfit(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
+              String fitImageUrl = prod.imageUrl;
+
+              final isAlreadyBgRemoved = fitImageUrl.contains('e_background_removal') ||
+                  (fitImageUrl.contains('cloudinary') && fitImageUrl.endsWith('.png'));
+
+              if (!isAlreadyBgRemoved) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (ctx) => PopScope(
+                    canPop: false,
+                    child: AlertDialog(
+                      backgroundColor: const Color(0xFF1E1C30),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      content: Row(
+                        children: [
+                          const SizedBox(
+                            width: 26,
+                            height: 26,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Text(
+                              isEn
+                                  ? 'Removing image background for fitting room...'
+                                  : 'Đang dùng AI tách nền trang phục để ướm thử...',
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+
+                try {
+                  final wardrobeService = WardrobeService();
+                  final bgRemovedUrl =
+                      await wardrobeService.removeBackgroundFromUrl(fitImageUrl);
+                  if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
+                    fitImageUrl = bgRemovedUrl;
+                  }
+                } catch (e) {
+                  debugPrint('[SmartShopping] Fitting room bg removal error: $e');
+                }
+
+                if (context.mounted) {
+                  Navigator.of(context, rootNavigator: true).pop();
+                }
+              }
+
+              if (!context.mounted) return;
+
               final prospectiveItem = WardrobeItemModel(
                 id: 'shopee_temp_${DateTime.now().millisecondsSinceEpoch}',
-                name: prod.title,
+                name: TagLocalization.getLocalizedName(prod.title, isEn),
                 category: prod.category,
                 color: prod.color,
                 brand: prod.brand,
-                imageUrl: prod.imageUrl,
+                imageUrl: fitImageUrl,
                 tags: prod.tags,
                 aiMatchScore: result.compatibilityScore,
               );
@@ -731,7 +812,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             icon: const Icon(Icons.add_shopping_cart_rounded,
                 color: Colors.white),
             label: Text(
-              'LƯU MÓN NÀY VÀO TỦ ĐỒ',
+              isEn ? 'SAVE ITEM TO WARDROBE' : 'LƯU MÓN NÀY VÀO TỦ ĐỒ',
               style: GoogleFonts.outfit(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -747,6 +828,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
   }
 
   Widget _buildCompatibilityScoreCard(ShoppingCompatibilityResult result) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     Color statusColor;
     if (result.scoreLevel == 'HIGH') {
       statusColor = const Color(0xFF10AC84);
@@ -754,6 +836,17 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
       statusColor = const Color(0xFFF59E0B);
     } else {
       statusColor = const Color(0xFFEF4444);
+    }
+
+    String statusText = result.recommendationStatus;
+    if (isEn) {
+      if (statusText.contains('CÂN NHẮC KỸ')) {
+        statusText = 'THINK CAREFULLY ⚠️';
+      } else if (statusText.contains('NÊN MUA')) {
+        statusText = 'RECOMMENDED TO BUY ✨';
+      } else if (statusText.contains('KHÔNG NÊN MUA')) {
+        statusText = 'NOT RECOMMENDED ❌';
+      }
     }
 
     return Container(
@@ -782,7 +875,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Độ Tương Thích Tủ Đồ',
+                    isEn ? 'Wardrobe Compatibility' : 'Độ Tương Thích Tủ Đồ',
                     style: GoogleFonts.outfit(
                       color: AppTheme.darkTextPrimary,
                       fontSize: 15,
@@ -820,7 +913,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             child: Row(
               children: [
                 Text(
-                  result.recommendationStatus,
+                  statusText,
                   style: GoogleFonts.outfit(
                     color: statusColor,
                     fontSize: 14,
@@ -830,7 +923,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    result.recommendationReason,
+                    TagLocalization.getLocalizedAiReason(result.recommendationReason, isEn),
                     style: GoogleFonts.inter(
                       color: AppTheme.darkTextPrimary,
                       fontSize: 12,
@@ -858,7 +951,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '⚠️ Cảnh báo: Tủ đồ của bạn đã có trang phục cùng loại & tông màu tương tự!',
+                      isEn
+                          ? '⚠️ Warning: Your wardrobe already has a similar item & color tone!'
+                          : '⚠️ Cảnh báo: Tủ đồ của bạn đã có trang phục cùng loại & tông màu tương tự!',
                       style: GoogleFonts.inter(
                         color: Colors.amber,
                         fontSize: 11,
@@ -876,6 +971,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
   }
 
   Widget _buildStylistAnalysisCards(ShoppingCompatibilityResult result) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Column(
       children: [
         // Color harmony
@@ -896,7 +992,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Bánh Xe Màu Sắc (Color Wheel)',
+                      isEn ? 'Color Wheel Analysis' : 'Bánh Xe Màu Sắc (Color Wheel)',
                       style: GoogleFonts.outfit(
                         color: AppTheme.darkTextPrimary,
                         fontSize: 14,
@@ -905,7 +1001,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      result.colorHarmonyAnalysis,
+                      TagLocalization.getLocalizedAiReason(result.colorHarmonyAnalysis, isEn),
                       style: GoogleFonts.inter(
                         color: AppTheme.darkTextSecondary,
                         fontSize: 12,
@@ -938,7 +1034,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Phom Dáng & Phối Lớp (Layering)',
+                      isEn ? 'Silhouette & Layering' : 'Phom Dáng & Phối Lớp (Layering)',
                       style: GoogleFonts.outfit(
                         color: AppTheme.darkTextPrimary,
                         fontSize: 14,
@@ -947,7 +1043,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      result.silhouetteAnalysis,
+                      TagLocalization.getLocalizedAiReason(result.silhouetteAnalysis, isEn),
                       style: GoogleFonts.inter(
                         color: AppTheme.darkTextSecondary,
                         fontSize: 12,
