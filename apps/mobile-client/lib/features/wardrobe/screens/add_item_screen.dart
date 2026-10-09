@@ -13,6 +13,7 @@ import '../../../core/utils/tag_localization.dart';
 import '../models/wardrobe_item_model.dart';
 import '../providers/wardrobe_provider.dart';
 import '../services/wardrobe_service.dart';
+import '../widgets/interactive_bg_eraser_dialog.dart';
 
 class _FashionSample {
   final String title;
@@ -459,7 +460,7 @@ class _AddItemScreenState extends State<AddItemScreen>
           if (mounted) {
             setState(() {
               _currentImageUrl = bgRemovedUrl;
-              _localImagePath = null; // Chuyển sang URL đã tách phông nền 100%
+              _localImagePath = bgRemovedUrl; // Giữ đường dẫn file PNG đã bóc phông nền
             });
           }
         }
@@ -730,6 +731,10 @@ class _AddItemScreenState extends State<AddItemScreen>
     }
 
     if (mounted) {
+      final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+      final localizedItemName = TagLocalization.getLocalizedName(newItem.name, isEn);
+      final localizedWardrobeName = TagLocalization.getLocalizedWardrobeName(targetWardrobe.name, isEn);
+
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -740,8 +745,8 @@ class _AddItemScreenState extends State<AddItemScreen>
               Expanded(
                 child: Text(
                   widget.existingItem != null
-                      ? '✨ Đã cập nhật "${newItem.name}"!'
-                      : '✨ Đã thêm "${newItem.name}" vào ${targetWardrobe.icon} ${targetWardrobe.name}!',
+                      ? (isEn ? '✨ Updated "$localizedItemName"!' : '✨ Đã cập nhật "${newItem.name}"!')
+                      : (isEn ? '✨ Added "$localizedItemName" to ${targetWardrobe.icon} $localizedWardrobeName!' : '✨ Đã thêm "${newItem.name}" vào ${targetWardrobe.icon} ${targetWardrobe.name}!'),
                   style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -1180,6 +1185,30 @@ class _AddItemScreenState extends State<AddItemScreen>
     );
   }
 
+  Future<void> _openBgEraserDialog() async {
+    final targetPath = _localImagePath ?? _currentImageUrl;
+    if (targetPath.isEmpty) return;
+
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => InteractiveBgEraserDialog(imagePath: targetPath),
+    );
+
+    if (result != null && result.isNotEmpty && mounted) {
+      setState(() {
+        _localImagePath = result;
+        _currentImageUrl = result;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã cập nhật hình ảnh bóc tách phông nền mới!'),
+          backgroundColor: Color(0xFF10B981),
+        ),
+      );
+    }
+  }
+
   Widget _buildSourceActionButtons() {
     final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Column(
@@ -1226,6 +1255,29 @@ class _AddItemScreenState extends State<AddItemScreen>
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _openBgEraserDialog,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF8B5CF6),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            icon: const Icon(Icons.cleaning_services_rounded, size: 20),
+            label: Text(
+              isEn ? 'Interactive Eraser & Refine' : 'Xóa Phông & Dặm Vá Thủ Công',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
       ],
     );

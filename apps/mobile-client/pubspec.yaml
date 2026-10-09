@@ -25,6 +25,7 @@ dependencies:
   crypto: ^3.0.3
   flutter_windowmanager_plus: ^1.1.1
   speech_to_text: ^7.0.0
+  image: ^4.10.1
 
 
 dev_dependencies:

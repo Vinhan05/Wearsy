@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/language_provider.dart';
 import '../../../core/utils/tag_localization.dart';
 import '../providers/wardrobe_provider.dart';
+import '../widgets/interactive_bg_eraser_dialog.dart';
 import 'add_item_screen.dart';
 
 class ItemDetailScreen extends StatefulWidget {
@@ -73,8 +74,32 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     _customTagController.clear();
   }
 
+  Future<void> _openBgEraser() async {
+    final item = widget.item;
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => InteractiveBgEraserDialog(imagePath: item.imageUrl),
+    );
+
+    if (result != null && result.isNotEmpty && mounted) {
+      final updatedItem = item.copyWith(imageUrl: result);
+      if (!mounted) return;
+      await Provider.of<WardrobeProvider>(context, listen: false)
+          .updateItem(updatedItem);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã cập nhật hình ảnh bóc tách phông nền mới!'),
+          backgroundColor: Color(0xFF10B981),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final item = widget.item;
 
     return Scaffold(
@@ -99,6 +124,19 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             actions: [
+              IconButton(
+                tooltip: 'Xóa Phông & Dặm Vá Thủ Công',
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.cleaning_services_rounded,
+                      color: Color(0xFF10B981)),
+                ),
+                onPressed: _openBgEraser,
+              ),
               IconButton(
                 tooltip: 'Chỉnh sửa món đồ',
                 icon: Container(
@@ -137,25 +175,33 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               const SizedBox(width: 8),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: item.imageUrl.startsWith('http')
-                  ? Image.network(
-                      item.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: AppTheme.darkSurface,
-                        child: Icon(Icons.checkroom_rounded,
-                            color: AppTheme.primaryLight, size: 80),
-                      ),
-                    )
-                  : Image.file(
-                      File(item.imageUrl),
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: AppTheme.darkSurface,
-                        child: Icon(Icons.checkroom_rounded,
-                            color: AppTheme.primaryLight, size: 80),
-                      ),
-                    ),
+              background: Container(
+                color: const Color(0xFFF3F4F6),
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                child: Center(
+                  child: item.imageUrl.startsWith('http')
+                      ? Image.network(
+                          item.imageUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Image.network(
+                            WardrobeItemModel.sanitizeImageUrl('', name: item.name, category: item.category),
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) => Icon(Icons.checkroom_rounded,
+                                color: AppTheme.primaryLight, size: 80),
+                          ),
+                        )
+                      : Image.file(
+                          File(item.imageUrl),
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Image.network(
+                            WardrobeItemModel.sanitizeImageUrl('', name: item.name, category: item.category),
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) => Icon(Icons.checkroom_rounded,
+                                color: AppTheme.primaryLight, size: 80),
+                          ),
+                        ),
+                ),
+              ),
             ),
           ),
 
@@ -174,7 +220,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item.name,
+                              TagLocalization.getLocalizedName(item.name, isEn),
                               style: GoogleFonts.outfit(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -185,7 +231,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             Row(
                               children: [
                                 Text(
-                                  '${item.category.icon} ${item.category.displayName}',
+                                  '${item.category.icon} ${TagLocalization.getCategoryName(item.category, isEn)}',
                                   style: GoogleFonts.inter(
                                     fontSize: 14,
                                     color: AppTheme.primaryLight,

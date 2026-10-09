@@ -88,8 +88,6 @@ Dự án đã chuẩn bị đầy đủ cả file **Excel (.xlsx)** chuyên nghi
 | :--- | :--- | :--- |
 | 🇻🇳 [vi.csv](file:///d:/FPTDocuments/FA26/EXE101/Project%20WEARSY/docs/translations/vi.csv) | **Ngôn ngữ gốc Tiếng Việt** | Bản chuẩn hiện tại trên app (chỉ đọc tham khảo). |
 | 🇬🇧 [en.csv](file:///d:/FPTDocuments/FA26/EXE101/Project%20WEARSY/docs/translations/en.csv) | **Tiếng Anh (English)** | Đã có sẵn bản dịch chuẩn thời trang. |
-| 🌐 [template_language_1.csv](file:///d:/FPTDocuments/FA26/EXE101/Project%20WEARSY/docs/translations/template_language_1.csv) | **Ngôn ngữ mới thứ 1** | Giao file này để bạn ngôn ngữ 1 điền vào `your_translation`. |
-| 🌐 [template_language_2.csv](file:///d:/FPTDocuments/FA26/EXE101/Project%20WEARSY/docs/translations/template_language_2.csv) | **Ngôn ngữ mới thứ 2** | Giao file này để bạn ngôn ngữ 2 điền vào `your_translation`. |
 
 ### 5.1. Cấu trúc cột trong mỗi file mẫu dịch:
 - **`Mã kỹ thuật (key)`**: Mã định danh trong code (❌ **Giữ nguyên 100%, không chỉnh sửa**).

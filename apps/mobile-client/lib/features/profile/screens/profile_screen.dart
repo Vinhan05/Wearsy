@@ -218,7 +218,7 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 18),
 
-              // 3. Wardrobe Stats Card (Tủ đồ của bạn)
+              // 3. Wardrobe Stats Card (TỦ ĐỒ CỦA BẠN)
               Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFFFAFAFC),
@@ -242,20 +242,106 @@ class ProfileScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatItem('👕', totalItems > 0 ? '$totalItems' : '128', isEn ? 'Items' : 'Món đồ'),
+                        _buildStatItem(
+                          icon: Icons.checkroom_outlined,
+                          count: totalItems > 0 ? '$totalItems' : '128',
+                          label: isEn ? 'Items' : 'Món đồ',
+                        ),
                         Container(width: 1, height: 32, color: const Color(0xFFE5E7EB)),
-                        _buildStatItem('👔', totalOutfits > 0 ? '$totalOutfits' : '32', isEn ? 'Outfits' : 'Set đồ'),
+                        _buildStatItem(
+                          icon: Icons.dry_cleaning_outlined,
+                          count: totalOutfits > 0 ? '$totalOutfits' : '32',
+                          label: isEn ? 'Outfits' : 'Set đồ',
+                        ),
                         Container(width: 1, height: 32, color: const Color(0xFFE5E7EB)),
-                        _buildStatItem('🤍', '18', isEn ? 'Favorites' : 'Yêu thích'),
+                        _buildStatItem(
+                          icon: Icons.favorite_border_rounded,
+                          count: '18',
+                          label: isEn ? 'Favorites' : 'Yêu thích',
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
 
+              const SizedBox(height: 16),
+
+              // 4. WEARSY VIP Gold/Bronze Banner Card (NÂNG CẤP Wearsy VIP)
+              Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF8A6728), Color(0xFF5C4418)],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF8A6728).withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.diamond_outlined,
+                          color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isEn ? 'UPGRADE' : 'NÂNG CẤP',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.8,
+                              color: const Color(0xFFFFD700),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Wearsy VIP',
+                            style: GoogleFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            isEn
+                                ? 'Unlock advanced personalized features.'
+                                : 'Mở khóa trải nghiệm cá nhân hóa nâng cao.',
+                            style: GoogleFonts.inter(
+                              fontSize: 11.5,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right_rounded,
+                        color: Colors.white, size: 24),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 18),
 
-              // 4. Account Settings & System Menus
+              // 5. Account Settings & System Menus
               Material(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -265,54 +351,54 @@ class ProfileScreen extends StatelessWidget {
                     border: Border.all(color: const Color(0xFFE5E7EB)),
                   ),
                   child: Column(
-                  children: [
-                    _buildMenuItem(
-                      icon: Icons.person_outline_rounded,
-                      title: isEn ? 'Account & Security' : 'Tài khoản & bảo mật',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AccountSettingsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Divider(color: Color(0xFFF3F4F6), height: 1),
-                    _buildMenuItem(
-                      icon: Icons.settings_outlined,
-                      title: isEn ? 'Settings' : 'Cài đặt',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AccountSettingsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Divider(color: Color(0xFFF3F4F6), height: 1),
-                    _buildMenuItem(
-                      icon: Icons.logout_rounded,
-                      title: isEn ? 'Log Out' : 'Đăng xuất',
-                      textColor: const Color(0xFFEF4444),
-                      iconColor: const Color(0xFFEF4444),
-                      onTap: () async {
-                        await authProvider.logout();
-                        if (context.mounted) {
-                          Navigator.pushAndRemoveUntil(
+                    children: [
+                      _buildMenuItem(
+                        icon: Icons.person_outline_rounded,
+                        title: isEn ? 'Account & Security' : 'Tài khoản & bảo mật',
+                        onTap: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const WelcomeScreen()),
-                            (route) => false,
+                              builder: (_) => const AccountSettingsScreen(),
+                            ),
                           );
-                        }
-                      },
-                    ),
-                  ],
+                        },
+                      ),
+                      const Divider(color: Color(0xFFF3F4F6), height: 1),
+                      _buildMenuItem(
+                        icon: Icons.settings_outlined,
+                        title: isEn ? 'Settings' : 'Cài đặt',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AccountSettingsScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(color: Color(0xFFF3F4F6), height: 1),
+                      _buildMenuItem(
+                        icon: Icons.logout_rounded,
+                        title: isEn ? 'Log Out' : 'Đăng xuất',
+                        textColor: const Color(0xFFEF4444),
+                        iconColor: const Color(0xFFEF4444),
+                        onTap: () async {
+                          await authProvider.logout();
+                          if (context.mounted) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const WelcomeScreen()),
+                              (route) => false,
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
           ],
           ),
         ),
@@ -320,18 +406,22 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String icon, String count, String label) {
+  Widget _buildStatItem({
+    required IconData icon,
+    required String count,
+    required String label,
+  }) {
     return Column(
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(icon, style: const TextStyle(fontSize: 16)),
-            const SizedBox(width: 6),
+            Icon(icon, size: 20, color: const Color(0xFF374151)),
+            const SizedBox(width: 8),
             Text(
               count,
               style: GoogleFonts.outfit(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF111827),
               ),

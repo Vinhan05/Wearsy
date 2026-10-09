@@ -297,6 +297,9 @@ class TagLocalization {
     if (reason.contains('cạp cao') || reason.contains('tôn dáng')) {
       return 'High-waisted black wide-leg jeans, streetwear style that enhances fit and easy matching.';
     }
+    if (reason.contains('Gọn gàng, hiện đại') || reason.contains('phù hợp cho nhiều hoàn cảnh')) {
+      return 'Neat, modern, and suitable for various occasions during the day.';
+    }
     return reason;
   }
 }

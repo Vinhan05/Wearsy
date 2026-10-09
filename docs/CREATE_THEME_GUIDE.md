@@ -28,7 +28,7 @@
 2. **Chuẩn hóa HSL/RGB theo tỷ lệ vàng:**
    * Áp dụng công thức ở [Phần 5](#5-công-thức-toán-học--nguyên-tắc-thiết-kế-theme-mới) để đảm bảo độ tương phản chữ đạt chuẩn AAA (> 7:1) và nền chống mỏi mắt.
 3. **Cập nhật mã nguồn:**
-   * Thêm đối tượng `AppThemePalette` vào file `wearsy_mobile/lib/core/theme/app_theme_palette.dart`.
+   * Thêm đối tượng `AppThemePalette` vào file `apps/mobile-client/lib/core/theme/app_theme_palette.dart`.
    * Thêm theme mới vào danh sách `allThemes`.
 4. **Kết quả:**
    * Không cần sửa đổi bất kỳ màn hình nào khác (Welcome, Login, Home, Closet, Shopping, Profile...) vì toàn bộ widget đã liên kết trực tiếp với `AppTheme` và `ThemeProvider`.
@@ -58,7 +58,7 @@
 ```
 
 1. **Quản lý trạng thái trung tâm (`ThemeProvider`):**
-   * File: `wearsy_mobile/lib/core/theme/theme_provider.dart`
+   * File: `apps/mobile-client/lib/core/theme/theme_provider.dart`
    * Quản lý biến trạng thái `_currentPalette` và tự động lưu `selected_app_theme_id` vào bộ nhớ máy.
    * Khi đổi màu, gọi `switchTheme(themeId)`:
      ```dart
@@ -66,7 +66,7 @@
      notifyListeners(); // Tái tạo toàn bộ cây widget tức thì
      ```
 2. **Cầu nối màu sắc tập trung (`AppTheme`):**
-   * File: `wearsy_mobile/lib/core/theme/app_theme.dart`
+   * File: `apps/mobile-client/lib/core/theme/app_theme.dart`
    * Toàn bộ thuộc tính màu (`primaryColor`, `primaryLight`, `secondaryColor`, `lightBackground`, `lavenderCard`, `lavenderSurface`, `cardColor`, `surfaceColor`, `darkTextPrimary`, `darkTextSecondary`, `primaryGradient`, `accentGradient`) đều là **Dynamic Getters** trỏ thẳng về `AppTheme.current`.
 3. **Cập nhật giao diện gốc (`main.dart`):**
    * `MaterialApp` được bọc bên trong `Consumer<ThemeProvider>`:
@@ -159,7 +159,7 @@ Khi bạn hoặc AI tạo thêm các Theme tiếp theo (Theme 6, 7, 8...), hãy 
 ## 6. ĐOẠN CODE MẪU CHUẨN ĐỂ THÊM VÀO `app_theme_palette.dart`
 
 Khi có thông số theme mới, chỉ cần copy khối mã sau dán vào:  
-📁 **`wearsy_mobile/lib/core/theme/app_theme_palette.dart`**
+📁 **`apps/mobile-client/lib/core/theme/app_theme_palette.dart`**
 
 ```dart
 static const AppThemePalette themeMoi = AppThemePalette(

@@ -1153,36 +1153,90 @@ class _WardrobeBody extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     final provider = Provider.of<WardrobeProvider>(context);
     final isEn = Provider.of<LanguageProvider>(context).isEnglish;
-    final activeWardrobe = provider.activeWardrobe;
-
-    final wardrobeName = (activeWardrobe.isDefault ||
-            activeWardrobe.id == 'default' ||
-            activeWardrobe.name == 'Tủ Đồ Hàng Ngày')
-        ? (isEn ? 'Daily Wardrobe' : 'Tủ Đồ Hàng Ngày')
-        : activeWardrobe.name;
+    final totalItems = provider.allItems.length;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: GestureDetector(
-        onTap: () => WardrobeScreen.showWardrobeSwitcherModal(context),
-        child: Row(
-          children: [
-            Text(
-              wardrobeName,
-              style: GoogleFonts.outfit(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.darkTextPrimary,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () => WardrobeScreen.showWardrobeSwitcherModal(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        isEn ? 'Wardrobe' : 'Tủ đồ',
+                        style: GoogleFonts.outfit(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF111827),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: AppTheme.primaryLight,
+                        size: 26,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isEn ? 'Your wardrobe' : 'Tủ đồ của bạn',
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF374151),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isEn
+                      ? '$totalItems items • 2 outfits paired • Updated today'
+                      : '$totalItems món đồ  •  2 set đã phối  •  Cập nhật hôm nay',
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    color: const Color(0xFF9CA3AF),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Dark Search Circle Button
+          GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(isEn
+                      ? '🔍 Type to search your wardrobe items'
+                      : '🔍 Nhập từ khóa để tìm kiếm trang phục'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: const BoxDecoration(
+                color: Color(0xFF18181B),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.search_rounded,
+                color: Colors.white,
+                size: 20,
               ),
             ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: AppTheme.primaryColor,
-              size: 26,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1190,40 +1244,23 @@ class _WardrobeBody extends StatelessWidget {
   Widget _buildCategoryFilter(BuildContext context) {
     final provider = Provider.of<WardrobeProvider>(context);
     final isEn = Provider.of<LanguageProvider>(context).isEnglish;
-    final counts = provider.itemCountByCategory;
-    final totalCount = provider.allItems.length;
 
     final filterOptions = [
-      {'key': null, 'label': isEn ? 'All ($totalCount)' : 'Tất cả ($totalCount)'},
-      {
-        'key': WardrobeCategory.tops,
-        'label': '${isEn ? 'Tops' : 'Áo'} (${counts[WardrobeCategory.tops] ?? 0})'
-      },
-      {
-        'key': WardrobeCategory.bottoms,
-        'label': '${isEn ? 'Bottoms' : 'Quần'} (${counts[WardrobeCategory.bottoms] ?? 0})'
-      },
-      {
-        'key': WardrobeCategory.dresses,
-        'label': '${isEn ? 'Dresses' : 'Đầm'} (${counts[WardrobeCategory.dresses] ?? 0})'
-      },
-      {
-        'key': WardrobeCategory.outerwear,
-        'label': '${isEn ? 'Outerwear' : 'Áo khoác'} (${counts[WardrobeCategory.outerwear] ?? 0})'
-      },
-      {
-        'key': WardrobeCategory.shoes,
-        'label': '${isEn ? 'Shoes' : 'Giày'} (${counts[WardrobeCategory.shoes] ?? 0})'
-      },
+      {'key': null, 'label': isEn ? 'All' : 'Tất cả'},
+      {'key': WardrobeCategory.tops, 'label': isEn ? 'Shirts' : 'Áo sơ mi'},
+      {'key': WardrobeCategory.outerwear, 'label': isEn ? 'Jackets' : 'Áo khoác'},
+      {'key': WardrobeCategory.dresses, 'label': isEn ? 'T-Shirts' : 'Áo thun'},
+      {'key': WardrobeCategory.bottoms, 'label': isEn ? 'Pants' : 'Quần'},
+      {'key': WardrobeCategory.shoes, 'label': isEn ? 'Shoes' : 'Giày'},
     ];
 
     return SizedBox(
-      height: 40,
+      height: 38,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         itemCount: filterOptions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final opt = filterOptions[index];
           final cat = opt['key'] as WardrobeCategory?;
@@ -1234,19 +1271,24 @@ class _WardrobeBody extends StatelessWidget {
             onTap: () => provider.setCategory(cat),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppTheme.primaryColor
-                    : const Color(0xFF8E8EA0),
+                    ? const Color(0xFF27272A)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isSelected
+                      ? const Color(0xFF27272A)
+                      : const Color(0xFFE5E7EB),
+                ),
               ),
               child: Text(
                 label,
                 style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  fontSize: 12.5,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected ? Colors.white : const Color(0xFF374151),
                 ),
               ),
             ),
@@ -1268,12 +1310,12 @@ class _WardrobeBody extends StatelessWidget {
     final items = provider.filteredItems;
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.72,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
+        childAspectRatio: 0.68,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 20,
       ),
       itemCount: items.length + 1,
       itemBuilder: (context, index) {
@@ -1302,14 +1344,41 @@ class _WardrobeBody extends StatelessWidget {
       onTap: () => WardrobeScreen.showAddOptionsModal(context),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.lavenderCard,
-          borderRadius: BorderRadius.circular(20),
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF3F4F6), Color(0xFFE5E7EB)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(85),
+            bottom: Radius.circular(16),
+          ),
+          border: Border.all(color: const Color(0xFFD1D5DB), width: 1.5),
         ),
-        child: const Center(
-          child: Icon(
-            Icons.add_rounded,
-            color: Colors.white,
-            size: 84,
+        child: Center(
+          child: Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF9CA3AF), Color(0xFF6B7280)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add_rounded,
+              color: Colors.white,
+              size: 38,
+            ),
           ),
         ),
       ),
@@ -1317,7 +1386,7 @@ class _WardrobeBody extends StatelessWidget {
   }
 }
 
-class _WardrobeCard extends StatelessWidget {
+class _WardrobeCard extends StatefulWidget {
   final WardrobeItemModel item;
   final VoidCallback onTap;
 
@@ -1327,71 +1396,119 @@ class _WardrobeCard extends StatelessWidget {
   });
 
   @override
+  State<_WardrobeCard> createState() => _WardrobeCardState();
+}
+
+class _WardrobeCardState extends State<_WardrobeCard> {
+  bool _isLiked = false;
+
+  @override
   Widget build(BuildContext context) {
+    final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+    final item = widget.item;
     final isNetworkImage = item.imageUrl.startsWith('http://') ||
         item.imageUrl.startsWith('https://');
 
     return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppTheme.lavenderCard,
-            borderRadius: BorderRadius.circular(20),
+      onTap: widget.onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF3F4F6), Color(0xFFE5E7EB)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          child: Column(
-            children: [
-              // Top lavender header bar with Title & Score
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.name,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(85),
+            bottom: Radius.circular(16),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                // Top Arch Image Container
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 18, 12, 4),
+                    child: _buildItemImage(context, item, isNetworkImage),
+                  ),
+                ),
+                // Bottom Text Container (Title + Category • Material)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
+                  child: Column(
+                    children: [
+                      Text(
+                        TagLocalization.getLocalizedName(item.name, isEn),
                         style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppTheme.darkTextPrimary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF111827),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF383350),
-                        borderRadius: BorderRadius.circular(10),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${TagLocalization.getLocalizedTag(item.category.displayName, isEn)} • Cotton',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: const Color(0xFF6B7280),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text('✨ ', style: TextStyle(fontSize: 10)),
-                          Text(
-                            item.aiMatchScore.toStringAsFixed(1),
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            // Top Right Floating Heart Button
+            Positioned(
+              top: 10,
+              right: 10,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isLiked = !_isLiked;
+                  });
+                },
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: Icon(
+                    _isLiked
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    size: 15,
+                    color: _isLiked ? Colors.redAccent : const Color(0xFF4B5563),
+                  ),
                 ),
               ),
-              // Image
-              Expanded(
-                child: _buildItemImage(context, item, isNetworkImage),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1399,65 +1516,40 @@ class _WardrobeCard extends StatelessWidget {
 
   Widget _buildItemImage(
       BuildContext context, WardrobeItemModel item, bool isNetworkImage) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: isNetworkImage
-          ? Image.network(
-              item.imageUrl,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => _buildFallbackCard(item),
-            )
-          : Image.file(
-              File(item.imageUrl),
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => _buildFallbackCard(item),
-            ),
-    );
+    return isNetworkImage
+        ? Image.network(
+            item.imageUrl,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => _buildFallbackCard(item),
+          )
+        : Image.file(
+            File(item.imageUrl),
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => _buildFallbackCard(item),
+          );
   }
 
   Widget _buildFallbackCard(WardrobeItemModel item) {
-    final lowerName = item.name.toLowerCase();
-    String? backupUrl;
-    if (lowerName.contains('sweater') ||
-        lowerName.contains('hoodie') ||
-        lowerName.contains('nỉ')) {
-      backupUrl =
-          'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=600&auto=format&fit=crop';
-    } else if (lowerName.contains('3 lỗ') || lowerName.contains('ba lỗ')) {
-      backupUrl =
-          'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop';
-    } else if (item.category == WardrobeCategory.tops) {
-      backupUrl =
-          'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=600&auto=format&fit=crop';
-    } else if (item.category == WardrobeCategory.bottoms) {
-      backupUrl =
-          'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=600&auto=format&fit=crop';
-    } else if (item.category == WardrobeCategory.shoes) {
-      backupUrl =
-          'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=600&auto=format&fit=crop';
-    } else if (item.category == WardrobeCategory.outerwear) {
-      backupUrl =
-          'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=600&auto=format&fit=crop';
-    }
-
-    if (backupUrl != null) {
-      return Image.network(
-        backupUrl,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _buildCategoryPlaceholder(item),
-      );
-    }
-    return _buildCategoryPlaceholder(item);
+    final fallbackUrl = WardrobeItemModel.sanitizeImageUrl(
+      '',
+      name: item.name,
+      category: item.category,
+    );
+    return Image.network(
+      fallbackUrl,
+      width: double.infinity,
+      height: double.infinity,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => _buildCategoryPlaceholder(item),
+    );
   }
 
   Widget _buildCategoryPlaceholder(WardrobeItemModel item) {
     return Container(
-      color: AppTheme.lavenderCard,
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1469,7 +1561,7 @@ class _WardrobeCard extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: AppTheme.darkTextSecondary,
+              color: const Color(0xFF6B7280),
             ),
           ),
         ],

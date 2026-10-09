@@ -7,6 +7,7 @@ import '../../fitting_room/screens/virtual_fitting_room_screen.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/language_provider.dart';
+import '../../../core/localization/language_toggle_button.dart';
 import '../../../core/utils/tag_localization.dart';
 
 class OutfitDetailScreen extends StatefulWidget {
@@ -140,7 +141,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Bar: Back Button & Weather Badge
+              // Top Bar: Back Button & Language Toggle & Weather Badge
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -158,28 +159,34 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           size: 20, color: Color(0xFF111827)),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Text('⛅', style: TextStyle(fontSize: 13)),
-                        const SizedBox(width: 4),
-                        Text(
-                          '29°C • ${TagLocalization.getLocalizedCityName("Đà Nẵng", isEn)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF374151),
-                          ),
+                  Row(
+                    children: [
+                      const LanguageToggleButton(style: LanguageToggleStyle.compact),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
                         ),
-                      ],
-                    ),
+                        child: Row(
+                          children: [
+                            const Text('⛅', style: TextStyle(fontSize: 13)),
+                            const SizedBox(width: 4),
+                            Text(
+                              '29°C • ${TagLocalization.getLocalizedCityName("Đà Nẵng", isEn)}',
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF374151),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -208,7 +215,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                       children: [
                         Text(
                           widget.outfit.name.isNotEmpty
-                              ? widget.outfit.name
+                              ? TagLocalization.getLocalizedTag(widget.outfit.name, isEn)
                               : 'Smart casual',
                           style: GoogleFonts.inter(
                             fontSize: 14,
@@ -218,9 +225,11 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          isEn
-                              ? 'Neat, modern, and suitable for various occasions during the day.'
-                              : 'Gọn gàng, hiện đại và phù hợp cho nhiều hoàn cảnh trong ngày.',
+                          widget.outfit.aiReason.isNotEmpty
+                              ? TagLocalization.getLocalizedAiReason(widget.outfit.aiReason, isEn)
+                              : (isEn
+                                  ? 'Neat, modern, and suitable for various occasions during the day.'
+                                  : 'Gọn gàng, hiện đại và phù hợp cho nhiều hoàn cảnh trong ngày.'),
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             color: const Color(0xFF6B7280),
