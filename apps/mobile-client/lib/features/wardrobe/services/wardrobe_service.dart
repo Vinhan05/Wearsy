@@ -102,27 +102,74 @@ class WardrobeService {
     }
   }
 
-  /// Xử lý tách phông nền AI trực tiếp trên máy (Client-Side Local Image Processing)
+  /// Xử lý tách phông nền AI từ URL hình ảnh
   Future<String?> removeBackgroundFromUrl(String imageUrl) async {
     try {
-      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      if (imageUrl.contains('e_background_removal') ||
+          (imageUrl.endsWith('.png') && imageUrl.contains('cloudinary'))) {
         return imageUrl;
       }
-      return await LocalBgRemovalService.processImage(imageUrl);
+      final res = await _apiClient.post(
+        ApiConstants.removeBackground,
+        body: {'image_url': imageUrl},
+      );
+      if (res is Map<String, dynamic> && res['bg_removed_url'] != null) {
+        return res['bg_removed_url'].toString();
+      }
     } catch (e) {
-      debugPrint('[WardrobeService] Lỗi khi tách nền từ URL: $e');
+      debugPrint('[WardrobeService] Lỗi khi tách nền từ URL qua API: $e');
     }
-    return null;
+    return imageUrl;
   }
 
-  /// Tải ảnh tệp cục bộ và tự động bóc tách phông nền bằng AI chạy trên thiết bị
+  /// Tải ảnh tệp cục bộ và tự động bóc tách phông nền bằng AI Deep Learning
   Future<String?> uploadImageWithBgRemoval(String filePath) async {
     try {
       final file = File(filePath);
       if (!await file.exists()) return null;
+
+      // 1. Tải lên máy chủ WEARSY để tách nền chuẩn xác bằng deep learning AI
+      try {
+        final res =
+            await _apiClient.postMultipart('/wardrobe/analyze-image', file);
+        if (res is Map<String, dynamic> && res['bg_removed_url'] != null) {
+          final url = res['bg_removed_url'].toString();
+          if (url.isNotEmpty) return url;
+        }
+      } catch (e) {
+        debugPrint('[WardrobeService] Upload tách nền qua server gặp lỗi: $e');
+      }
+
+      // 2. Fallback sang client-side image processing nếu offline
       return await LocalBgRemovalService.processImage(filePath);
     } catch (e) {
       debugPrint('[WardrobeService] Lỗi khi tách nền ảnh cục bộ: $e');
+    }
+    return null;
+  }
+
+  /// Tân trang trang phục bằng AI (Premium Studio Lookbook)
+  Future<Map<String, dynamic>?> enhanceGarment({
+    required String imageUrl,
+    String? name,
+    String? category,
+    String? color,
+  }) async {
+    try {
+      final res = await _apiClient.post(
+        '/wardrobe/enhance-garment',
+        body: {
+          'image_url': imageUrl,
+          'name': name ?? 'Trang phục',
+          'category': category ?? 'Khác',
+          'color': color ?? 'Đa sắc',
+        },
+      );
+      if (res is Map<String, dynamic>) {
+        return res;
+      }
+    } catch (e) {
+      debugPrint('[WardrobeService] Lỗi khi tân trang trang phục bằng AI: $e');
     }
     return null;
   }

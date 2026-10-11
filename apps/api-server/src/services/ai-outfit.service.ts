@@ -179,4 +179,59 @@ export class AiOutfitService {
       ];
     }
   }
+
+  /**
+   * Trò chuyện cùng AI Stylist (hỏi thăm, đối thoại, chốt phối đồ)
+   */
+  async chatWithStylist(
+    messages: { role: string; content: string }[],
+    wardrobeItems: WardrobeItemDto[],
+    userProfile?: any,
+    userName: string = 'Bạn',
+    forceFinalize: boolean = false,
+  ) {
+    const payload = {
+      messages,
+      user_name: userName,
+      user_profile: userProfile,
+      wardrobe_items: wardrobeItems.map((item) => ({
+        id: String(item.id),
+        name: item.name,
+        category: item.category_name || item.category || 'Trang phục',
+        primary_color: item.primary_color || 'Đa sắc',
+        style_tags: item.style_tags || [],
+        image_url: item.bg_removed_url || item.image_url || '',
+      })),
+      force_finalize: forceFinalize,
+    };
+
+    try {
+      this.logger.log(
+        `Connecting to AI Stylist Chat: ${this.aiOrchestratorUrl}/api/v1/stylist/chat`,
+      );
+      const response = await axios.post(
+        `${this.aiOrchestratorUrl}/api/v1/stylist/chat`,
+        payload,
+        { timeout: 60000 },
+      );
+      const data = response.data;
+      if (data.action === 'FINALIZE_OUTFIT') {
+        const orchestratorBase = this.aiOrchestratorUrl.replace(/\/+$/, '');
+        const formattedImageUrl = data.image_url
+          ? (data.image_url.startsWith('http')
+              ? data.image_url
+              : `${orchestratorBase}${data.image_url.startsWith('/') ? '' : '/'}${data.image_url}`)
+          : (data.image_base64 || undefined);
+        data.image_url = formattedImageUrl;
+      }
+      return data;
+    } catch (err: any) {
+      this.logger.warn(`AI Stylist Chat error: ${err.message}`);
+      return {
+        success: true,
+        action: 'CONVERSATION',
+        reply: `Chào ${userName}! Stylist sẵn sàng hỗ trợ bạn. Bạn dự định diện trang phục này ở không gian nào (nhà hàng, quán cà phê hay dạo phố)? Khi bạn đã sẵn sàng, hãy bấm '✨ Chốt & Phối đồ' nhé!`,
+      };
+    }
+  }
 }

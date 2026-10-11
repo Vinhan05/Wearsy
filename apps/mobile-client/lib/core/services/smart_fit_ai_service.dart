@@ -250,4 +250,152 @@ class SmartFitAiService {
       ),
     );
   }
+
+  /// Trò chuyện tương tác với AI Stylist (đối thoại, hỏi thăm hoàn cảnh, kiểm tra vóc dáng, chốt đồ mới tạo ảnh)
+  static Future<Map<String, dynamic>> chatWithStylist({
+    required List<Map<String, String>> messages,
+    required List<WardrobeItemModel> wardrobeItems,
+    required double heightCm,
+    required double weightKg,
+    String gender = 'Nữ',
+    String userName = 'Bạn',
+    bool forceFinalize = false,
+  }) async {
+    final bodyAnalysis = SmartFitEngine.analyzeBody(
+      heightCm: heightCm,
+      weightKg: weightKg,
+      gender: gender,
+    );
+
+    final wardrobeJson = wardrobeItems.map((item) {
+      return {
+        'id': item.id,
+        'name': item.name,
+        'category': item.category.displayName,
+        'primary_color': item.color,
+        'style_tags': item.tags,
+        'image_url': item.imageUrl,
+      };
+    }).toList();
+
+    final payload = {
+      'messages': messages,
+      'user_name': userName,
+      'user_profile': {
+        'gender': gender,
+        'height_cm': heightCm,
+        'weight_kg': weightKg,
+        'bmi': bodyAnalysis.bmi,
+        'body_frame': bodyAnalysis.bodyFrame,
+        'estimated_size': bodyAnalysis.estimatedSize,
+      },
+      'wardrobe_items': wardrobeJson,
+      'force_finalize': forceFinalize,
+    };
+
+    // 1st attempt: Call Backend /outfits/stylist-chat
+    try {
+      final uri = Uri.parse('$_backendUrl/outfits/stylist-chat');
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(minutes: 5));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data =
+            jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        if (data['action'] == 'FINALIZE_OUTFIT') {
+          final outfit = _parseOutfitFromJson(
+            data,
+            wardrobeItems,
+            bodyAnalysis,
+            messages.isNotEmpty
+                ? messages.last['content'] ?? 'Đi chơi'
+                : 'Đi chơi',
+          );
+          return {
+            'action': 'FINALIZE_OUTFIT',
+            'reply': data['reply'] ?? outfit.aiReason,
+            'outfit': outfit,
+          };
+        } else {
+          return {
+            'action': 'CONVERSATION',
+            'reply': data['reply'] ??
+                'Tôi có thể giúp bạn phối trang phục cho dịp nào?',
+          };
+        }
+      }
+    } catch (e) {
+      debugPrint('[SmartFitAiService] Backend stylist-chat error: $e');
+    }
+
+    // 2nd attempt: Call direct Orchestrator /api/v1/stylist/chat
+    try {
+      final uri = Uri.parse('$_aiOrchestratorUrl/stylist/chat');
+      final response = await http
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(minutes: 5));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data =
+            jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        if (data['action'] == 'FINALIZE_OUTFIT') {
+          final outfit = _parseOutfitFromJson(
+            data,
+            wardrobeItems,
+            bodyAnalysis,
+            messages.isNotEmpty
+                ? messages.last['content'] ?? 'Đi chơi'
+                : 'Đi chơi',
+          );
+          return {
+            'action': 'FINALIZE_OUTFIT',
+            'reply': data['reply'] ?? outfit.aiReason,
+            'outfit': outfit,
+          };
+        } else {
+          return {
+            'action': 'CONVERSATION',
+            'reply': data['reply'] ??
+                'Tôi có thể giúp bạn phối trang phục cho dịp nào?',
+          };
+        }
+      }
+    } catch (e) {
+      debugPrint('[SmartFitAiService] Orchestrator direct chat error: $e');
+    }
+
+    // Fallback if offline
+    if (forceFinalize) {
+      final outfit = _buildFallbackOutfit(
+        wardrobeItems: wardrobeItems,
+        bodyAnalysis: bodyAnalysis,
+        occasion: messages.isNotEmpty
+            ? messages.last['content'] ?? 'Đi chơi'
+            : 'Đi chơi',
+      );
+      return {
+        'action': 'FINALIZE_OUTFIT',
+        'reply': outfit.aiReason,
+        'outfit': outfit,
+      };
+    }
+
+    final salutation = gender.toLowerCase().contains('nam')
+        ? 'anh'
+        : (gender.toLowerCase().contains('nữ') ? 'chị' : 'bạn');
+    return {
+      'action': 'CONVERSATION',
+      'reply':
+          'Chào $salutation $userName! Stylist rất hào hứng hỗ trợ bạn ✨ $salutation dự định diện trang phục này ở địa điểm hay không gian nào thế ạ (nhà hàng, quán cà phê hay dạo phố)? Khi $salutation đã chọn xong ý tưởng, chỉ cần bấm "✨ Chốt & Phối đồ" để em lên ngay set đồ hoàn chỉnh kèm ảnh người mẫu mặc thực tế nhé!',
+    };
+  }
 }

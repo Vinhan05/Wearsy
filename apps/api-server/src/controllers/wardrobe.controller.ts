@@ -24,6 +24,7 @@ import {
 import { CloudinaryService } from '../services/cloudinary.service';
 import { WardrobeScannerService } from '../services/wardrobe-scanner.service';
 import { WardrobeService } from '../services/wardrobe.service';
+import axios from 'axios';
 import {
   ScanBulkBodyDto,
   ScanBulkResponseDto,
@@ -133,6 +134,61 @@ export class WardrobeController {
       width: result.width,
       height: result.height,
     };
+  }
+
+  @Post('enhance-garment')
+  @ApiOperation({
+    summary: 'Tân trang trang phục bằng AI (Premium Studio Lookbook)',
+  })
+  async enhanceGarment(
+    @Body()
+    body: {
+      image_url: string;
+      name?: string;
+      category?: string;
+      color?: string;
+    },
+  ) {
+    if (!body || !body.image_url) {
+      throw new BadRequestException('Vui lòng cung cấp image_url để tân trang.');
+    }
+
+    try {
+      const orchestratorUrl =
+        process.env.AI_ORCHESTRATOR_URL || 'http://127.0.0.1:8000';
+      const response = await axios.post(
+        `${orchestratorUrl}/api/v1/wardrobe/enhance-garment`,
+        {
+          image_url: body.image_url,
+          name: body.name || 'Trang phục',
+          category: body.category || 'Khác',
+          color: body.color || 'Đa sắc',
+          is_premium: true,
+        },
+        { timeout: 60000 },
+      );
+
+      const data = response.data;
+      const cleanOrch = orchestratorUrl.replace(/\/+$/, '');
+      const enhancedUrl = data.enhanced_image_url?.startsWith('http')
+        ? data.enhanced_image_url
+        : `${cleanOrch}${data.enhanced_image_url?.startsWith('/') ? '' : '/'}${data.enhanced_image_url}`;
+
+      return {
+        success: true,
+        message: 'Tân trang trang phục thành công!',
+        enhanced_image_url: enhancedUrl,
+        enhanced_image_base64: data.enhanced_image_base64,
+        bg_removed_url: data.bg_removed_url,
+        visual_description: data.visual_description,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Tân trang trang phục thất bại, giữ nguyên ảnh gốc.',
+        enhanced_image_url: body.image_url,
+      };
+    }
   }
 
   @Post('scan-bulk')

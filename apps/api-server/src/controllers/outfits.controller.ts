@@ -53,6 +53,35 @@ export class OutfitsController {
     return this.outfitsService.recommendAndCreateOutfit(userId, dto);
   }
 
+  @Post('stylist-chat')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Trò chuyện cùng Trợ lý AI Stylist (đối thoại, hỏi thăm hoàn cảnh, kiểm tra vóc dáng, chốt đồ mới tạo ảnh)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Phản hồi từ AI Stylist (hội thoại hoặc chốt outfit)',
+  })
+  async chatWithStylist(
+    @Body()
+    dto: {
+      messages: { role: string; content: string }[];
+      user_name?: string;
+      user_profile?: any;
+      wardrobe_items?: any[];
+      force_finalize?: boolean;
+    },
+  ) {
+    return this.aiOutfitService.chatWithStylist(
+      dto.messages || [],
+      dto.wardrobe_items || [],
+      dto.user_profile,
+      dto.user_name || 'Bạn',
+      dto.force_finalize || false,
+    );
+  }
+
   @Get()
   @ApiOperation({ summary: 'Lấy toàn bộ danh sách outfit của người dùng' })
   async getOutfits(@Headers('x-user-id') headerUserId?: string) {

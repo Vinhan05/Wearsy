@@ -144,14 +144,20 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     });
   }
 
-  Future<void> _sendPrompt([String? presetText]) async {
+  Future<void> _sendPrompt({String? presetText, bool forceFinalize = false}) async {
     final userText = (presetText ?? _promptCtrl.text).trim();
-    if (userText.isEmpty || _isLoading) return;
+    if (userText.isEmpty && !forceFinalize) return;
+    if (_isLoading) return;
+
     final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
     final auth = Provider.of<AuthProvider>(context, listen: false);
 
+    final displayText = forceFinalize && userText.isEmpty
+        ? '✨ Chốt & Phối đồ ngay'
+        : userText;
+
     setState(() {
-      _messages.add(_ChatMessage(sender: _ChatSender.user, text: userText));
+      _messages.add(_ChatMessage(sender: _ChatSender.user, text: displayText));
       _isLoading = true;
     });
     _promptCtrl.clear();
@@ -161,36 +167,56 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
       final heightCm = (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 170.0;
       final weightKg = (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 62.0;
       final userName = auth.user?.fullName ?? 'bạn';
+      final gender = auth.user?.bodyMeasurements?['gender']?.toString() ?? 'Nữ';
 
-      final outfitResult = await SmartFitAiService.generateSmartFitOutfit(
+      final history = _messages.map((m) => {
+        'role': m.sender == _ChatSender.user ? 'user' : 'assistant',
+        'content': m.text,
+      }).toList();
+
+      final chatResponse = await SmartFitAiService.chatWithStylist(
+        messages: history,
         wardrobeItems: wardrobe.allItems,
         heightCm: heightCm,
         weightKg: weightKg,
-        occasion: userText,
+        gender: gender,
         userName: userName,
+        forceFinalize: forceFinalize,
       );
 
       if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-        _messages.add(_ChatMessage(
-          sender: _ChatSender.ai,
-          text: outfitResult.aiReason.isNotEmpty
-              ? outfitResult.aiReason
-              : 'Dưới đây là gợi ý phối đồ AI tối ưu nhất từ tủ đồ của bạn:',
-          outfit: outfitResult,
-        ));
-      });
 
-      final outfitProvider = Provider.of<OutfitProvider>(context, listen: false);
-      await outfitProvider.addOutfitFromChat(outfitResult);
+      final action = chatResponse['action']?.toString() ?? 'CONVERSATION';
+      if (action == 'FINALIZE_OUTFIT' && chatResponse['outfit'] != null) {
+        final outfitResult = chatResponse['outfit'] as OutfitModel;
+        setState(() {
+          _isLoading = false;
+          _messages.add(_ChatMessage(
+            sender: _ChatSender.ai,
+            text: chatResponse['reply']?.toString() ?? outfitResult.aiReason,
+            outfit: outfitResult,
+          ));
+        });
+
+        final outfitProvider = Provider.of<OutfitProvider>(context, listen: false);
+        await outfitProvider.addOutfitFromChat(outfitResult);
+      } else {
+        setState(() {
+          _isLoading = false;
+          _messages.add(_ChatMessage(
+            sender: _ChatSender.ai,
+            text: chatResponse['reply']?.toString() ??
+                'Tôi có thể giúp bạn phối thêm chi tiết gì không?',
+          ));
+        });
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
         _messages.add(_ChatMessage(
           sender: _ChatSender.ai,
-          text: '😔 Có lỗi xảy ra khi kết nối AI Stylist. Vui lòng kiểm tra lại kết nối hoặc thử lại nhé!',
+          text: '😔 Có lỗi xảy ra khi kết nối AI Stylist. Vui lòng thử lại nhé!',
         ));
       });
     }
@@ -641,45 +667,71 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
   }
 
   Widget _buildBottomSection() {
-    final suggestions = ['Đi dự đám cưới', 'Hẹn hò cafe cuối tuần', 'Đi làm công sở'];
+    final suggestions = ['Đi hẹn hò lãng mạn', 'Đi làm công sở', 'Dự tiệc cưới'];
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: suggestions.map((s) {
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+          // Action button: Chốt & Phối đồ ngay
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                ),
+                icon: const Icon(Icons.auto_awesome, color: Color(0xFFFDCB6E), size: 18),
+                label: Text(
+                  '✨ Chốt & Phối đồ ngay',
+                  style: AppFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () => _sendPrompt(forceFinalize: true),
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: suggestions.map((s) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
                   child: GestureDetector(
-                    onTap: () => _sendPrompt(s),
+                    onTap: () => _sendPrompt(presetText: s),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         color: AppTheme.lavenderCard,
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
                       ),
-                      child: Center(
-                        child: Text(
-                          s,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppFonts.inter(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.darkTextPrimary,
-                          ),
+                      child: Text(
+                        s,
+                        style: AppFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.darkTextPrimary,
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),

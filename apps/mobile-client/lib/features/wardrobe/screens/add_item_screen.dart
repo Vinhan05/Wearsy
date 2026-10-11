@@ -127,6 +127,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   String? _aiAnalysisReason;
 
   bool _isAnalyzing = false;
+  bool _isEnhancing = false;
   bool _isCameraSimulatorOpen = false;
   late AnimationController _scanAnimController;
 
@@ -1209,6 +1210,66 @@ class _AddItemScreenState extends State<AddItemScreen>
     }
   }
 
+  Future<void> _enhanceGarmentWithAi() async {
+    final targetPath = _localImagePath ?? _currentImageUrl;
+    if (targetPath.isEmpty || _isEnhancing) return;
+
+    setState(() => _isEnhancing = true);
+
+    try {
+      final wardrobeService = WardrobeService();
+      final res = await wardrobeService.enhanceGarment(
+        imageUrl: targetPath,
+        name: _nameController.text.trim().isNotEmpty
+            ? _nameController.text.trim()
+            : null,
+        category: _selectedCategory.displayName,
+        color: _colorController.text.trim().isNotEmpty
+            ? _colorController.text.trim()
+            : null,
+      );
+
+      if (res != null && res['enhanced_image_url'] != null && mounted) {
+        final enhancedUrl = res['enhanced_image_url'].toString();
+        setState(() {
+          _isEnhancing = false;
+          _localImagePath = null;
+          _currentImageUrl = enhancedUrl;
+          if (res['visual_description'] != null) {
+            _aiAnalysisReason =
+                'AI đã tân trang studio: ${res['visual_description']}';
+          }
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.auto_awesome, color: Color(0xFFFDCB6E)),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                      '✨ Đã tân trang trang phục thành ảnh studio lookbook sang trọng!'),
+                ),
+              ],
+            ),
+            backgroundColor: Color(0xFF2C2849),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        if (mounted) setState(() => _isEnhancing = false);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isEnhancing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi tân trang trang phục: $e')),
+        );
+      }
+    }
+  }
+
   Widget _buildSourceActionButtons() {
     final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return Column(
@@ -1255,6 +1316,60 @@ class _AddItemScreenState extends State<AddItemScreen>
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 10),
+        // Premium Garment Enhancement Button
+        SizedBox(
+          width: double.infinity,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFE65C00), Color(0xFFF9D423)],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFF9D423).withOpacity(0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              onPressed: _isEnhancing ? null : _enhanceGarmentWithAi,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              icon: _isEnhancing
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.auto_awesome, size: 20, color: Colors.white),
+              label: Text(
+                _isEnhancing
+                    ? (isEn
+                        ? 'AI Enhancing Garment...'
+                        : 'AI Đang Tân Trang Trang Phục...')
+                    : (isEn
+                        ? '✨ AI Studio Enhancement (Premium)'
+                        : '✨ Tân Trang Bằng AI (Bản Premium)'),
+                style: AppFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 10),
         SizedBox(
