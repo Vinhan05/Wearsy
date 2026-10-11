@@ -22,7 +22,10 @@ export class UsersController {
     summary:
       'Nâng cấp tài khoản WEARSY PREMIUM bằng mã Coupon hoặc trực tiếp trên PostgreSQL Server',
   })
-  @ApiResponse({ status: 200, description: 'Nâng cấp WEARSY PREMIUM thành công' })
+  @ApiResponse({
+    status: 200,
+    description: 'Nâng cấp WEARSY PREMIUM thành công',
+  })
   async upgradeVip(@Body() body: any) {
     const coupon = body?.coupon || 'WEARSY';
     return this.usersService.upgradeVip(coupon, body?.email);

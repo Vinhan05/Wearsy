@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
@@ -125,10 +121,10 @@ export class AiOutfitService {
 
       const orchestratorBase = this.orchestratorUrl.replace(/\/+$/, '');
       const formattedImageUrl = data.image_url
-        ? (data.image_url.startsWith('http')
-            ? data.image_url
-            : `${orchestratorBase}${data.image_url.startsWith('/') ? '' : '/'}${data.image_url}`)
-        : (data.image_base64 || undefined);
+        ? data.image_url.startsWith('http')
+          ? data.image_url
+          : `${orchestratorBase}${data.image_url.startsWith('/') ? '' : '/'}${data.image_url}`
+        : data.image_base64 || undefined;
 
       const outfitResult: RecommendedOutfitDto = {
         outfit_id: `outfit_${Date.now()}`,
@@ -138,7 +134,8 @@ export class AiOutfitService {
         selected_item_ids: finalItemIds,
         item_ids: finalItemIds,
         stylist_reasoning:
-          data.reply || 'Set đồ kết hợp hài hòa, tôn dáng và phù hợp hoàn cảnh.',
+          data.reply ||
+          'Set đồ kết hợp hài hòa, tôn dáng và phù hợp hoàn cảnh.',
         image_url: formattedImageUrl,
         image_base64: data.image_base64,
         is_ai_rendered: data.is_ai_rendered ?? false,
@@ -221,10 +218,10 @@ export class AiOutfitService {
       if (data.action === 'FINALIZE_OUTFIT') {
         const orchestratorBase = this.orchestratorUrl.replace(/\/+$/, '');
         const formattedImageUrl = data.image_url
-          ? (data.image_url.startsWith('http')
-              ? data.image_url
-              : `${orchestratorBase}${data.image_url.startsWith('/') ? '' : '/'}${data.image_url}`)
-          : (data.image_base64 || undefined);
+          ? data.image_url.startsWith('http')
+            ? data.image_url
+            : `${orchestratorBase}${data.image_url.startsWith('/') ? '' : '/'}${data.image_url}`
+          : data.image_base64 || undefined;
         data.image_url = formattedImageUrl;
       }
       return data;

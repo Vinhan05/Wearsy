@@ -60,9 +60,8 @@ export class BgRemovalService {
         'Đang xử lý tách nền fallback bằng mô hình @imgly/background-removal-node...',
       );
 
-      const { removeBackground } = await import(
-        '@imgly/background-removal-node'
-      );
+      const { removeBackground } =
+        await import('@imgly/background-removal-node');
 
       let source: any = input;
       if (Buffer.isBuffer(input)) {

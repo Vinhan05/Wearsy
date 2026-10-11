@@ -91,7 +91,8 @@ export class WardrobeController {
 
   @Post('remove-background')
   @ApiOperation({
-    summary: 'Tách nền AI từ URL hình ảnh (Shopee, Web...) và trả về URL PNG trong suốt',
+    summary:
+      'Tách nền AI từ URL hình ảnh (Shopee, Web...) và trả về URL PNG trong suốt',
   })
   async removeBackgroundFromUrl(@Body() body: { image_url: string }) {
     if (!body || !body.image_url) {

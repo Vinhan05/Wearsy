@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +20,8 @@ class _PendingOtp {
 class AuthService {
   final ApiClient _apiClient = ApiClient();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId:
+        '542169574265-god0pmi4siobijlobf42ooiggc41d0cr.apps.googleusercontent.com',
     scopes: ['email', 'profile'],
   );
 
@@ -169,83 +172,46 @@ class AuthService {
   }
 
   /// Real Google SSO Authentication with dynamic user profile extraction
-  Future<AuthSuccessData> loginWithGoogle({
-    String? fallbackEmail,
-    String? fallbackName,
-  }) async {
-    String? realEmail = fallbackEmail;
-    String? realName = fallbackName;
-
-    // Remove any stale session cache from previous user immediately
+  Future<AuthSuccessData> loginWithGoogle() async {
+    // 1. Clear any stale session cache
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('saved_user_profile_current');
     } catch (_) {}
 
-    if (realEmail == null || realEmail.trim().isEmpty) {
-      try {
-        // Reset Google SSO state to prevent cached session deadlock
-        try {
-          await _googleSignIn.signOut().timeout(const Duration(seconds: 1));
-        } catch (_) {}
+    // 2. Sign out past session to always prompt Google account picker
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {}
 
-        // 1. Interactive Sign In
-        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-        if (googleUser != null) {
-          realEmail = googleUser.email;
-          realName = (googleUser.displayName != null &&
-                  googleUser.displayName!.trim().isNotEmpty)
-              ? googleUser.displayName
-              : _deriveNameFromEmail(googleUser.email);
-        } else {
-          throw ApiException(
-            statusCode: 400,
-            message: 'Đăng nhập Google đã bị hủy.',
-          );
-        }
-      } catch (e) {
-        if (e is ApiException) rethrow;
-
-        // 2. Silent Sign In fallback
-        try {
-          final GoogleSignInAccount? silentUser =
-              await _googleSignIn.signInSilently();
-          if (silentUser != null) {
-            realEmail = silentUser.email;
-            realName = silentUser.displayName ??
-                _deriveNameFromEmail(silentUser.email);
-          }
-        } catch (_) {}
-
-        // 3. Active Current User fallback
-        if (realEmail == null && _googleSignIn.currentUser != null) {
-          realEmail = _googleSignIn.currentUser!.email;
-          realName = _googleSignIn.currentUser!.displayName ??
-              _deriveNameFromEmail(realEmail);
-        }
-
-        // 4. Regex extraction if exception text contains email
-        if (realEmail == null) {
-          final errStr = e.toString();
-          final emailMatch =
-              RegExp(r'[\w\.-]+@[\w\.-]+\.\w+').firstMatch(errStr);
-          if (emailMatch != null) {
-            realEmail = emailMatch.group(0);
-            realName = _deriveNameFromEmail(realEmail!);
-          }
-        }
-
-        if (realEmail == null) {
-          throw ApiException(
-            statusCode: 400,
-            message:
-                'Không thể xác thực tài khoản Google (${e.toString()}). Vui lòng thử lại hoặc đăng nhập bằng Email/Mật khẩu.',
-          );
-        }
-      }
+    // 3. Interactive Sign In via native Google Play Services dialog
+    GoogleSignInAccount? googleUser;
+    try {
+      googleUser = await _googleSignIn.signIn();
+    } catch (e) {
+      debugPrint('[AuthService] GoogleSignIn error: $e');
+      throw ApiException(
+        statusCode: 400,
+        message: 'Lỗi xác thực Google ($e). Vui lòng thử lại.',
+      );
     }
 
-    final cleanEmail = realEmail.trim().toLowerCase();
+    if (googleUser == null) {
+      throw ApiException(
+        statusCode: 400,
+        message: 'Đăng nhập Google đã bị hủy.',
+      );
+    }
+
+    final realEmail = googleUser.email.trim().toLowerCase();
+    final realName = (googleUser.displayName != null &&
+            googleUser.displayName!.trim().isNotEmpty)
+        ? googleUser.displayName!.trim()
+        : _deriveNameFromEmail(realEmail);
+    final photoUrl = googleUser.photoUrl;
+    final googleId = googleUser.id;
+
+    final cleanEmail = realEmail;
     final prefs = await SharedPreferences.getInstance();
     final explicitlySavedName =
         prefs.getString('user_custom_name_$cleanEmail');
@@ -267,23 +233,27 @@ class AuthService {
     }
 
     final finalEmail = cleanEmail;
-    final finalName = localSavedName ??
-        ((realName != null && realName.trim().isNotEmpty)
-            ? realName.trim()
-            : _deriveNameFromEmail(cleanEmail));
+    final finalName = localSavedName ?? realName;
 
     UserModel? serverUser;
     String? serverToken;
     try {
       final res = await _apiClient.post(
         ApiConstants.googleLogin,
-        body: {'email': finalEmail, 'full_name': finalName},
+        body: {
+          'email': finalEmail,
+          'full_name': finalName,
+          'avatar_url': photoUrl,
+          'google_id': googleId,
+        },
       );
       if (res is Map<String, dynamic> && res['user'] != null) {
         serverUser = UserModel.fromJson(res['user'] as Map<String, dynamic>);
         serverToken = res['token']?.toString();
       }
-    } catch (_) {}
+    } catch (err) {
+      debugPrint('[AuthService] Backend googleLogin sync error: $err');
+    }
 
     final baseUser =
         serverUser ?? await _getSavedOrMockUser(finalEmail, finalName);

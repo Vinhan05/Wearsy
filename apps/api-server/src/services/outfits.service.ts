@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -60,7 +56,10 @@ export class OutfitsService {
         bmi: Number(measurements.bmi) || 19.5,
         body_frame: measurements.body_frame || 'Cân đối',
         estimated_size: measurements.estimated_size || 'S',
-        preferred_styles: profile?.preferred_styles || ['Thanh lịch', 'Hiện đại'],
+        preferred_styles: profile?.preferred_styles || [
+          'Thanh lịch',
+          'Hiện đại',
+        ],
         color_preferences: profile?.color_preferences || {},
       };
     } catch {
@@ -84,7 +83,11 @@ export class OutfitsService {
     }
 
     // Nếu gửi kèm danh sách đồ từ client (cho mục đích test/demo)
-    if ((!itemsToAnalyze || itemsToAnalyze.length === 0) && dto.wardrobe_items && dto.wardrobe_items.length > 0) {
+    if (
+      (!itemsToAnalyze || itemsToAnalyze.length === 0) &&
+      dto.wardrobe_items &&
+      dto.wardrobe_items.length > 0
+    ) {
       itemsToAnalyze = dto.wardrobe_items as any[];
     }
 
@@ -92,7 +95,8 @@ export class OutfitsService {
     const wardrobeDtoList = itemsToAnalyze.map((item) => ({
       id: item.id,
       name: item.name,
-      category_name: (item as any).category_name || (item as any).category || '',
+      category_name:
+        (item as any).category_name || (item as any).category || '',
       primary_color: item.primary_color || 'Đa sắc',
       style_tags: item.style_tags || [],
       image_url: item.image_url,
@@ -101,12 +105,13 @@ export class OutfitsService {
     }));
 
     // Gọi AI Engine
-    const recommendations = await this.aiOutfitService.generateOutfitRecommendations(
-      dto.occasion,
-      wardrobeDtoList,
-      dto.body_summary,
-      dto.user_name || 'Bạn',
-    );
+    const recommendations =
+      await this.aiOutfitService.generateOutfitRecommendations(
+        dto.occasion,
+        wardrobeDtoList,
+        dto.body_summary,
+        dto.user_name || 'Bạn',
+      );
 
     if (!recommendations || recommendations.length === 0) {
       throw new NotFoundException('Không tìm thấy gợi ý outfit phù hợp.');

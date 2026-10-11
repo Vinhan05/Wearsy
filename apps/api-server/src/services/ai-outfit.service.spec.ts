@@ -6,9 +6,12 @@ import { AiOutfitService, WardrobeItemDto } from './ai-outfit.service';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+import { AiGatewayService } from './ai-gateway.service';
+
 describe('AiOutfitService', () => {
   let service: AiOutfitService;
   let mockConfigService: Partial<ConfigService>;
+  let mockAiGatewayService: Partial<AiGatewayService>;
 
   const sampleWardrobe: WardrobeItemDto[] = [
     {
@@ -36,10 +39,16 @@ describe('AiOutfitService', () => {
 
   beforeEach(async () => {
     mockConfigService = {
-      get: jest.fn().mockImplementation((key: string, defaultValue?: string) => {
-        if (key === 'AI_ORCHESTRATOR_URL') return 'http://127.0.0.1:8000';
-        return defaultValue || '';
-      }),
+      get: jest
+        .fn()
+        .mockImplementation((key: string, defaultValue?: string) => {
+          if (key === 'AI_ORCHESTRATOR_URL') return 'http://127.0.0.1:8000';
+          return defaultValue || '';
+        }),
+    };
+
+    mockAiGatewayService = {
+      getOrchestratorUrl: jest.fn().mockReturnValue('http://127.0.0.1:8000'),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -48,6 +57,10 @@ describe('AiOutfitService', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: AiGatewayService,
+          useValue: mockAiGatewayService,
         },
       ],
     }).compile();
