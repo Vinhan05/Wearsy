@@ -22,7 +22,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   WeatherData? _weatherData;
   CityLocation _selectedCity = WeatherService.defaultCity;
-  final Set<String> _favoriteOutfits = {'smart_casual_1', 'chic_minimal_2'};
+  final Set<String> _favoriteOutfits = {};
 
   @override
   void initState() {
@@ -300,12 +300,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final cityStr = _selectedCity.name;
 
     return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAFAFC),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-      ),
-      padding: const EdgeInsets.fromLTRB(18, 20, 18, 16),
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: Column(
         children: [
           Row(
