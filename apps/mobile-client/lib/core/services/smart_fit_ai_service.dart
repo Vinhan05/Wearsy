@@ -5,9 +5,11 @@ import '../../features/outfits/models/outfit_model.dart';
 import '../../features/wardrobe/models/wardrobe_item_model.dart';
 import 'smart_fit_engine.dart';
 
+import '../constants/api_constants.dart';
+
 class SmartFitAiService {
-  // URLs for Android Emulator (10.0.2.2) and local host
-  static const String _backendUrl = 'http://10.0.2.2:8000/v1';
+  // URLs kết nối đến Backend trên Render.com hoặc local
+  static String get _backendUrl => ApiConstants.baseUrl;
   static const String _aiOrchestratorUrl = 'http://10.0.2.2:8000/v1';
 
   /// Sinh gợi ý Outfit kết hợp giữa Gemma 4 Multimodal và ComfyUI Try-on
