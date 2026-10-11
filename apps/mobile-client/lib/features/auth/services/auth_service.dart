@@ -420,7 +420,7 @@ class AuthService {
   Future<EmailSendResult> sendOtpEmail(String email, {String? fullName}) async {
     final cleanEmail = email.trim().toLowerCase();
 
-    // 1. Thử gọi API Backend Server để gửi OTP bằng SMTP trên Server
+    // 1. Gọi API Backend Server để gửi OTP bằng SMTP cấu hình trên Server
     try {
       final res = await _apiClient.post(
         ApiConstants.sendOtp,
@@ -428,6 +428,12 @@ class AuthService {
       );
       if (res != null && res['success'] == true) {
         return EmailSendResult(success: true);
+      }
+      if (res != null && res['message'] != null) {
+        return EmailSendResult(
+          success: false,
+          errorMessage: res['message'].toString(),
+        );
       }
     } catch (e) {
       final err = e.toString();
@@ -439,26 +445,15 @@ class AuthService {
           isConfigMissing: true,
         );
       }
-    }
-
-    // 2. Fallback: Nếu backend offline, sử dụng cấu hình SMTP nội bộ (nếu có)
-    if (EmailService.isConfigured) {
-      final otp = (100000 + Random().nextInt(900000)).toString();
-      _pendingOtps[cleanEmail] = _PendingOtp(
-        code: otp,
-        expiresAt: DateTime.now().add(const Duration(minutes: 5)),
-      );
-      return await EmailService.sendOtpEmail(
-        toEmail: cleanEmail,
-        otp: otp,
-        userName: fullName,
+      return EmailSendResult(
+        success: false,
+        errorMessage: 'Lỗi kết nối máy chủ (${ApiConstants.baseUrl}): $err',
       );
     }
 
     return EmailSendResult(
       success: false,
-      errorMessage: 'Chưa cấu hình tài khoản SMTP trên server backend (.env).',
-      isConfigMissing: true,
+      errorMessage: 'Không thể gửi mã OTP. Vui lòng thử lại sau giây lát.',
     );
   }
 

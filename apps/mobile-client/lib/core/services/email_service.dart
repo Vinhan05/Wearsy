@@ -8,10 +8,10 @@ class EmailService {
   static const String _prefKeySmtpEmail = 'smtp_sender_email';
   static const String _prefKeySmtpPassword = 'smtp_sender_password';
 
-  // Default credentials (Brevo Relay)
+  // Default credentials (Gmail SMTP)
   static String senderEmail = const String.fromEnvironment(
     'SMTP_USER',
-    defaultValue: 'baee6e001@smtp-brevo.com',
+    defaultValue: 'wearsycontacts@gmail.com',
   );
   static String senderAppPassword = const String.fromEnvironment(
     'SMTP_PASSWORD',
@@ -91,18 +91,9 @@ class EmailService {
     }
 
     try {
-      // 1. Tạo SMTP server (Brevo Relay hoặc Gmail tùy host)
+      // 1. Tạo SMTP server qua Gmail
       final cleanPassword = effectivePassword.replaceAll(' ', '');
-      final smtpServer = senderEmail.contains('brevo.com')
-          ? SmtpServer(
-              'smtp-relay.brevo.com',
-              port: 587,
-              username: senderEmail,
-              password: cleanPassword,
-              ssl: false,
-              allowInsecure: true,
-            )
-          : gmail(senderEmail, cleanPassword);
+      final smtpServer = gmail(senderEmail, cleanPassword);
 
       // 2. Tạo nội dung email HTML cao cấp chuẩn WEARSY
       final displayName =
