@@ -288,17 +288,23 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                     return FilterChip(
                       label: Text(_getColorLabel(color, isEn)),
                       selected: isSelected,
-                      selectedColor: AppTheme.secondaryColor.withOpacity(0.8),
-                      backgroundColor: AppTheme.darkSurface,
+                      checkmarkColor: Colors.white,
+                      selectedColor: const Color(0xFF374151),
+                      backgroundColor: Colors.white,
                       labelStyle: GoogleFonts.inter(
                         color: isSelected
-                            ? Colors.black
-                            : AppTheme.darkTextSecondary,
+                            ? Colors.white
+                            : const Color(0xFF4B5563),
                         fontWeight:
                             isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color: isSelected
+                              ? Colors.transparent
+                              : const Color(0xFFD1D5DB),
+                        ),
                       ),
                       onSelected: (selected) {
                         setState(() {
