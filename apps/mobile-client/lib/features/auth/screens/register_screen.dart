@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/utils/security_utils.dart';
 import '../../home/screens/main_navigation_screen.dart';
+import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../providers/auth_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -112,6 +113,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Navigator.pop(bottomSheetContext);
 
               if (success) {
+                try {
+                  final wardrobeProvider =
+                      Provider.of<WardrobeProvider>(context, listen: false);
+                  await wardrobeProvider.clearAllItems();
+                } catch (_) {}
+
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text(
