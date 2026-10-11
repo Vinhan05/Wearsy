@@ -10,7 +10,11 @@ import '../constants/api_constants.dart';
 class SmartFitAiService {
   // URLs kết nối đến Backend trên Render.com hoặc local
   static String get _backendUrl => ApiConstants.baseUrl;
-  static const String _aiOrchestratorUrl = 'http://10.0.2.2:8000/v1';
+  static String get _aiOrchestratorUrl {
+    const envUrl = String.fromEnvironment('AI_ORCHESTRATOR_URL');
+    if (envUrl.isNotEmpty) return envUrl;
+    return 'http://10.30.1.50:8000';
+  }
 
   /// Sinh gợi ý Outfit kết hợp giữa Gemma 4 Multimodal và ComfyUI Try-on
   static Future<OutfitModel> generateSmartFitOutfit({
