@@ -142,10 +142,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               child: Container(
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppTheme.darkCard,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
                   borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(28)),
+                      BorderRadius.vertical(top: Radius.circular(28)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 20,
+                      offset: Offset(0, -4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -156,7 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: Colors.white24,
+                          color: const Color(0xFFCBD5E1),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -183,7 +190,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 style: AppFonts.outfit(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: const Color(0xFF0F172A),
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -191,7 +198,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 'Mã 6 chữ số đã được gửi đến:',
                                 style: AppFonts.inter(
                                   fontSize: 13,
-                                  color: AppTheme.darkTextSecondary,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF64748B),
                                 ),
                               ),
                             ],
@@ -199,23 +207,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
+                          horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.15),
+                        color: const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color:
-                                AppTheme.primaryLight.withValues(alpha: 0.3)),
+                            color: const Color(0xFFCBD5E1), width: 1.2),
                       ),
                       child: Text(
                         email,
                         style: AppFonts.inter(
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryLight,
+                          color: const Color(0xFF0F172A),
                           fontSize: 14,
                         ),
                       ),
@@ -224,23 +231,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.12),
+                        color: const Color(0xFFEFF6FF),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color:
-                                AppTheme.primaryLight.withValues(alpha: 0.25)),
+                            color: const Color(0xFFBFDBFE), width: 1.2),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.mark_email_unread_rounded,
-                              color: AppTheme.primaryLight, size: 20),
+                          const Icon(Icons.mark_email_unread_rounded,
+                              color: Color(0xFF2563EB), size: 22),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               'Mã OTP 6 số đã được gửi qua Gmail thật tới hộp thư của bạn. Vui lòng kiểm tra Hộp thư đến (hoặc thư mục Spam).',
                               style: AppFonts.inter(
-                                color: Colors.white70,
-                                fontSize: 12,
+                                color: const Color(0xFF1E293B),
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w500,
                                 height: 1.4,
                               ),
                             ),
@@ -253,8 +260,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(6, (index) {
                         return SizedBox(
-                          width: 44,
-                          height: 52,
+                          width: 46,
+                          height: 54,
                           child: TextField(
                             controller: otpControllers[index],
                             focusNode: focusNodes[index],
@@ -262,22 +269,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textAlign: TextAlign.center,
                             maxLength: 1,
                             style: AppFonts.outfit(
-                              fontSize: 20,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: const Color(0xFF0F172A),
                             ),
                             decoration: InputDecoration(
                               counterText: '',
+                              filled: true,
+                              fillColor: const Color(0xFFF8FAFC),
                               contentPadding: EdgeInsets.zero,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                    color: AppTheme.primaryLight, width: 2),
+                                borderSide: const BorderSide(
+                                    color: Color(0xFF2563EB), width: 2),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    const BorderSide(color: Colors.white24),
+                                borderSide: const BorderSide(
+                                    color: Color(0xFFCBD5E1), width: 1.5),
                               ),
                             ),
                             onChanged: (value) {
@@ -329,6 +338,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   style: AppFonts.outfit(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
+                                    color: Colors.white,
                                     letterSpacing: 1.0,
                                   ),
                                 ),
@@ -362,12 +372,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             );
                           }
                         },
-                        icon: Icon(Icons.refresh_rounded,
-                            size: 16, color: AppTheme.primaryLight),
+                        icon: const Icon(Icons.refresh_rounded,
+                            size: 16, color: Color(0xFF2563EB)),
                         label: Text(
                           'Chưa nhận được? Gửi lại mã OTP',
                           style: AppFonts.inter(
-                            color: AppTheme.primaryLight,
+                            color: const Color(0xFF2563EB),
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
