@@ -5,34 +5,14 @@ import axios from 'axios';
 @Injectable()
 export class AiGatewayService {
   private readonly logger = new Logger(AiGatewayService.name);
-  private static dynamicUrl: string | null = null;
-  private static lastRegisteredAt: Date | null = null;
 
   constructor(private readonly configService: ConfigService) {}
 
   /**
-   * Cập nhật URL AI Orchestrator động (khi Cloudflare Tunnel sinh ra link mới)
-   */
-  setDynamicUrl(url: string): string {
-    const cleanUrl = url.trim().replace(/\/+$/, '');
-    AiGatewayService.dynamicUrl = cleanUrl;
-    AiGatewayService.lastRegisteredAt = new Date();
-    this.logger.log(
-      `[AI Auto-Registration] Đã tự động cập nhật AI Orchestrator URL mới: ${cleanUrl}`,
-    );
-    return cleanUrl;
-  }
-
-  /**
-   * Lấy URL AI Orchestrator đang hoạt động:
-   * 1. Ưu tiên URL động vừa đăng ký từ máy local qua Cloudflare
-   * 2. Kế tiếp là biến môi trường AI_ORCHESTRATOR_URL từ Render .env
-   * 3. Mặc định là localhost http://127.0.0.1:8000
+   * Lấy URL AI Orchestrator trực tiếp từ biến môi trường (AI_ORCHESTRATOR_URL):
+   * Người dùng thiết lập thủ công trên Render Dashboard / file .env.
    */
   getOrchestratorUrl(): string {
-    if (AiGatewayService.dynamicUrl && AiGatewayService.dynamicUrl.length > 5) {
-      return AiGatewayService.dynamicUrl;
-    }
     const envUrl = this.configService.get<string>('AI_ORCHESTRATOR_URL');
     if (envUrl && envUrl.trim().length > 5) {
       return envUrl.trim().replace(/\/+$/, '');
@@ -44,22 +24,8 @@ export class AiGatewayService {
     return 'http://127.0.0.1:8000';
   }
 
-  markUrlFailed(failedUrl: string): void {
-    const clean = failedUrl?.trim().replace(/\/+$/, '');
-    if (
-      AiGatewayService.dynamicUrl &&
-      (AiGatewayService.dynamicUrl === clean ||
-        clean?.includes(AiGatewayService.dynamicUrl))
-    ) {
-      this.logger.warn(
-        `[AI Auto-Registration] URL động ${clean} đã mất kết nối hoặc trả về lỗi. Tự động hủy đăng ký URL này.`,
-      );
-      AiGatewayService.dynamicUrl = null;
-    }
-  }
-
   /**
-   * Lấy trạng thái kết nối
+   * Kiểm tra trạng thái kết nối tới AI Orchestrator theo ENV
    */
   async getStatus() {
     const activeUrl = this.getOrchestratorUrl();
@@ -73,16 +39,12 @@ export class AiGatewayService {
       }
     } catch (e: any) {
       reachError = e.message;
-      if (AiGatewayService.dynamicUrl) {
-        this.markUrlFailed(activeUrl);
-      }
     }
 
     return {
       active_url: activeUrl,
-      is_dynamic: Boolean(AiGatewayService.dynamicUrl),
+      is_manual_env: true,
       is_reachable: isReachable,
-      last_registered_at: AiGatewayService.lastRegisteredAt,
       error: reachError,
     };
   }
