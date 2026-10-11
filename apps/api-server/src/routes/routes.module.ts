@@ -56,7 +56,10 @@ import {
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET', 'wearsy_fallback_secret_2024'),
+        secret:
+          config.get<string>('JWT_SECRET') ||
+          process.env.JWT_SECRET ||
+          'wearsy_fallback_secret_2024_super_secure',
         signOptions: { expiresIn: '24h' },
       }),
     }),
