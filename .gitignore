@@ -40,3 +40,7 @@ AI/models/
 outputs/
 cache/
 
+# Release APKs (kept locally for archive & rollback, ignored by git to avoid 100MB file limit)
+*.apk
+releases/apk/*.apk
+!releases/apk/.gitkeep

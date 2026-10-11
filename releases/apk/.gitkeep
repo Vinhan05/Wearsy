@@ -1,0 +1,7 @@
+# This folder holds local APK releases and historical backups:
+# - wearsy-beta-1.0.0.apk
+# - wearsy-beta-1.0.1.apk
+# - ...
+# - wearsy-latest.apk
+#
+# Binary .apk files are ignored by git (.gitignore) to keep repository size lean.
