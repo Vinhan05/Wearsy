@@ -256,6 +256,14 @@ class _AddItemScreenState extends State<AddItemScreen>
       final savedList = prefs.getStringList('user_wardrobe_gallery') ?? [];
       setState(() {
         _galleryImages = savedList;
+        if (savedList.isNotEmpty && widget.existingItem == null && _localImagePath == null) {
+          final firstImg = savedList.first;
+          if (firstImg.startsWith('http')) {
+            _currentImageUrl = firstImg;
+          } else if (File(firstImg).existsSync()) {
+            _localImagePath = firstImg;
+          }
+        }
       });
     } catch (_) {}
   }
@@ -453,7 +461,7 @@ class _AddItemScreenState extends State<AddItemScreen>
     // BẮT BUỘC 100% XÓA NỀN NGAY KHI TẢI ẢNH TỪ ĐIỆN THOẠI / URL LÊN APP
     try {
       final wardrobeService = WardrobeService();
-      if (_localImagePath != null && _localImagePath!.isNotEmpty) {
+      if (_localImagePath != null && _localImagePath!.isNotEmpty && !_localImagePath!.startsWith('http')) {
         final bgRemovedUrl =
             await wardrobeService.uploadImageWithBgRemoval(_localImagePath!);
         if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
@@ -461,7 +469,11 @@ class _AddItemScreenState extends State<AddItemScreen>
           if (mounted) {
             setState(() {
               _currentImageUrl = bgRemovedUrl;
-              _localImagePath = bgRemovedUrl; // Giữ đường dẫn file PNG đã bóc phông nền
+              if (bgRemovedUrl.startsWith('http')) {
+                _localImagePath = null;
+              } else {
+                _localImagePath = bgRemovedUrl;
+              }
             });
           }
         }
@@ -475,6 +487,7 @@ class _AddItemScreenState extends State<AddItemScreen>
           if (mounted) {
             setState(() {
               _currentImageUrl = bgRemovedUrl;
+              _localImagePath = null;
             });
           }
         }
@@ -1000,7 +1013,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   }
 
   Widget _buildImageScannerHero() {
-    final bool isLocal = _localImagePath != null;
+    final bool isLocal = _localImagePath != null && !_localImagePath!.startsWith('http');
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),

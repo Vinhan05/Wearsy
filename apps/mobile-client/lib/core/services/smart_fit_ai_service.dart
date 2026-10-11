@@ -307,6 +307,11 @@ class SmartFitAiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data =
             jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        final replyText = (data['reply']?.toString() ?? '').trim();
+        final safeReply = replyText.isNotEmpty
+            ? replyText
+            : 'Chào bạn! Stylist rất sẵn lòng hỗ trợ. Bạn muốn diện trang phục cho dịp nào thế ạ?';
+
         if (data['action'] == 'FINALIZE_OUTFIT') {
           final outfit = _parseOutfitFromJson(
             data,
@@ -318,14 +323,13 @@ class SmartFitAiService {
           );
           return {
             'action': 'FINALIZE_OUTFIT',
-            'reply': data['reply'] ?? outfit.aiReason,
+            'reply': safeReply,
             'outfit': outfit,
           };
         } else {
           return {
             'action': 'CONVERSATION',
-            'reply': data['reply'] ??
-                'Tôi có thể giúp bạn phối trang phục cho dịp nào?',
+            'reply': safeReply,
           };
         }
       }
@@ -333,7 +337,7 @@ class SmartFitAiService {
       debugPrint('[SmartFitAiService] Backend stylist-chat error: $e');
     }
 
-    // 2nd attempt: Call direct Orchestrator /api/v1/stylist/chat
+    // 2nd attempt: Call direct Orchestrator /api/v1/stylist/chat (short timeout if local network)
     try {
       final uri = Uri.parse('$_aiOrchestratorUrl/stylist/chat');
       final response = await http
@@ -342,11 +346,16 @@ class SmartFitAiService {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode(payload),
           )
-          .timeout(const Duration(minutes: 5));
+          .timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data =
             jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+        final replyText = (data['reply']?.toString() ?? '').trim();
+        final safeReply = replyText.isNotEmpty
+            ? replyText
+            : 'Chào bạn! Stylist đã sẵn sàng hỗ trợ bạn phối đồ.';
+
         if (data['action'] == 'FINALIZE_OUTFIT') {
           final outfit = _parseOutfitFromJson(
             data,
@@ -358,14 +367,13 @@ class SmartFitAiService {
           );
           return {
             'action': 'FINALIZE_OUTFIT',
-            'reply': data['reply'] ?? outfit.aiReason,
+            'reply': safeReply,
             'outfit': outfit,
           };
         } else {
           return {
             'action': 'CONVERSATION',
-            'reply': data['reply'] ??
-                'Tôi có thể giúp bạn phối trang phục cho dịp nào?',
+            'reply': safeReply,
           };
         }
       }
