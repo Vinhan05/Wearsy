@@ -1,67 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private transporter: nodemailer.Transporter | null = null;
+  private resend: Resend | null = null;
 
   constructor(private readonly configService: ConfigService) {
-    this.initTransporter();
+    this.initResend();
   }
 
-  private initTransporter() {
-    const host =
-      process.env.MAIL_HOST ||
-      this.configService.get<string>('MAIL_HOST') ||
-      process.env.SMTP_HOST ||
-      this.configService.get<string>('SMTP_HOST') ||
-      'smtp-relay.brevo.com';
-
-    const port =
-      Number(
-        process.env.MAIL_PORT || this.configService.get<number>('MAIL_PORT'),
-      ) ||
-      Number(
-        process.env.SMTP_PORT || this.configService.get<number>('SMTP_PORT'),
-      ) ||
-      587;
-
-    const secure = false; // Bắt buộc false vì sử dụng port 587 STARTTLS
-
-    const user = (
-      process.env.MAIL_USER ||
-      this.configService.get<string>('MAIL_USER') ||
-      process.env.SMTP_USER ||
-      this.configService.get<string>('SMTP_USER') ||
-      ''
-    ).trim();
-
-    const rawPass =
-      process.env.MAIL_PASS ||
-      this.configService.get<string>('MAIL_PASS') ||
-      process.env.SMTP_PASS ||
-      this.configService.get<string>('SMTP_PASS') ||
+  private initResend() {
+    const apiKey =
+      process.env.RESEND_API_KEY ||
+      this.configService.get<string>('RESEND_API_KEY') ||
       '';
-    const pass = rawPass.replace(/\s+/g, '');
 
-    if (user && pass) {
-      this.transporter = nodemailer.createTransport({
-        host,
-        port,
-        secure,
-        auth: {
-          user,
-          pass,
-        },
-      });
-      this.logger.log(
-        `SMTP Mailer initialized successfully for host: ${host}, user: ${user}`,
-      );
+    if (apiKey) {
+      this.resend = new Resend(apiKey.trim());
+      this.logger.log('Resend email client initialized successfully.');
     } else {
       this.logger.warn(
-        'MAIL_USER (hoặc SMTP_USER) / MAIL_PASS (hoặc SMTP_PASS) chưa được cấu hình trong .env. Email sẽ không thể gửi đi.',
+        'RESEND_API_KEY chưa được cấu hình trong .env. Email sẽ không thể gửi đi.',
       );
     }
   }
@@ -71,23 +32,23 @@ export class MailService {
     otp: string,
     userName?: string,
   ): Promise<{ success: boolean; message?: string }> {
-    if (!this.transporter) {
-      this.initTransporter();
-      if (!this.transporter) {
+    if (!this.resend) {
+      this.initResend();
+      if (!this.resend) {
         return {
           success: false,
           message:
-            'Server chưa được cấu hình thông tin SMTP (MAIL_USER / MAIL_PASS trong file .env).',
+            'Server chưa được cấu hình thông tin RESEND_API_KEY trong file .env.',
         };
       }
     }
 
     const from =
+      process.env.RESEND_FROM ||
+      this.configService.get<string>('RESEND_FROM') ||
       process.env.MAIL_FROM ||
-      this.configService.get<string>('MAIL_FROM') ||
-      process.env.SMTP_FROM ||
-      this.configService.get<string>('SMTP_FROM') ||
-      'WEARSY Support <vo.thedan@outlook.com>';
+      'WEARSY <onboarding@resend.dev>';
+
     const displayName = userName || 'Bạn';
 
     const html = `
@@ -144,16 +105,31 @@ export class MailService {
 `;
 
     try {
-      await this.transporter.sendMail({
+      const { data, error } = await this.resend.emails.send({
         from,
         to: toEmail,
         subject: 'WEARSY Verification Code',
         html,
       });
-      this.logger.log(`OTP email sent successfully to: ${toEmail}`);
+
+      if (error) {
+        this.logger.error(
+          `Failed to send email to ${toEmail} via Resend: ${error.message}`,
+        );
+        return {
+          success: false,
+          message: `Lỗi dịch vụ gửi mail Resend: ${error.message}`,
+        };
+      }
+
+      this.logger.log(
+        `OTP email sent successfully to ${toEmail}. Resend ID: ${data?.id}`,
+      );
       return { success: true };
-    } catch (error) {
-      this.logger.error(`Failed to send email to ${toEmail}: ${error.message}`);
+    } catch (error: any) {
+      this.logger.error(
+        `Unexpected error sending email to ${toEmail}: ${error.message}`,
+      );
       return {
         success: false,
         message: `Lỗi máy chủ gửi mail: ${error.message}`,
