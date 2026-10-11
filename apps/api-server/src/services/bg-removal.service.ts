@@ -49,6 +49,7 @@ export class BgRemovalService {
         return resultBuffer;
       }
     } catch (orchError) {
+      this.aiGatewayService.markUrlFailed(this.aiOrchestratorUrl);
       this.logger.warn(
         `Không thể kết nối AI Orchestrator để tách nền (${orchError.message}). Đang thử fallback...`,
       );

@@ -1244,6 +1244,19 @@ class _AddItemScreenState extends State<AddItemScreen>
       );
 
       if (res != null && mounted) {
+        if (res['success'] == false) {
+          setState(() => _isEnhancing = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  '⚠️ ${res['message'] ?? 'Tân trang trang phục không thành công'}'),
+              backgroundColor: const Color(0xFFE17055),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          return;
+        }
+
         final enhancedUrl = res['enhanced_image_url']?.toString() ?? '';
         final enhancedB64 = res['enhanced_image_base64']?.toString() ?? '';
         String? newLocalPath;

@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class AiGatewayService {
@@ -43,14 +44,46 @@ export class AiGatewayService {
     return 'http://127.0.0.1:8000';
   }
 
+  markUrlFailed(failedUrl: string): void {
+    const clean = failedUrl?.trim().replace(/\/+$/, '');
+    if (
+      AiGatewayService.dynamicUrl &&
+      (AiGatewayService.dynamicUrl === clean ||
+        clean?.includes(AiGatewayService.dynamicUrl))
+    ) {
+      this.logger.warn(
+        `[AI Auto-Registration] URL động ${clean} đã mất kết nối hoặc trả về lỗi. Tự động hủy đăng ký URL này.`,
+      );
+      AiGatewayService.dynamicUrl = null;
+    }
+  }
+
   /**
    * Lấy trạng thái kết nối
    */
-  getStatus() {
+  async getStatus() {
+    const activeUrl = this.getOrchestratorUrl();
+    let isReachable = false;
+    let reachError: string | null = null;
+
+    try {
+      const resp = await axios.get(`${activeUrl}/health`, { timeout: 4000 });
+      if (resp.status === 200) {
+        isReachable = true;
+      }
+    } catch (e: any) {
+      reachError = e.message;
+      if (AiGatewayService.dynamicUrl) {
+        this.markUrlFailed(activeUrl);
+      }
+    }
+
     return {
-      active_url: this.getOrchestratorUrl(),
+      active_url: activeUrl,
       is_dynamic: Boolean(AiGatewayService.dynamicUrl),
+      is_reachable: isReachable,
       last_registered_at: AiGatewayService.lastRegisteredAt,
+      error: reachError,
     };
   }
 }

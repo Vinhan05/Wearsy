@@ -186,9 +186,11 @@ export class WardrobeController {
         visual_description: data.visual_description,
       };
     } catch (error: any) {
+      const orchestratorUrl = this.aiGatewayService.getOrchestratorUrl();
+      this.aiGatewayService.markUrlFailed(orchestratorUrl);
       return {
         success: false,
-        message: 'Tân trang trang phục thất bại, giữ nguyên ảnh gốc.',
+        message: `Tân trang AI không thể kết nối tới máy chủ AI (${error.message}). Vui lòng đảm bảo AI runner đang chạy trên máy tính.`,
         enhanced_image_url: body.image_url,
       };
     }
