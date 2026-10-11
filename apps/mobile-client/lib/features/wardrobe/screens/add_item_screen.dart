@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'dart:math';
@@ -1242,12 +1243,36 @@ class _AddItemScreenState extends State<AddItemScreen>
             : null,
       );
 
-      if (res != null && res['enhanced_image_url'] != null && mounted) {
-        final enhancedUrl = res['enhanced_image_url'].toString();
+      if (res != null && mounted) {
+        final enhancedUrl = res['enhanced_image_url']?.toString() ?? '';
+        final enhancedB64 = res['enhanced_image_base64']?.toString() ?? '';
+        String? newLocalPath;
+
+        if (enhancedB64.isNotEmpty) {
+          try {
+            var rawB64 = enhancedB64;
+            if (rawB64.contains('base64,')) {
+              rawB64 = rawB64.split('base64,')[1];
+            }
+            final bytes = base64Decode(rawB64);
+            final tempFile = File(
+                '${Directory.systemTemp.path}/enhanced_${DateTime.now().millisecondsSinceEpoch}.png');
+            await tempFile.writeAsBytes(bytes);
+            newLocalPath = tempFile.path;
+          } catch (e) {
+            debugPrint('[AddItemScreen] Error saving enhanced base64: $e');
+          }
+        }
+
         setState(() {
           _isEnhancing = false;
-          _localImagePath = null;
-          _currentImageUrl = enhancedUrl;
+          if (newLocalPath != null) {
+            _localImagePath = newLocalPath;
+            _currentImageUrl = newLocalPath;
+          } else if (enhancedUrl.isNotEmpty) {
+            _localImagePath = null;
+            _currentImageUrl = enhancedUrl;
+          }
           if (res['visual_description'] != null) {
             _aiAnalysisReason =
                 'AI đã tân trang studio: ${res['visual_description']}';

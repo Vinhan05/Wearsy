@@ -143,14 +143,15 @@ export class WardrobeController {
   async enhanceGarment(
     @Body()
     body: {
-      image_url: string;
+      image_url?: string;
+      image_base64?: string;
       name?: string;
       category?: string;
       color?: string;
     },
   ) {
-    if (!body || !body.image_url) {
-      throw new BadRequestException('Vui lòng cung cấp image_url để tân trang.');
+    if (!body || (!body.image_url && !body.image_base64)) {
+      throw new BadRequestException('Vui lòng cung cấp hình ảnh để tân trang.');
     }
 
     try {
@@ -160,12 +161,13 @@ export class WardrobeController {
         `${orchestratorUrl}/api/v1/wardrobe/enhance-garment`,
         {
           image_url: body.image_url,
+          image_base64: body.image_base64,
           name: body.name || 'Trang phục',
           category: body.category || 'Khác',
           color: body.color || 'Đa sắc',
           is_premium: true,
         },
-        { timeout: 60000 },
+        { timeout: 90000 },
       );
 
       const data = response.data;

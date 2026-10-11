@@ -102,4 +102,5 @@ releases/apk/
 | Phiên bản | Build | Ngày phát hành | Tác giả | Nội dung cập nhật chính |
 | :--- | :---: | :---: | :--- | :--- |
 | **beta 1.0.0** | **1** | 12/10/2026 | Võ Thế Đan & Đỗ Phúc Hậu | Mốc khởi đầu chính thức. Tích hợp AI Stylist Chat, bóc tách nền U2Net transparent PNG, phục dựng đồ thật Studio Lookbook, fix OTP email Resend, font chữ Montserrat tiếng Việt. |
-| *beta 1.0.1* | *2* | *(Chờ cập nhật)* | | *(Dành cho bản cập nhật kế tiếp)* |
+| **beta 1.0.1** | **2** | 12/10/2026 | Đỗ Phúc Hậu & Võ Thế Đan | Sửa dứt điểm lỗi Tân trang AI (hỗ trợ Base64 từ bộ nhớ thiết bị sang AI Orchestrator), nâng cấp AI Stylist Chat thông minh (đọc danh sách đồ thật trong tủ, tư vấn mix match thời thượng, xóa bỏ câu trả lời rập khuôn, tăng timeout kết nối 25s). |
+| *beta 1.0.2* | *3* | *(Chờ cập nhật)* | | *(Dành cho bản cập nhật kế tiếp)* |

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../../../core/constants/api_constants.dart';
@@ -156,10 +157,29 @@ class WardrobeService {
     String? color,
   }) async {
     try {
+      String? imageBase64;
+      String finalImageUrl = imageUrl;
+
+      // Nếu là ảnh cục bộ trên điện thoại (chụp/chọn từ thư viện), chuyển sang Base64
+      if (!imageUrl.startsWith('http://') &&
+          !imageUrl.startsWith('https://') &&
+          !imageUrl.startsWith('data:')) {
+        try {
+          final file = File(imageUrl);
+          if (await file.exists()) {
+            final bytes = await file.readAsBytes();
+            imageBase64 = 'data:image/png;base64,${base64Encode(bytes)}';
+          }
+        } catch (e) {
+          debugPrint('[WardrobeService] Lỗi đọc file cục bộ sang base64: $e');
+        }
+      }
+
       final res = await _apiClient.post(
         '/wardrobe/enhance-garment',
         body: {
-          'image_url': imageUrl,
+          'image_url': finalImageUrl,
+          'image_base64': imageBase64,
           'name': name ?? 'Trang phục',
           'category': category ?? 'Khác',
           'color': color ?? 'Đa sắc',
