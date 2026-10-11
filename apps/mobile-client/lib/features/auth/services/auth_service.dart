@@ -20,8 +20,6 @@ class _PendingOtp {
 class AuthService {
   final ApiClient _apiClient = ApiClient();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId:
-        '542169574265-god0pmi4siobijlobf42ooiggc41d0cr.apps.googleusercontent.com',
     scopes: ['email', 'profile'],
   );
 
@@ -30,7 +28,13 @@ class AuthService {
     final n = name.trim().toLowerCase();
     final cleanEmail = email.trim().toLowerCase();
     final prefix = cleanEmail.split('@')[0];
-    if (n == 'nguyễn văn demo' || n == 'a con dog') return true;
+    if (n == 'nguyễn văn demo' ||
+        n == 'a con dog' ||
+        n == 'acondog468' ||
+        n == 'acondog' ||
+        n == 'user 1') {
+      return true;
+    }
     if (n.contains('@')) return true;
     if (n == prefix) return true;
     if (n == _deriveNameFromEmail(cleanEmail).toLowerCase()) return true;
@@ -166,54 +170,86 @@ class AuthService {
   }
 
   /// Real Google SSO Authentication with dynamic user profile extraction
-  Future<AuthSuccessData> loginWithGoogle() async {
-    String? realEmail;
-    String? realName;
+  Future<AuthSuccessData> loginWithGoogle({
+    String? fallbackEmail,
+    String? fallbackName,
+  }) async {
+    String? realEmail = fallbackEmail;
+    String? realName = fallbackName;
 
+    // Remove any stale session cache from previous user immediately
     try {
-      // 1. Interactive Sign In
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser != null) {
-        realEmail = googleUser.email;
-        realName = (googleUser.displayName != null &&
-                googleUser.displayName!.isNotEmpty)
-            ? googleUser.displayName
-            : _deriveNameFromEmail(googleUser.email);
-      }
-    } catch (e) {
-      // 2. Silent Sign In fallback
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('saved_user_profile_current');
+    } catch (_) {}
+
+    if (realEmail == null || realEmail.trim().isEmpty) {
       try {
-        final GoogleSignInAccount? silentUser =
-            await _googleSignIn.signInSilently();
-        if (silentUser != null) {
-          realEmail = silentUser.email;
-          realName =
-              silentUser.displayName ?? _deriveNameFromEmail(silentUser.email);
+        // Reset Google SSO state to prevent cached session deadlock
+        try {
+          await _googleSignIn.signOut().timeout(const Duration(seconds: 1));
+        } catch (_) {}
+
+        // 1. Interactive Sign In
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser != null) {
+          realEmail = googleUser.email;
+          realName = (googleUser.displayName != null &&
+                  googleUser.displayName!.trim().isNotEmpty)
+              ? googleUser.displayName
+              : _deriveNameFromEmail(googleUser.email);
+        } else {
+          throw ApiException(
+            statusCode: 400,
+            message: 'Đăng nhập Google đã bị hủy.',
+          );
         }
-      } catch (_) {}
+      } catch (e) {
+        if (e is ApiException) rethrow;
 
-      // 3. Active Current User fallback
-      if (realEmail == null && _googleSignIn.currentUser != null) {
-        realEmail = _googleSignIn.currentUser!.email;
-        realName = _googleSignIn.currentUser!.displayName ??
-            _deriveNameFromEmail(realEmail);
-      }
+        // 2. Silent Sign In fallback
+        try {
+          final GoogleSignInAccount? silentUser =
+              await _googleSignIn.signInSilently();
+          if (silentUser != null) {
+            realEmail = silentUser.email;
+            realName = silentUser.displayName ??
+                _deriveNameFromEmail(silentUser.email);
+          }
+        } catch (_) {}
 
-      // 4. Regex extraction if exception text contains email
-      if (realEmail == null) {
-        final errStr = e.toString();
-        final emailMatch = RegExp(r'[\w\.-]+@[\w\.-]+\.\w+').firstMatch(errStr);
-        if (emailMatch != null) {
-          realEmail = emailMatch.group(0);
-          realName = _deriveNameFromEmail(realEmail!);
+        // 3. Active Current User fallback
+        if (realEmail == null && _googleSignIn.currentUser != null) {
+          realEmail = _googleSignIn.currentUser!.email;
+          realName = _googleSignIn.currentUser!.displayName ??
+              _deriveNameFromEmail(realEmail);
+        }
+
+        // 4. Regex extraction if exception text contains email
+        if (realEmail == null) {
+          final errStr = e.toString();
+          final emailMatch =
+              RegExp(r'[\w\.-]+@[\w\.-]+\.\w+').firstMatch(errStr);
+          if (emailMatch != null) {
+            realEmail = emailMatch.group(0);
+            realName = _deriveNameFromEmail(realEmail!);
+          }
+        }
+
+        if (realEmail == null) {
+          throw ApiException(
+            statusCode: 400,
+            message:
+                'Không thể xác thực tài khoản Google (${e.toString()}). Vui lòng thử lại hoặc đăng nhập bằng Email/Mật khẩu.',
+          );
         }
       }
     }
 
-    final cleanEmail =
-        (realEmail ?? 'acondog468@gmail.com').trim().toLowerCase();
+    final cleanEmail = realEmail.trim().toLowerCase();
     final prefs = await SharedPreferences.getInstance();
-    final explicitlySavedName = prefs.getString('user_custom_name_$cleanEmail');
+    final explicitlySavedName =
+        prefs.getString('user_custom_name_$cleanEmail');
     final savedJson = prefs.getString('saved_user_profile_$cleanEmail');
     String? localSavedName;
     if (explicitlySavedName != null &&
@@ -233,8 +269,8 @@ class AuthService {
 
     final finalEmail = cleanEmail;
     final finalName = localSavedName ??
-        ((realName != null && realName.isNotEmpty)
-            ? realName
+        ((realName != null && realName.trim().isNotEmpty)
+            ? realName.trim()
             : _deriveNameFromEmail(cleanEmail));
 
     UserModel? serverUser;
@@ -459,24 +495,28 @@ class AuthService {
       String cleanEmail, String fullName) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      var savedJson = prefs.getString('saved_user_profile_$cleanEmail');
-      savedJson ??= prefs.getString('saved_user_profile_current');
+      final savedJson = prefs.getString('saved_user_profile_$cleanEmail');
       if (savedJson != null && savedJson.isNotEmpty) {
         final decoded = jsonDecode(savedJson) as Map<String, dynamic>;
         final user = UserModel.fromJson(decoded);
         return user.copyWith(
           email: cleanEmail,
           fullName:
-              (user.fullName.isNotEmpty && user.fullName != 'Nguyễn Văn Demo')
-                  ? user.fullName
-                  : (fullName.isNotEmpty ? fullName : user.fullName),
+              (fullName.isNotEmpty && !_isDefaultOrEmailName(fullName, cleanEmail))
+                  ? fullName
+                  : (user.fullName.isNotEmpty ? user.fullName : _deriveNameFromEmail(cleanEmail)),
         );
       }
     } catch (_) {}
 
+    final bestName =
+        (fullName.isNotEmpty && !_isDefaultOrEmailName(fullName, cleanEmail))
+            ? fullName
+            : _deriveNameFromEmail(cleanEmail);
+
     return MockDataService.getMockAuthData(
       email: cleanEmail,
-      fullName: fullName,
+      fullName: bestName,
     ).user;
   }
 
@@ -719,8 +759,12 @@ class AuthService {
 
   String _deriveNameFromEmail(String email) {
     if (email.contains('@')) {
+      final prefix = email.split('@')[0].toLowerCase();
+      if (prefix.contains('vinhan') || prefix.contains('vi.nhan')) {
+        return 'Vi Nhân';
+      }
       final parts =
-          email.split('@')[0].replaceAll('.', ' ').replaceAll('_', ' ');
+          prefix.replaceAll('.', ' ').replaceAll('_', ' ');
       return parts
           .split(' ')
           .map((w) =>

@@ -84,19 +84,28 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> loginWithGoogle() async {
+  Future<bool> loginWithGoogle({
+    String? fallbackEmail,
+    String? fallbackName,
+  }) async {
     _setLoading(true);
     _clearError();
 
     try {
-      final authData = await _authService.loginWithGoogle();
+      final authData = await _authService.loginWithGoogle(
+        fallbackEmail: fallbackEmail,
+        fallbackName: fallbackName,
+      );
       _user = authData.user;
       _status = AuthStatus.authenticated;
       await _setHasLoggedOut(false);
       notifyListeners();
       return true;
+    } on ApiException catch (e) {
+      _setError(e.message);
+      return false;
     } catch (e) {
-      _setError('Đăng nhập Google thất bại. Vui lòng thử lại.');
+      _setError('Đăng nhập Google thất bại: ${e.toString()}');
       return false;
     } finally {
       _setLoading(false);
