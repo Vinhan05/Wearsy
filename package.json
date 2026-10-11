@@ -1,0 +1,9 @@
+{
+  "name": "wearsy-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd apps/api-server && npm install && npm run build",
+    "start": "cd apps/api-server && npm run start:prod"
+  }
+}
