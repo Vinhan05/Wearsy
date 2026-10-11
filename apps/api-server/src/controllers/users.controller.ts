@@ -11,7 +11,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from '../services/users.service';
 
-@ApiTags('Users & VIP')
+@ApiTags('Users & Premium')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -20,9 +20,9 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary:
-      'Nâng cấp tài khoản VIP bằng mã Coupon hoặc trực tiếp trên PostgreSQL Server',
+      'Nâng cấp tài khoản WEARSY PREMIUM bằng mã Coupon hoặc trực tiếp trên PostgreSQL Server',
   })
-  @ApiResponse({ status: 200, description: 'Nâng cấp VIP thành công' })
+  @ApiResponse({ status: 200, description: 'Nâng cấp WEARSY PREMIUM thành công' })
   async upgradeVip(@Body() body: any) {
     const coupon = body?.coupon || 'WEARSY';
     return this.usersService.upgradeVip(coupon, body?.email);

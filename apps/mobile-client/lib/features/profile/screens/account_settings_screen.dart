@@ -111,7 +111,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     color: Color(0xFF8A6728), size: 28),
                 const SizedBox(width: 10),
                 Text(
-                  'WEARSY VIP PASS',
+                  'WEARSY PREMIUM PASS',
                   style: GoogleFonts.outfit(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     borderRadius: BorderRadius.circular(14)),
               ),
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Kích hoạt VIP ngay (Trải nghiệm)',
+              child: const Text('Kích hoạt WEARSY PREMIUM ngay (Trải nghiệm)',
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold)),
             ),
@@ -717,7 +717,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                             ),
                           ),
                           Text(
-                            'Wearsy VIP',
+                            'WEARSY PREMIUM',
                             style: GoogleFonts.outfit(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -1393,7 +1393,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isEn ? 'Upgrade VIP Plan ✨' : 'Nâng Cấp Gói VIP ✨',
+                    isEn ? 'Upgrade WEARSY PREMIUM Plan ✨' : 'Nâng Cấp Gói WEARSY PREMIUM ✨',
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1482,7 +1482,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'VIP Fashionista',
+                            'WEARSY PREMIUM',
                             style: GoogleFonts.outfit(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -1559,8 +1559,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                       Expanded(
                         child: Text(
                           isEn
-                              ? 'VIP Expires: ${DateFormat('dd/MM/yyyy - HH:mm').format(expiresAt)}'
-                              : 'Thời hạn VIP đến: ${DateFormat('dd/MM/yyyy - HH:mm').format(expiresAt)}',
+                              ? 'PREMIUM Expires: ${DateFormat('dd/MM/yyyy - HH:mm').format(expiresAt)}'
+                              : 'Thời hạn PREMIUM đến: ${DateFormat('dd/MM/yyyy - HH:mm').format(expiresAt)}',
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             color: AppTheme.darkTextPrimary,
@@ -1579,7 +1579,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
 
               // Đặc quyền VIP
               Text(
-                isEn ? 'VIP Privileges:' : 'Đặc quyền gói VIP:',
+                isEn ? 'PREMIUM Privileges:' : 'Đặc quyền gói WEARSY PREMIUM:',
                 style: GoogleFonts.outfit(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -1732,11 +1732,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                                 Text(
                                   isVip
                                       ? (isEn
-                                          ? 'EXTEND VIP FOR 1 YEAR'
-                                          : 'GIA HẠN THÊM VIP 1 NĂM')
+                                          ? 'EXTEND WEARSY PREMIUM FOR 1 YEAR'
+                                          : 'GIA HẠN THÊM WEARSY PREMIUM 1 NĂM')
                                       : (isEn
-                                          ? 'ACTIVATE 1 YEAR VIP'
-                                          : 'KÍCH HOẠT VIP 1 NĂM'),
+                                          ? 'ACTIVATE 1 YEAR WEARSY PREMIUM'
+                                          : 'KÍCH HOẠT WEARSY PREMIUM 1 NĂM'),
                                   style: GoogleFonts.outfit(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
@@ -1785,8 +1785,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                             ),
                             TextSpan(
                                 text: isEn
-                                    ? ' to get 1 year free VIP!'
-                                    : ' để nhận ngay 1 năm VIP miễn phí!'),
+                                    ? ' to get 1 year free WEARSY PREMIUM!'
+                                    : ' để nhận ngay 1 năm WEARSY PREMIUM miễn phí!'),
                           ],
                         ),
                       ),
@@ -1872,7 +1872,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
         SnackBar(
           content: Text(
             authProvider.errorMessage ??
-                'Nâng cấp VIP thất bại. Vui lòng thử lại.',
+                'Nâng cấp WEARSY PREMIUM thất bại. Vui lòng thử lại.',
             style: GoogleFonts.inter(),
           ),
           backgroundColor: AppTheme.accentColor,
@@ -1927,7 +1927,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             const SizedBox(height: 18),
             Text(
-              '🎉 NÂNG CẤP VIP THÀNH CÔNG!',
+              '🎉 NÂNG CẤP WEARSY PREMIUM THÀNH CÔNG!',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
                 fontSize: 19,
@@ -1937,7 +1937,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Chúc mừng bạn đã kích hoạt gói VIP Fashionista trong 1 năm bằng mã Coupon WEARSY!',
+              'Chúc mừng bạn đã kích hoạt gói WEARSY PREMIUM trong 1 năm bằng mã Coupon WEARSY!',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 13,
@@ -1967,7 +1967,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                         ),
                       ),
                       Text(
-                        'VIP Fashionista 👑',
+                        'WEARSY PREMIUM 👑',
                         style: GoogleFonts.outfit(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
