@@ -4,8 +4,8 @@
 > **Tên dự án:** WEARSY - Smart Wardrobe & AI Fashion Assistant  
 > **Mã môn / Dự án:** EXE101 - FA26  
 > **Chủ trì Kỹ thuật & An toàn Thông tin:** Võ Thế Dân  
-> **Phiên bản tài liệu:** v2.5.0 (Cập nhật chuẩn hóa Kiến trúc Server Database & Bảo mật)  
-> **Ngày cập nhật:** 30/09/2026  
+> **Phiên bản tài liệu:** v2.6.0 (Cập nhật chuẩn hóa cấu trúc dự án & tài liệu dọn dẹp)  
+> **Ngày cập nhật:** 09/10/2026  
 
 ---
 

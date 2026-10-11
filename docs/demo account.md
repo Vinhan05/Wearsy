@@ -157,7 +157,7 @@ Người dùng có thể thử tính năng kiểm tra món đồ định mua tr�
 
 Nếu trong quá trình test bạn đã thêm/xóa nhiều món đồ hoặc outfit và muốn đưa ứng dụng về lại trạng thái chuẩn demo ban đầu:
 - Vào **Hồ sơ (Profile)** → **Cài đặt tài khoản** → Chọn **Khôi phục dữ liệu demo mặc định**.
-- Hoặc đăng xuất và đăng nhập lại bằng tài khoản `demo@wearsy.app`.
+- Hoặc đăng ký tài khoản mới để trải nghiệm trạng thái khởi đầu sạch hoàn toàn.
 
 ---
 

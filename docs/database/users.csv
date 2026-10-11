@@ -1,0 +1,5 @@
+﻿STT,User ID (UUID),Email,Mật khẩu mã hóa (password_hash),Họ và Tên,Vai trò (Role),Gói VIP,Hạn VIP,Trạng thái,Ngày đăng ký
+1,0ba850b6-9ff4-4bcb-9013-9864c92614e9,savageflame5764@dustmail.net,SSO_AUTO_ACCOUNT,savageflame5764,USER,Miễn phí (Free),Không có,Đang hoạt động,2026-10-01T18:57:44.973Z
+2,1a9d1e4a-a0fc-4d12-8f2a-2fc9b1cde955,megasable8920@dustmail.net,$2b$12$T7Pt49JVxMMpy/qWfK1xNuI6UX9ok5Nlrid/UTnOx8dHKDeeE.M0O,Demo c,USER,VIP (Active),2027-10-01T18:59:43.254Z,Đang hoạt động,2026-10-01T18:59:09.770Z
+3,d140b5f9-8f4e-4b78-ae35-cbf40907184c,acondog468@gmail.com,SSO_AUTH_ACCOUNT,User 1,USER,VIP (Active),2027-10-01T19:00:32.855Z,Đang hoạt động,2026-10-01T19:00:05.298Z
+4,d9944be7-a90c-483d-8521-3ba0823e6b24,velvetray7847@dustmail.net,$2b$12$qETW9lbMxeKx.OcGxAhd6.Nudf/OGRh5xQPXai7LulC/9Akq.T1PK,Demo si3,USER,Miễn phí (Free),Không có,Đang hoạt động,2026-10-03T17:22:30.235Z

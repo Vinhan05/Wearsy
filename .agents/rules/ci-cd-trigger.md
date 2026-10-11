@@ -10,7 +10,7 @@ Agent **BẮT BUỘC TỰ ĐỘNG CHẠY TOÀN BỘ FLOW CI/CD** chuẩn của d
 
 Chạy tuần tự 7 bước cho cả **Backend** và **Mobile**:
 
-### A. Phân hệ Backend (`wearsy-backend`):
+### A. Phân hệ Backend (`apps/api-server`):
 1. **Install dependencies:** `npm ci`
 2. **Check format:** `npm run format:check`
 3. **Run lint:** `npm run lint`
@@ -19,7 +19,7 @@ Chạy tuần tự 7 bước cho cả **Backend** và **Mobile**:
 6. **Run integration tests:** `npm run test:e2e` (bao gồm test `/health`)
 7. **Build project:** `npm run build`
 
-### B. Phân hệ Mobile (`wearsy_mobile`):
+### B. Phân hệ Mobile (`apps/mobile-client`):
 1. **Install dependencies:** `flutter pub get`
 2. **Check format:** `dart format --output=none --set-exit-if-changed lib test`
 3. **Run lint:** `flutter analyze --no-fatal-infos`
@@ -29,7 +29,7 @@ Chạy tuần tự 7 bước cho cả **Backend** và **Mobile**:
 7. **Build project:** `flutter build apk --debug --no-tree-shake-icons` (Smoke test build)
 
 ### C. Safe Database Migration Check:
-- Chạy: `node database/migrate.js --dry-run`
+- Chạy: `node infrastructure/scripts/migrate.js --dry-run`
 
 ---
 

@@ -1,0 +1,148 @@
+key,screen,text,notes
+nav_home,Navigation,Trang chủ,Thanh điều hướng đáy
+nav_wardrobe,Navigation,Tủ đồ,Thanh điều hướng đáy
+nav_outfits,Navigation,Phối đồ,Thanh điều hướng đáy
+nav_color_score,Navigation,Chấm điểm màu,Thanh điều hướng đáy
+nav_shopping,Navigation,Mua sắm,Thanh điều hướng đáy
+btn_save,Common,Lưu,Nút bấm chung
+btn_cancel,Common,Hủy,Nút bấm chung
+btn_confirm,Common,Xác nhận,Nút bấm chung
+btn_close,Common,Đóng,Nút bấm chung
+btn_delete,Common,Xóa,Nút bấm chung
+btn_edit,Common,Chỉnh sửa,Nút bấm chung
+btn_retry,Common,Thử lại,Nút bấm khi có lỗi
+btn_continue,Common,Tiếp tục,Nút bấm tiếp theo
+loading,Common,Đang tải...,Trạng thái chờ
+search_hint,Common,Tìm kiếm...,Placeholder ô tìm kiếm
+no_data,Common,Chưa có dữ liệu,Khi danh sách trống
+welcome_tagline,Auth,Your wardrobe smarter,Khẩu hiệu thương hiệu
+welcome_title,Auth,Khám phá phong cách của bạn cùng WEARSY,Tiêu đề màn hình chào
+welcome_subtitle,Auth,Quản lý tủ đồ thông minh và phối đồ chuẩn gu với trợ lý AI,Mô tả màn hình chào
+welcome_btn_start,Auth,Bắt đầu ngay,Nút bấm bắt đầu
+login_title,Auth,Đăng nhập,Tiêu đề trang đăng nhập
+login_welcome,Auth,Chào mừng bạn quay trở lại!,Lời chào đăng nhập
+login_email_label,Auth,Địa chỉ Email,Nhãn ô nhập email
+login_email_hint,Auth,Nhập email của bạn,Gợi ý ô nhập email
+login_password_label,Auth,Mật khẩu,Nhãn ô mật khẩu
+login_password_hint,Auth,Nhập mật khẩu của bạn,Gợi ý ô mật khẩu
+login_forgot_password,Auth,Quên mật khẩu?,Liên kết quên mật khẩu
+login_btn_submit,Auth,Đăng nhập,Nút gửi đăng nhập
+login_or_continue_with,Auth,Hoặc tiếp tục với,Ngăn cách phương thức đăng nhập
+login_with_google,Auth,Tiếp tục bằng Google,Nút Google OAuth
+login_with_facebook,Auth,Tiếp tục bằng Facebook,Nút Facebook OAuth
+login_no_account,Auth,Chưa có tài khoản?,Hỏi tài khoản
+login_register_now,Auth,Đăng ký ngay,Liên kết sang trang đăng ký
+login_success,Auth,Đăng nhập thành công! Chào mừng bạn đến với WEARSY.,Thông báo snackbar khi đăng nhập
+login_lockout_1min,Auth,Bạn đã nhập sai 5 lần liên tiếp. Nút đăng nhập tạm khóa trong 1 phút.,Cảnh báo bảo mật khóa tài khoản
+login_lockout_5min,Auth,Bạn đã nhập sai 10 lần liên tiếp. Nút đăng nhập tạm khóa trong 5 phút.,Cảnh báo bảo mật khóa tài khoản
+register_title,Auth,Tạo tài khoản,Tiêu đề trang đăng ký
+register_subtitle,Auth,Bắt đầu hành trình định hình phong cách cá nhân,Mô tả trang đăng ký
+register_fullname_label,Auth,Họ và tên,Nhãn họ tên
+register_fullname_hint,Auth,Nhập họ tên của bạn,Gợi ý họ tên
+register_confirm_password_label,Auth,Xác nhận mật khẩu,Nhãn xác nhận mật khẩu
+register_confirm_password_hint,Auth,Nhập lại mật khẩu,Gợi ý xác nhận mật khẩu
+register_terms_agree,Auth,Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật,Hộp kiểm điều khoản
+register_btn_submit,Auth,Đăng ký,Nút gửi đăng ký
+register_has_account,Auth,Đã có tài khoản?,Hỏi đăng nhập
+register_login_now,Auth,Đăng nhập,Liên kết sang đăng nhập
+register_success,Auth,Đăng ký tài khoản thành công!,Thông báo tạo tài khoản thành công
+forgot_password_title,Auth,Quên mật khẩu,Tiêu đề quên mật khẩu
+forgot_password_desc,Auth,Nhập địa chỉ email để nhận mã khôi phục mật khẩu,Mô tả quên mật khẩu
+forgot_password_btn_send,Auth,Gửi mã xác nhận,Nút gửi mã OTP
+otp_title,Auth,Xác thực mã OTP,Tiêu đề xác thực mã
+otp_desc,Auth,Vui lòng nhập mã gồm 6 chữ số đã được gửi tới {email},Giữ nguyên {email}
+otp_resend,Auth,Gửi lại mã sau {seconds}s,Giữ nguyên {seconds}
+home_greeting_morning,Home,Chào buổi sáng {userName}! ☀️,Giữ nguyên {userName}
+home_greeting_afternoon,Home,Chào buổi chiều {userName}! 🌤️,Giữ nguyên {userName}
+home_greeting_evening,Home,Chào buổi tối {userName}! 🌙,Giữ nguyên {userName}
+home_weather_title,Home,Thời tiết hôm nay,Mục thời tiết
+home_weather_temp,Home,{temp}°C {weatherDesc},Giữ nguyên {temp} và {weatherDesc}
+home_weather_advice,Home,Thời tiết lý tưởng cho các trang phục nhẹ nhàng thoáng mát.,Gợi ý AI theo thời tiết
+home_today_outfit_title,Home,Gợi ý trang phục hôm nay,Tiêu đề gợi ý outfit
+home_view_all,Home,Xem tất cả,Nút xem tất cả
+home_my_wardrobe_summary,Home,Tổng quan tủ đồ,Tiêu đề mục tủ đồ
+home_total_items,Home,{count} món đồ,Giữ nguyên {count}
+home_recent_outfits,Home,Phong cách gần đây,Lịch sử phối đồ
+wardrobe_title,Wardrobe,Tủ đồ của tôi,Tiêu đề trang tủ đồ
+wardrobe_tab_all,Wardrobe,Tất cả,Bộ lọc danh mục
+wardrobe_cat_tops,Wardrobe,Áo,Danh mục áo
+wardrobe_cat_bottoms,Wardrobe,Quần,Danh mục quần
+wardrobe_cat_dresses,Wardrobe,Váy / Đầm,Danh mục đầm váy
+wardrobe_cat_shoes,Wardrobe,Giày dép,Danh mục giày
+wardrobe_cat_accessories,Wardrobe,Phụ kiện,Danh mục phụ kiện
+wardrobe_cat_bags,Wardrobe,Túi xách,Danh mục túi
+wardrobe_cat_outerwear,Wardrobe,Áo khoác,Danh mục áo khoác
+wardrobe_empty_msg,Wardrobe,Tủ đồ đang trống. Hãy thêm món đồ đầu tiên của bạn!,Thông báo khi chưa có đồ
+wardrobe_btn_add_item,Wardrobe,Thêm món đồ mới,Nút thêm trang phục
+wardrobe_btn_create_capsule,Wardrobe,Tạo tủ đồ mới,Nút tạo tủ đồ con
+wardrobe_capsule_name_hint,Wardrobe,Nhập tên tủ đồ...,Gợi ý đặt tên tủ đồ
+wardrobe_delete_capsule_confirm,Wardrobe,Bạn có chắc chắn muốn xóa tủ đồ "{name}" không?,Giữ nguyên {name}
+wardrobe_item_detail_title,Wardrobe,Chi tiết trang phục,Tiêu đề xem chi tiết món đồ
+wardrobe_item_name,Wardrobe,Tên món đồ,Tên sản phẩm
+wardrobe_item_brand,Wardrobe,Thương hiệu,Hãng sản xuất
+wardrobe_item_category,Wardrobe,Danh mục,Phân loại
+wardrobe_item_color,Wardrobe,Màu sắc,Màu chủ đạo
+wardrobe_item_material,Wardrobe,Chất liệu,Vải/vật liệu
+wardrobe_item_size,Wardrobe,Kích cỡ,Kích thước S/M/L
+wardrobe_item_season,Wardrobe,Mùa phù hợp,Xuân/Hạ/Thu/Đông
+wardrobe_item_occasion,Wardrobe,Dịp mặc,Dịp sử dụng
+wardrobe_item_wear_count,Wardrobe,Số lần đã mặc: {count},Giữ nguyên {count}
+wardrobe_item_last_worn,Wardrobe,Lần mặc gần nhất: {date},Giữ nguyên {date}
+wardrobe_item_delete_confirm,Wardrobe,Bạn có chắc chắn muốn xóa món đồ này khỏi tủ không?,Cảnh báo xóa đồ
+wardrobe_add_item_title,Wardrobe,Thêm món đồ,Tiêu đề thêm đồ
+wardrobe_add_take_photo,Wardrobe,Chụp ảnh,Chọn từ camera
+wardrobe_add_choose_gallery,Wardrobe,Chọn từ thư viện,Chọn từ album
+wardrobe_ai_analyzing,Wardrobe,AI đang nhận diện chất liệu kiểu dáng và màu sắc...,Thông báo AI phân tích ảnh
+wardrobe_ai_completed,Wardrobe,Đã nhận diện thành công!,Thông báo thành công
+outfit_title,Outfits,Phối đồ & AI Stylist,Tiêu đề trang phối đồ
+outfit_tab_suggested,Outfits,Gợi ý từ AI,Gợi ý tự động
+outfit_tab_my_outfits,Outfits,Bộ phối của tôi,Danh sách đồ đã phối
+outfit_tab_mix_match,Outfits,Tự phối đồ,Tính năng tự ghép đồ
+outfit_btn_create,Outfits,Tạo bộ phối mới,Nút tạo phối đồ
+outfit_occasion_work,Outfits,Đi làm,Dịp công sở
+outfit_occasion_casual,Outfits,Đi chơi / Dạo phố,Dịp thường ngày
+outfit_occasion_party,Outfits,Dự tiệc / Sự kiện,Dịp lễ tiệc
+outfit_occasion_date,Outfits,Hẹn hò,Dịp hẹn hò
+outfit_occasion_sport,Outfits,Thể thao,Dịp vận động
+outfit_score_label,Outfits,Điểm phong cách,Chấm điểm phối đồ
+outfit_score_desc,Outfits,{score}/100 - Phối màu và tỷ lệ trang phục rất hài hòa!,Giữ nguyên {score}
+outfit_save_success,Outfits,Đã lưu bộ phối trang phục thành công!,Thông báo lưu thành công
+outfit_share,Outfits,Chia sẻ bộ phối này,Nút chia sẻ outfit
+color_score_title,ColorScore,Chấm điểm màu sắc,Tiêu đề phân tích màu
+color_score_subtitle,ColorScore,Phân tích mức độ ăn ý về màu sắc giữa các món đồ,Mô tả tính năng
+color_score_palette_title,ColorScore,Bảng màu cá nhân,Bảng màu phù hợp
+color_score_contrast,ColorScore,Độ tương phản: {contrastLevel},Giữ nguyên {contrastLevel}
+color_score_harmony,ColorScore,Mức độ hài hòa: {harmonyLevel},Giữ nguyên {harmonyLevel}
+color_score_ai_tip,ColorScore,Lời khuyên từ AI Stylist: {tipText},Giữ nguyên {tipText}
+shopping_title,Shopping,Mua sắm thông minh,Tiêu đề trang mua sắm
+shopping_subtitle,Shopping,Món đồ gợi ý bổ sung cho các bộ phối trong tủ của bạn,Mô tả trang mua sắm
+shopping_why_recommend,Shopping,Lý do gợi ý,Lý do AI đề xuất món này
+shopping_why_recommend_desc,Shopping,Kết hợp hoàn hảo với {itemCount} món đồ có sẵn trong tủ của bạn,Giữ nguyên {itemCount}
+shopping_btn_buy_now,Shopping,Mua ngay,Nút mua
+shopping_btn_add_cart,Shopping,Thêm vào giỏ,Nút thêm giỏ hàng
+shopping_cart_title,Shopping,Giỏ hàng,Tiêu đề giỏ hàng
+shopping_cart_empty,Shopping,Giỏ hàng đang trống,Khi chưa có hàng
+shopping_total,Shopping,Tổng thanh toán,Tổng tiền
+shopping_btn_checkout,Shopping,Tiến hành đặt hàng,Nút đặt hàng
+profile_title,Profile,Cá nhân,Tiêu đề trang cá nhân
+profile_edit,Profile,Chỉnh sửa thông tin,Nút sửa hồ sơ
+profile_style_preference,Profile,Phong cách yêu thích,Sở thích phong cách
+settings_title,Profile,Cài đặt,Tiêu đề cài đặt
+settings_theme,Profile,Giao diện ứng dụng,Đổi màu giao diện
+settings_language,Profile,Ngôn ngữ,Cài đặt ngôn ngữ
+settings_language_dialog_title,Profile,Chọn ngôn ngữ,Tiêu đề popup chọn ngôn ngữ
+settings_notifications,Profile,Thông báo,Cài đặt nhận tin
+settings_security,Profile,Bảo mật & Đổi mật khẩu,Bảo mật tài khoản
+settings_privacy,Profile,Chính sách bảo mật,Chính sách
+settings_terms,Profile,Điều khoản dịch vụ,Điều khoản
+settings_help_support,Profile,Trợ giúp & Phản hồi,Trung tâm hỗ trợ
+settings_about,Profile,Về WEARSY,Thông tin ứng dụng
+settings_version,Profile,Phiên bản {version},Giữ nguyên {version}
+settings_logout,Profile,Đăng xuất,Nút đăng xuất
+settings_logout_confirm,Profile,Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?,Xác nhận thoát
+error_network,Errors,Không có kết nối Internet. Vui lòng kiểm tra lại mạng.,Báo mất mạng
+error_server,Errors,Hệ thống đang bận. Vui lòng thử lại sau.,Báo lỗi máy chủ
+error_required_field,Errors,Trường này không được để trống.,Lỗi bỏ trống
+error_invalid_email,Errors,Địa chỉ email không đúng định dạng.,Lỗi định dạng email
+error_password_too_short,Errors,Mật khẩu phải có ít nhất 6 ký tự.,Lỗi mật khẩu ngắn
+error_password_not_match,Errors,Mật khẩu xác nhận không khớp.,Lỗi nhập lại mật khẩu sai
