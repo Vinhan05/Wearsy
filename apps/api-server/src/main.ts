@@ -4,10 +4,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+
+  // Body Parser Limit: Tăng giới hạn 50MB để hỗ trợ tải ảnh Base64 cho AI tách nền & tân trang
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // ── Security Headers (Helmet + HSTS) ──────────────────────────────────────
   // HSTS: Buộc browser dùng HTTPS trong 1 năm khi deploy production
