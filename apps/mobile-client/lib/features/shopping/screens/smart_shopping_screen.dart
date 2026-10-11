@@ -767,12 +767,12 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   debugPrint('[SmartShopping] Fitting room bg removal error: $e');
                 }
 
-                if (context.mounted) {
+                if (mounted) {
                   Navigator.of(context, rootNavigator: true).pop();
                 }
               }
 
-              if (!context.mounted) return;
+              if (!mounted) return;
 
               final prospectiveItem = WardrobeItemModel(
                 id: 'shopee_temp_${DateTime.now().millisecondsSinceEpoch}',

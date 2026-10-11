@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/services/weather_service.dart';
-import '../../../shared/widgets/user_avatar.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../outfits/models/outfit_model.dart';
 import '../../outfits/screens/outfit_detail_screen.dart';
@@ -242,36 +241,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // Action Icons
         Row(
           children: [
-            // Notification Bell
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.notifications_none_rounded,
-                    size: 22, color: Color(0xFF111827)),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('✨ Không có thông báo mới'),
-                      behavior: SnackBarBehavior.floating,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-              ),
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              icon: const Icon(Icons.notifications_none_rounded,
+                  size: 26, color: Color(0xFF111827)),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✨ Không có thông báo mới'),
+                    behavior: SnackBarBehavior.floating,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
             ),
-            const SizedBox(width: 10),
-            // Profile Avatar
-            UserAvatar(
-              radius: 20,
-              showBorder: true,
-              borderColor: const Color(0xFFE5E7EB),
-              borderWidth: 1.2,
-              onTap: () => widget.onSwitchTab?.call(3), // Switch to profile tab
+            const SizedBox(width: 14),
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              icon: const Icon(Icons.person_outline_rounded,
+                  size: 28, color: Color(0xFF111827)),
+              onPressed: () => widget.onSwitchTab?.call(3),
             ),
           ],
         ),
@@ -376,12 +367,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Clothing item pills
-                    _buildClothingPill('👕', isEn ? 'White T-Shirt' : 'Áo thun trắng'),
+                    // Clothing item pills matching Image 1
+                    _buildClothingPill(
+                      const ClothingOutlineIcon(type: 'shirt'),
+                      isEn ? 'White T-Shirt' : 'Áo thun trắng',
+                    ),
                     const SizedBox(height: 6),
-                    _buildClothingPill('👖', isEn ? 'Denim Shorts' : 'Quần short denim'),
+                    _buildClothingPill(
+                      const ClothingOutlineIcon(type: 'shorts'),
+                      isEn ? 'Denim Shorts' : 'Short denim',
+                    ),
                     const SizedBox(height: 6),
-                    _buildClothingPill('👟', isEn ? 'White Sneakers' : 'Giày thể thao trắng'),
+                    _buildClothingPill(
+                      const ClothingOutlineIcon(type: 'sneaker'),
+                      isEn ? 'White Sneakers' : 'Sneaker trắng',
+                    ),
                   ],
                 ),
               ),
@@ -498,7 +498,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildClothingPill(String icon, String label) {
+  Widget _buildClothingPill(Widget iconWidget, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -508,8 +508,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(icon, style: const TextStyle(fontSize: 12)),
-          const SizedBox(width: 6),
+          iconWidget,
+          const SizedBox(width: 8),
           Text(
             label,
             style: GoogleFonts.inter(
@@ -702,4 +702,90 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ],
     );
   }
+}
+
+class ClothingOutlineIcon extends StatelessWidget {
+  final String type; // 'shirt', 'shorts', 'sneaker'
+  final Color color;
+  final double size;
+
+  const ClothingOutlineIcon({
+    super.key,
+    required this.type,
+    this.color = const Color(0xFF4B5563),
+    this.size = 14,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(
+        painter: _ClothingPainter(type: type, color: color),
+      ),
+    );
+  }
+}
+
+class _ClothingPainter extends CustomPainter {
+  final String type;
+  final Color color;
+
+  _ClothingPainter({required this.type, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.3
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    if (type == 'shirt') {
+      final path = Path();
+      path.moveTo(w * 0.35, h * 0.1);
+      path.quadraticBezierTo(w * 0.5, h * 0.28, w * 0.65, h * 0.1);
+      path.lineTo(w * 0.9, h * 0.28);
+      path.lineTo(w * 0.78, h * 0.46);
+      path.lineTo(w * 0.72, h * 0.38);
+      path.lineTo(w * 0.72, h * 0.9);
+      path.lineTo(w * 0.28, h * 0.9);
+      path.lineTo(w * 0.28, h * 0.38);
+      path.lineTo(w * 0.22, h * 0.46);
+      path.lineTo(w * 0.1, h * 0.28);
+      path.close();
+      canvas.drawPath(path, paint);
+    } else if (type == 'shorts') {
+      final path = Path();
+      path.moveTo(w * 0.15, h * 0.18);
+      path.lineTo(w * 0.85, h * 0.18);
+      path.lineTo(w * 0.9, h * 0.85);
+      path.lineTo(w * 0.55, h * 0.85);
+      path.lineTo(w * 0.5, h * 0.45);
+      path.lineTo(w * 0.45, h * 0.85);
+      path.lineTo(w * 0.1, h * 0.85);
+      path.close();
+      canvas.drawPath(path, paint);
+    } else if (type == 'sneaker') {
+      final path = Path();
+      path.moveTo(w * 0.15, h * 0.35);
+      path.lineTo(w * 0.45, h * 0.35);
+      path.lineTo(w * 0.7, h * 0.55);
+      path.lineTo(w * 0.95, h * 0.65);
+      path.lineTo(w * 0.95, h * 0.85);
+      path.lineTo(w * 0.05, h * 0.85);
+      path.lineTo(w * 0.05, h * 0.55);
+      path.close();
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ClothingPainter oldDelegate) =>
+      oldDelegate.type != type || oldDelegate.color != color;
 }
