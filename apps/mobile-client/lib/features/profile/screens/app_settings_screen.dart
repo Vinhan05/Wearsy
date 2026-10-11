@@ -9,6 +9,7 @@ import '../../../core/theme/theme_picker_sheet.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/screens/login_screen.dart';
+import '../../../core/constants/app_version.dart';
 
 class AppSettingsScreen extends StatefulWidget {
   const AppSettingsScreen({super.key});
@@ -262,7 +263,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   icon: Icons.code_rounded,
                   iconColor: const Color(0xFF6B7280),
                   title: isEn ? 'App Version' : 'Phiên bản ứng dụng',
-                  subtitle: 'v1.2.0 (Build 2026.10 - Latest)',
+                  subtitle: AppVersion.fullDisplay,
                 ),
                 _buildDivider(),
                 _buildNavigationTile(
@@ -1616,7 +1617,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Version 1.2.0 • Build 2026.10',
+                '${AppVersion.versionName} • Build ${AppVersion.buildNumber}',
                 style: AppFonts.inter(
                   fontSize: 12.5,
                   color: const Color(0xFF6B7280),
