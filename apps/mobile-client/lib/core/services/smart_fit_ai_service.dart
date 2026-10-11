@@ -337,16 +337,17 @@ class SmartFitAiService {
       debugPrint('[SmartFitAiService] Backend stylist-chat error: $e');
     }
 
-    // 2nd attempt: Call direct Orchestrator /api/v1/stylist/chat (short timeout if local network)
+    // 2nd attempt: Call direct Orchestrator /api/v1/stylist/chat (for local emulator or direct IP)
     try {
-      final uri = Uri.parse('$_aiOrchestratorUrl/stylist/chat');
+      final cleanBase = _aiOrchestratorUrl.replaceAll(RegExp(r'/v1/?$'), '');
+      final uri = Uri.parse('$cleanBase/api/v1/stylist/chat');
       final response = await http
           .post(
             uri,
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode(payload),
           )
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 25));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data =
@@ -400,10 +401,13 @@ class SmartFitAiService {
     final salutation = gender.toLowerCase().contains('nam')
         ? 'anh'
         : (gender.toLowerCase().contains('nữ') ? 'chị' : 'bạn');
+    final sampleItem = wardrobeItems.isNotEmpty ? wardrobeItems.first.name : null;
+    final hint = sampleItem != null
+        ? 'Chào $salutation $userName! Em thấy tủ đồ của $salutation có "$sampleItem", mình có thể mix thêm cùng quần/váy phù hợp để tạo nên phong cách rất ấn tượng. $salutation muốn diện set này vào dịp nào thế ạ?'
+        : 'Chào $salutation $userName! Stylist rất vui được hỗ trợ bạn. Hôm nay $salutation muốn tìm một phong cách năng động, thanh lịch hay cho dịp đặc biệt nào thế ạ?';
     return {
       'action': 'CONVERSATION',
-      'reply':
-          'Chào $salutation $userName! Stylist rất hào hứng hỗ trợ bạn ✨ $salutation dự định diện trang phục này ở địa điểm hay không gian nào thế ạ (nhà hàng, quán cà phê hay dạo phố)? Khi $salutation đã chọn xong ý tưởng, chỉ cần bấm "✨ Chốt & Phối đồ" để em lên ngay set đồ hoàn chỉnh kèm ảnh người mẫu mặc thực tế nhé!',
+      'reply': hint,
     };
   }
 }
