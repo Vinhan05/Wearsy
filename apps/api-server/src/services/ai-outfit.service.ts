@@ -120,6 +120,13 @@ export class AiOutfitService {
           ? validItemIds
           : wardrobeItems.slice(0, 3).map((i) => String(i.id));
 
+      const orchestratorBase = this.aiOrchestratorUrl.replace(/\/+$/, '');
+      const formattedImageUrl = data.image_url
+        ? (data.image_url.startsWith('http')
+            ? data.image_url
+            : `${orchestratorBase}${data.image_url.startsWith('/') ? '' : '/'}${data.image_url}`)
+        : (data.image_base64 || undefined);
+
       const outfitResult: RecommendedOutfitDto = {
         outfit_id: `outfit_${Date.now()}`,
         title: data.title || 'Bộ trang phục đề xuất từ AI',
@@ -129,9 +136,7 @@ export class AiOutfitService {
         item_ids: finalItemIds,
         stylist_reasoning:
           data.reply || 'Set đồ kết hợp hài hòa, tôn dáng và phù hợp hoàn cảnh.',
-        image_url: data.image_url
-          ? `${this.aiOrchestratorUrl}${data.image_url}`
-          : undefined,
+        image_url: formattedImageUrl,
         image_base64: data.image_base64,
         is_ai_rendered: data.is_ai_rendered ?? false,
         smart_fit_advice: {
