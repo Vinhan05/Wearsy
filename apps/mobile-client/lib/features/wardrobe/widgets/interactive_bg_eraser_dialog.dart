@@ -1,8 +1,8 @@
 import 'dart:io';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import '../../../core/services/local_bg_removal_service.dart';
 import '../../../core/theme/app_theme.dart';
@@ -189,7 +189,7 @@ class _InteractiveBgEraserDialogState
         ),
         title: Text(
           'Chỉnh Sửa & Xóa Phông Nền',
-          style: GoogleFonts.inter(
+          style: AppFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -201,7 +201,7 @@ class _InteractiveBgEraserDialogState
             icon: const Icon(Icons.check_rounded, color: Color(0xFF10B981)),
             label: Text(
               'Lưu Ảnh',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF10B981),
               ),

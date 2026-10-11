@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
@@ -198,7 +198,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
         ),
         title: Text(
           isEn ? 'Fashion Style Profile' : 'Hồ sơ Phong cách Thời trang',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          style: AppFonts.outfit(fontWeight: FontWeight.bold),
         ),
       ),
       body: Container(
@@ -213,7 +213,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                 // Section 1: Preferred Styles
                 Text(
                   isEn ? '1. Your Preferred Styles' : '1. Phong cách ưa thích của bạn',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.darkTextPrimary,
@@ -224,7 +224,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                   isEn
                       ? 'Select styles to help WEARSY AI suggest the best outfits for you'
                       : 'Chọn các phong cách giúp AI WEARSY gợi ý outfit chuẩn nhất với bạn',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 13,
                     color: AppTheme.darkTextSecondary,
                   ),
@@ -240,7 +240,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                       selected: isSelected,
                       selectedColor: AppTheme.primaryColor,
                       backgroundColor: AppTheme.darkSurface,
-                      labelStyle: GoogleFonts.inter(
+                      labelStyle: AppFonts.inter(
                         color: isSelected
                             ? Colors.white
                             : AppTheme.darkTextSecondary,
@@ -273,7 +273,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                 // Section 2: Favorite Colors
                 Text(
                   isEn ? '2. Favorite Colors' : '2. Tông màu yêu thích',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.darkTextPrimary,
@@ -291,7 +291,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                       checkmarkColor: Colors.white,
                       selectedColor: const Color(0xFF374151),
                       backgroundColor: Colors.white,
-                      labelStyle: GoogleFonts.inter(
+                      labelStyle: AppFonts.inter(
                         color: isSelected
                             ? Colors.white
                             : const Color(0xFF4B5563),
@@ -324,7 +324,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                 // Section 3: Budget Range Slider
                 Text(
                   isEn ? '3. Estimated Shopping Budget' : '3. Ngân sách mua sắm ước tính',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.darkTextPrimary,
@@ -335,7 +335,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                   isEn
                       ? '${currencyFormatter.format(_minBudget)} - ${currencyFormatter.format(_maxBudget)} / item'
                       : '${currencyFormatter.format(_minBudget)} - ${currencyFormatter.format(_maxBudget)} / sản phẩm',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryLight,
@@ -367,7 +367,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                   isEn
                       ? '4. Body Metrics & Measurements (Optional)'
                       : '4. Chỉ số cơ thể & Vóc dáng (Tùy chọn)',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.darkTextPrimary,
@@ -382,7 +382,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                         children: [
                           Text(
                             isEn ? 'Height (cm)' : 'Chiều cao (cm)',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                                 color: AppTheme.darkTextPrimary, fontSize: 13),
                           ),
                           const SizedBox(height: 6),
@@ -405,7 +405,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                         children: [
                           Text(
                             isEn ? 'Weight (kg)' : 'Cân nặng (kg)',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                                 color: AppTheme.darkTextPrimary, fontSize: 13),
                           ),
                           const SizedBox(height: 6),
@@ -426,7 +426,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                 const SizedBox(height: 16),
                 Text(
                   isEn ? 'Body Shape Type' : 'Kiểu vóc dáng cơ thể',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                       color: AppTheme.darkTextPrimary, fontSize: 13),
                 ),
                 const SizedBox(height: 6),
@@ -485,7 +485,7 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                               isEn
                                   ? 'SAVE STYLE PROFILE'
                                   : 'LƯU HỒ SƠ PHONG CÁCH',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.2,

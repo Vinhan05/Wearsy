@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
@@ -181,7 +181,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
             const SizedBox(width: 10),
             Text(
               'Thành Công!',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -190,7 +190,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
         ),
         content: Text(
           'Đã thêm ${newModels.length} món đồ vào Tủ Đồ Kỹ Thuật Số của bạn!\n\nAI đã tự động phân loại danh mục, màu sắc và độ phù hợp cho trang phục.',
-          style: GoogleFonts.inter(
+          style: AppFonts.inter(
             color: AppTheme.darkTextSecondary,
             fontSize: 14,
             height: 1.4,
@@ -210,7 +210,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
             },
             child: Text(
               'Xem Tủ Đồ Ngay',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -235,7 +235,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
         ),
         title: Text(
           'AI Quét Cả Tủ Đồ',
-          style: GoogleFonts.outfit(
+          style: AppFonts.outfit(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -304,7 +304,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                 const SizedBox(height: 16),
                 Text(
                   'Kiểm Kê Tủ Đồ Cấp Tốc',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -314,7 +314,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                 Text(
                   'Không cần chụp riêng từng chiếc! Chỉ cần 1 bức ảnh chụp toàn cảnh tủ hoặc sào đồ, Gemini Vision sẽ tự động đếm và nhận diện hàng loạt.',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     color: AppTheme.darkTextSecondary,
                     fontSize: 13,
                     height: 1.5,
@@ -330,7 +330,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
             alignment: Alignment.centerLeft,
             child: Text(
               '💡 Mẹo chụp ảnh chính xác nhất',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -375,7 +375,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                   icon: const Icon(Icons.camera_alt_rounded),
                   label: Text(
                     'Chụp Tủ Đồ',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -399,7 +399,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                   icon: const Icon(Icons.photo_library_rounded),
                   label: Text(
                     'Chọn Từ Thư Viện',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -440,7 +440,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -448,7 +448,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                 ),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     color: AppTheme.darkTextSecondary,
                     fontSize: 12,
                     height: 1.4,
@@ -531,7 +531,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
             child: Text(
               _scanningStatus,
               textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 color: Colors.white,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -541,7 +541,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
           const SizedBox(height: 6),
           Text(
             'Mô hình Gemini Vision Multimodal đang nhận diện',
-            style: GoogleFonts.inter(
+            style: AppFonts.inter(
               color: AppTheme.darkTextSecondary,
               fontSize: 12,
             ),
@@ -581,7 +581,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
               children: [
                 Text(
                   'Danh Sách Chi Tiết (${result.items.where((i) => i.isSelected).length}/${result.items.length})',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -601,7 +601,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                     result.items.every((i) => i.isSelected)
                         ? 'Bỏ chọn tất cả'
                         : 'Chọn tất cả',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 12,
                       color: AppTheme.primaryLight,
                     ),
@@ -713,7 +713,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                               '${item.subCategory} • ${item.primaryColor}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 color:
@@ -753,7 +753,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
               const SizedBox(width: 8),
               Text(
                 'Tổng kết phát hiện: $total món trang phục',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -790,7 +790,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
           children: [
             Text(
               '$count',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -799,7 +799,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
             const SizedBox(height: 2),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 color: AppTheme.darkTextSecondary,
                 fontSize: 11,
               ),
@@ -854,7 +854,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
               children: [
                 Text(
                   item.name,
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -872,7 +872,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                       ),
                       child: Text(
                         item.primaryColor,
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           color: AppTheme.darkTextSecondary,
                           fontSize: 11,
                         ),
@@ -881,7 +881,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
                     const SizedBox(width: 6),
                     Text(
                       '•  Độ tin cậy: ${(item.confidence * 100).toInt()}%',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         color: const Color(0xFF10AC84),
                         fontSize: 11,
                       ),
@@ -911,7 +911,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Chỉnh sửa tên trang phục',
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 16),
+          style: AppFonts.outfit(color: Colors.white, fontSize: 16),
         ),
         content: TextField(
           controller: controller,
@@ -972,7 +972,7 @@ class _BulkScanScreenState extends State<BulkScanScreen>
             const SizedBox(width: 10),
             Text(
               'Thêm Vào Tủ Đồ ($selectedCount món)',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,

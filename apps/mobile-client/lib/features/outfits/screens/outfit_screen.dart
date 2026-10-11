@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/outfit_model.dart';
 import 'ai_stylist_chat_screen.dart';
@@ -109,7 +109,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                               const SizedBox(width: 6),
                               Text(
                                 isEn ? 'History' : 'Lịch sử',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF374151),
@@ -140,7 +140,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                           children: [
                             Text(
                               isEn ? 'Style with\nAI' : 'Phối đồ\ncùng AI',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 fontSize: 34,
                                 fontWeight: FontWeight.w800,
                                 height: 1.15,
@@ -150,7 +150,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                             const SizedBox(height: 8),
                             Text(
                               isEn ? 'Where are you going?' : 'Bạn sắp đi đâu?',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 fontSize: 15,
                                 color: const Color(0xFF6B7280),
                               ),
@@ -197,7 +197,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                     children: [
                       Text(
                         isEn ? 'Select Occasion' : 'Chọn ngữ cảnh',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF111827),
@@ -238,7 +238,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                     const SizedBox(height: 8),
                                     Text(
                                       c['label'] as String,
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.inter(
                                         fontSize: 11.5,
                                         fontWeight: isSelected
                                             ? FontWeight.bold
@@ -279,7 +279,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                     children: [
                       Text(
                         isEn ? 'Weather' : 'Thời tiết',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF111827),
@@ -320,7 +320,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                     const SizedBox(height: 6),
                                     Text(
                                       w['label'] as String,
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.inter(
                                         fontSize: 10,
                                         fontWeight: isSelected
                                             ? FontWeight.bold
@@ -362,7 +362,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                     children: [
                       Text(
                         isEn ? 'Style' : 'Phong cách',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF111827),
@@ -408,7 +408,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                     const SizedBox(width: 6),
                                     Text(
                                       s['label']!,
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.inter(
                                         fontSize: 12,
                                         fontWeight: isSelected
                                             ? FontWeight.bold
@@ -464,7 +464,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                   const SizedBox(width: 8),
                                   Text(
                                     isEn ? 'Create Outfit' : 'Tạo outfit',
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.inter(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -518,7 +518,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                           const SizedBox(width: 8),
                           Text(
                             isEn ? 'Chat with Wearsy AI' : 'Trò chuyện với wearsy AI',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 14.5,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,

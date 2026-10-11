@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/wardrobe_item_model.dart';
 import '../../../core/theme/app_theme.dart';
@@ -221,7 +221,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           children: [
                             Text(
                               TagLocalization.getLocalizedName(item.name, isEn),
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.darkTextPrimary,
@@ -232,7 +232,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               children: [
                                 Text(
                                   '${item.category.icon} ${TagLocalization.getCategoryName(item.category, isEn)}',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     fontSize: 14,
                                     color: AppTheme.primaryLight,
                                     fontWeight: FontWeight.w600,
@@ -258,7 +258,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             const SizedBox(height: 2),
                             Text(
                               item.aiMatchScore.toStringAsFixed(1),
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -266,7 +266,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             ),
                             Text(
                               'AI Score',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                   color: Colors.white70, fontSize: 10),
                             ),
                           ],
@@ -348,7 +348,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               children: [
                                 Text(
                                   isEn ? 'Style / Tags' : 'Phong cách / Thẻ gợi ý',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
                                     color: AppTheme.darkTextSecondary,
@@ -368,7 +368,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     ),
                                     child: Text(
                                       isEn ? '${_tags.length} selected' : '${_tags.length} đã chọn',
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.inter(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
                                         color: AppTheme.primaryLight,
@@ -452,7 +452,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                         Provider.of<LanguageProvider>(context).isEnglish
                                             ? 'Extended Styles (AI Recognized / Custom):'
                                             : 'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
-                                        style: GoogleFonts.inter(
+                                        style: AppFonts.inter(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
                                           color: AppTheme.primaryLight,
@@ -493,7 +493,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                                   tag,
                                                   Provider.of<LanguageProvider>(context)
                                                       .isEnglish),
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.inter(
                                                 fontSize: 12,
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w600,
@@ -558,7 +558,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               Expanded(
                                 child: TextField(
                                   controller: _customTagController,
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                       fontSize: 13,
                                       color: AppTheme.darkTextPrimary),
                                   textInputAction: TextInputAction.done,
@@ -569,7 +569,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                             .isEnglish
                                         ? 'Add custom style (e.g. School, Y2K, Gym...)'
                                         : 'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
-                                    hintStyle: GoogleFonts.inter(
+                                    hintStyle: AppFonts.inter(
                                       fontSize: 12,
                                       color: AppTheme.darkTextSecondary
                                           .withOpacity(0.6),
@@ -639,7 +639,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     color: Colors.white),
                                 label: Text(
                                   isEn ? 'Style Outfit with AI' : 'Phối Outfit Với AI',
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.outfit(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -652,7 +652,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                         isEn
                                             ? '✨ AI is finding matching outfits for ${item.name}...'
                                             : '✨ AI đang tìm outfit phù hợp với ${item.name}...',
-                                        style: GoogleFonts.inter(),
+                                        style: AppFonts.inter(),
                                       ),
                                       backgroundColor: AppTheme.primaryColor,
                                       behavior: SnackBarBehavior.floating,
@@ -683,7 +683,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               icon: const Icon(Icons.edit_rounded, size: 20),
                               label: Text(
                                 isEn ? 'Edit Item' : 'Chỉnh sửa món đồ',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
                                 ),
@@ -717,7 +717,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               icon: const Icon(Icons.drive_file_move_outlined, size: 20),
                               label: Text(
                                 isEn ? 'Move to Another Wardrobe' : 'Chuyển sang tủ đồ khác',
-                                style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+                                style: AppFonts.outfit(fontWeight: FontWeight.w600),
                               ),
                               onPressed: () => _showMoveWardrobeSheet(context),
                             ),
@@ -741,7 +741,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               icon: const Icon(Icons.delete_outline_rounded),
                               label: Text(
                                 isEn ? 'Delete Item' : 'Xóa khỏi tủ đồ',
-                                style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+                                style: AppFonts.outfit(fontWeight: FontWeight.w600),
                               ),
                               onPressed: () {
                                 Provider.of<WardrobeProvider>(context, listen: false)
@@ -753,7 +753,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                       isEn
                                           ? '🗑️ Deleted ${item.name} from wardrobe'
                                           : '🗑️ Đã xóa ${item.name} khỏi tủ đồ',
-                                      style: GoogleFonts.inter(),
+                                      style: AppFonts.inter(),
                                     ),
                                     backgroundColor: AppTheme.accentColor,
                                     behavior: SnackBarBehavior.floating,
@@ -808,7 +808,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 const SizedBox(height: 16),
                 Text(
                   isEn ? 'Choose Target Wardrobe 🚪' : 'Chọn Tủ Đồ Chuyển Đến 🚪',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -819,7 +819,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   isEn
                       ? 'Move "${widget.item.name}" to another wardrobe collection:'
                       : 'Chuyển "${widget.item.name}" sang bộ sưu tập tủ đồ khác:',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     color: AppTheme.darkTextSecondary,
                     fontSize: 13,
                   ),
@@ -853,14 +853,14 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           Text(col.icon, style: const TextStyle(fontSize: 22)),
                       title: Text(
                         col.name,
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                           color: AppTheme.darkTextPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       subtitle: Text(
                         '${provider.getItemCountForWardrobe(col.id)} món đồ',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           color: AppTheme.darkTextSecondary,
                           fontSize: 12,
                         ),
@@ -882,7 +882,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                   SnackBar(
                                     content: Text(
                                       '📦 Đã chuyển "${widget.item.name}" sang ${col.icon} ${col.name}',
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.inter(
                                           fontWeight: FontWeight.bold),
                                     ),
                                     backgroundColor: AppTheme.primaryColor,
@@ -928,7 +928,7 @@ class _InfoChip extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                     color: AppTheme.darkTextSecondary, fontSize: 12),
               ),
             ],
@@ -936,7 +936,7 @@ class _InfoChip extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             value,
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
               color: AppTheme.darkTextPrimary,
               fontSize: 15,
               fontWeight: FontWeight.bold,

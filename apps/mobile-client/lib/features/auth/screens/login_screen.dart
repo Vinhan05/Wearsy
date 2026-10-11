@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
@@ -268,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Expanded(
                   child: Text(
                     'Đăng nhập Google SSO',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF111827),
@@ -280,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 12),
             Text(
               'Xác nhận thông tin tài khoản Google của bạn để đăng nhập ngay lập tức:',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 fontSize: 13.5,
                 color: const Color(0xFF6B7280),
                 height: 1.4,
@@ -348,7 +348,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: Text(
                 'Xác Nhận & Đăng Nhập',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -414,7 +414,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Title Wearsy
                   Text(
                     'Wearsy',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 42,
                       fontWeight: FontWeight.w900,
                       color: AppTheme.darkTextPrimary,
@@ -425,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Subtitle
                   Text(
                     'Trợ lý Thời trang & Tủ đồ Thông minh AI',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: AppTheme.darkTextSecondary,
@@ -460,7 +460,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Email Field Label
                           Text(
                             'Email',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.darkTextPrimary,
@@ -530,7 +530,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Password Field Label
                           Text(
                             'Mật khẩu',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.darkTextPrimary,
@@ -643,7 +643,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           : isLocked
                                               ? Text(
                                                   'THỬ LẠI SAU ${_formatDuration(_lockoutSecondsRemaining)}',
-                                                  style: GoogleFonts.outfit(
+                                                  style: AppFonts.outfit(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,
@@ -651,7 +651,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 )
                                               : Text(
                                                   'Đăng Nhập',
-                                                  style: GoogleFonts.inter(
+                                                  style: AppFonts.inter(
                                                     fontSize: 18,
                                                     fontWeight: FontWeight.w700,
                                                     color: Colors.white,
@@ -670,7 +670,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Center(
                             child: Text(
                               'Hoặc',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 color:
                                     AppTheme.darkTextSecondary.withOpacity(0.7),
                                 fontSize: 13,
@@ -720,7 +720,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: RichText(
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     fontSize: 13,
                                     color: AppTheme.darkTextSecondary
                                         .withOpacity(0.8),
@@ -730,7 +730,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         text: 'Chưa có tài khoản Wearsy? - '),
                                     TextSpan(
                                       text: 'Đăng ký ngay',
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.inter(
                                         color: AppTheme.primaryColor,
                                         fontWeight: FontWeight.w600,
                                       ),

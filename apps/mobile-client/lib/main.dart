@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'core/services/email_service.dart';
 import 'core/theme/app_theme.dart';
@@ -13,6 +12,7 @@ import 'features/wardrobe/providers/wardrobe_provider.dart';
 
 import 'core/localization/localization.dart';
 import 'core/theme/theme_provider.dart';
+import 'core/theme/app_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,8 +39,14 @@ class WearsyApp extends StatelessWidget {
             title: 'WEARSY - Smart Wardrobe',
             debugShowCheckedModeBanner: false,
             locale: languageProvider.currentLocale,
-            theme: themeProvider.currentThemeData,
-            darkTheme: themeProvider.currentThemeData,
+            theme: AppTheme.buildTheme(
+              themeProvider.currentPalette,
+              isVietnamese: languageProvider.isVietnamese,
+            ),
+            darkTheme: AppTheme.buildTheme(
+              themeProvider.currentPalette,
+              isVietnamese: languageProvider.isVietnamese,
+            ),
             themeMode: ThemeMode.light,
             home: const AuthWrapperScreen(),
           );
@@ -89,7 +95,7 @@ class AuthWrapperScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     Text(
                       'WEARSY',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 3.5,
@@ -99,7 +105,7 @@ class AuthWrapperScreen extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       'Your wardrobe, smarter',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         fontSize: 13,
                         letterSpacing: 1.0,
                         color: AppTheme.darkTextSecondary,

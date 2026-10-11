@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../localization/language_provider.dart';
 import 'app_theme_palette.dart';
 
 class AppTheme {
@@ -44,8 +45,14 @@ class AppTheme {
   );
 
   // Theme Configuration builder
-  static ThemeData buildTheme(AppThemePalette palette) {
+  static ThemeData buildTheme(AppThemePalette palette, {bool? isVietnamese}) {
     final base = ThemeData.light();
+    final isVi = isVietnamese ?? LanguageProvider.isVietnameseStatic;
+
+    final baseTextTheme = isVi
+        ? GoogleFonts.montserratTextTheme(base.textTheme)
+        : GoogleFonts.outfitTextTheme(base.textTheme);
+
     return base.copyWith(
       scaffoldBackgroundColor: palette.lightBackground,
       primaryColor: palette.primary,
@@ -68,30 +75,58 @@ class AppTheme {
         centerTitle: true,
         iconTheme: IconThemeData(color: palette.textPrimary),
       ),
-      textTheme: GoogleFonts.outfitTextTheme(base.textTheme).copyWith(
-        displayLarge: GoogleFonts.outfit(
-          color: palette.textPrimary,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-        ),
-        headlineMedium: GoogleFonts.outfit(
-          color: palette.textPrimary,
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-        ),
-        titleLarge: GoogleFonts.outfit(
-          color: palette.textPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: GoogleFonts.inter(
-          color: palette.textPrimary,
-          fontSize: 16,
-        ),
-        bodyMedium: GoogleFonts.inter(
-          color: palette.textSecondary,
-          fontSize: 14,
-        ),
+      textTheme: baseTextTheme.copyWith(
+        displayLarge: isVi
+            ? GoogleFonts.montserrat(
+                color: palette.textPrimary,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              )
+            : GoogleFonts.outfit(
+                color: palette.textPrimary,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+        headlineMedium: isVi
+            ? GoogleFonts.montserrat(
+                color: palette.textPrimary,
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+              )
+            : GoogleFonts.outfit(
+                color: palette.textPrimary,
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+              ),
+        titleLarge: isVi
+            ? GoogleFonts.montserrat(
+                color: palette.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              )
+            : GoogleFonts.outfit(
+                color: palette.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+        bodyLarge: isVi
+            ? GoogleFonts.montserrat(
+                color: palette.textPrimary,
+                fontSize: 16,
+              )
+            : GoogleFonts.inter(
+                color: palette.textPrimary,
+                fontSize: 16,
+              ),
+        bodyMedium: isVi
+            ? GoogleFonts.montserrat(
+                color: palette.textSecondary,
+                fontSize: 14,
+              )
+            : GoogleFonts.inter(
+                color: palette.textSecondary,
+                fontSize: 14,
+              ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
@@ -254,7 +254,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
             children: [
               Text(
                 'Wearsy AI Stylist',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -263,7 +263,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
               const SizedBox(height: 2),
               Text(
                 'Trợ lý phối đồ & Thử đồ thông minh',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 12.5,
                   color: Colors.white70,
                 ),
@@ -288,7 +288,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
           const SizedBox(width: 12),
           Text(
             'WEARSY AI đang quan sát tủ đồ & phối trang phục...',
-            style: GoogleFonts.inter(
+            style: AppFonts.inter(
               fontSize: 13,
               fontStyle: FontStyle.italic,
               color: AppTheme.darkTextSecondary,
@@ -328,7 +328,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
               ),
               child: Text(
                 msg.text,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 14,
                   color: Colors.white,
                   height: 1.4,
@@ -390,7 +390,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                   ),
                   child: Text(
                     msg.text,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 13.5,
                       color: AppTheme.darkTextPrimary,
                       height: 1.45,
@@ -455,7 +455,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                     Expanded(
                       child: Text(
                         outfit.name,
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.darkTextPrimary,
@@ -474,7 +474,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                           const SizedBox(width: 4),
                           Text(
                             outfit.eleganceScore.toStringAsFixed(1),
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 12.5,
                               fontWeight: FontWeight.bold,
                               color: const Color(0xFFB45309),
@@ -490,7 +490,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                 // Selected Items Thumbnails
                 Text(
                   'Các món đồ được chọn (${selectedItems.length} món):',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.darkTextSecondary,
@@ -534,7 +534,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                                     item.name,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.inter(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                       color: AppTheme.darkTextPrimary,
@@ -543,7 +543,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                                   Text(
                                     item.category.displayName,
                                     maxLines: 1,
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.inter(
                                       fontSize: 11,
                                       color: AppTheme.darkTextSecondary,
                                     ),
@@ -575,7 +575,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                     icon: const Icon(Icons.visibility_outlined, size: 18),
                     label: Text(
                       'Xem Chi Tiết & Thử Đồ 2D',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
                       ),
@@ -666,7 +666,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                           s,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.darkTextPrimary,
@@ -695,7 +695,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _promptCtrl,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 14,
                       color: AppTheme.darkTextPrimary,
                     ),
@@ -703,7 +703,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                       hintText: _isListening
                           ? '🎙️ Đang lắng nghe giọng nói...'
                           : 'Nhập dịp đi chơi, đi làm, dự tiệc...',
-                      hintStyle: GoogleFonts.inter(
+                      hintStyle: AppFonts.inter(
                         fontSize: 13.5,
                         color: _isListening ? Colors.redAccent : AppTheme.darkTextSecondary,
                         fontWeight: _isListening ? FontWeight.w500 : FontWeight.normal,

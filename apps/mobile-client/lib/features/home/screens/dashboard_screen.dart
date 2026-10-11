@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/services/weather_service.dart';
@@ -79,7 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 16),
               Text(
                 isEn ? 'Select Weather Location 📍' : 'Chọn Vị Trí Thời Tiết 📍',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -94,7 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   isEn
                       ? 'Current Location (Auto Detect)'
                       : 'Vị trí hiện tại (Định vị tự động)',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryLight,
                   ),
@@ -103,7 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   isEn
                       ? 'Auto-detect realtime location via IP/GPS'
                       : 'Tự động lấy vị trí Realtime qua IP/GPS',
-                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[600]),
+                  style: AppFonts.inter(fontSize: 12, color: Colors.grey[600]),
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -130,7 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text(city.icon, style: const TextStyle(fontSize: 24)),
                       title: Text(
                         TagLocalization.getLocalizedCityName(city.name, isEn),
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.w500,
                           color: isSelected
@@ -274,7 +275,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     return RichText(
       text: TextSpan(
-        style: GoogleFonts.outfit(
+        style: AppFonts.outfit(
           fontSize: 16,
           color: const Color(0xFF6B7280),
         ),
@@ -315,7 +316,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Text(
                       isEn ? 'What to\nwear today?' : 'Hôm nay\nmặc gì?',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
                         height: 1.15,
@@ -327,7 +328,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       isEn
                           ? 'AI Fashion Assistant &\nSmart Wardrobe'
                           : 'Trợ lý thời trang &\ntủ đồ thông minh AI',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         fontSize: 13,
                         height: 1.35,
                         color: const Color(0xFF6B7280),
@@ -352,7 +353,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             const SizedBox(width: 6),
                             Text(
                               isEn ? 'AI Stylist' : 'Phối đồ AI',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -417,7 +418,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 const SizedBox(width: 4),
                                 Text(
                                   tempStr,
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.outfit(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
                                     color: const Color(0xFF111827),
@@ -434,7 +435,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 const SizedBox(width: 2),
                                 Text(
                                   cityStr,
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     fontSize: 10,
                                     color: const Color(0xFF6B7280),
                                   ),
@@ -508,7 +509,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(width: 8),
           Text(
             label,
-            style: GoogleFonts.inter(
+            style: AppFonts.inter(
               fontSize: 11.5,
               fontWeight: FontWeight.w500,
               color: const Color(0xFF374151),
@@ -565,7 +566,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Text(
               isEn ? 'Recommended for you' : 'Gợi ý cho bạn',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF111827),
@@ -575,7 +576,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onTap: () => widget.onSwitchTab?.call(2),
               child: Text(
                 isEn ? 'See all' : 'Xem tất cả',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF6B7280),
@@ -671,7 +672,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   // Title
                   Text(
                     item['title']!,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 13.5,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF111827),
@@ -683,7 +684,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   // Subtitle
                   Text(
                     item['subtitle']!,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 11.5,
                       color: const Color(0xFF6B7280),
                     ),

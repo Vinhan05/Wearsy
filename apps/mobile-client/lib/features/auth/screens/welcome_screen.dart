@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
@@ -87,7 +87,7 @@ class WelcomeScreen extends StatelessWidget {
                     child: Center(
                       child: Text(
                         'GET STARTED',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.5,

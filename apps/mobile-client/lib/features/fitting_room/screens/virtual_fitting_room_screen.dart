@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
@@ -211,7 +211,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
             Expanded(
               child: Text(
                 '🎉 Đã lưu bộ trang phục vào mục Outfits!',
-                style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                style: AppFonts.outfit(fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -244,7 +244,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
         elevation: 0,
         title: Text(
           'Phòng Thử Đồ Ảo 👗',
-          style: GoogleFonts.outfit(
+          style: AppFonts.outfit(
             fontWeight: FontWeight.bold,
             color: AppTheme.darkTextPrimary,
             fontSize: 20,
@@ -351,7 +351,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                             harmonyScore > 0
                                 ? '$harmonyScore/10 Hài Hòa'
                                 : 'Ướm Đồ Ngay',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
                               color: AppTheme.darkTextPrimary,
@@ -525,7 +525,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                                 const SizedBox(height: 6),
                                 Text(
                                   'Chưa có món đồ nào trong danh mục này',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     fontSize: 12,
                                     color: AppTheme.darkTextSecondary,
                                   ),
@@ -566,7 +566,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                         icon: const Icon(Icons.shuffle_rounded, size: 18),
                         label: Text(
                           'Xáo Trộn',
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.outfit(
                               fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                         onPressed: () => _randomMix(allItems),
@@ -588,7 +588,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                               color: Colors.white, size: 18),
                           label: Text(
                             'Lưu Bộ Này Thành Outfit',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -639,7 +639,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
             const SizedBox(width: 4),
             Text(
               label,
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
@@ -662,7 +662,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
             color: isSelected ? Colors.white : AppTheme.primaryColor),
         label: Text(
           title,
-          style: GoogleFonts.outfit(
+          style: AppFonts.outfit(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
             color: isSelected ? Colors.white : AppTheme.darkTextPrimary,
@@ -722,7 +722,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                   item.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 10,
                     fontWeight:
                         isEquipped ? FontWeight.bold : FontWeight.w500,
@@ -731,7 +731,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                 ),
                 Text(
                   item.color,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 9,
                     color: AppTheme.darkTextSecondary,
                   ),

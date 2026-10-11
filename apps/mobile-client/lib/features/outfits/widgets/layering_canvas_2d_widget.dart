@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/services/smart_fit_engine.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
@@ -187,7 +187,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                         const SizedBox(width: 4),
                         Text(
                           'Layering 2D • Scale ${scaleRatio.toStringAsFixed(2)}x',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             color: Colors.white70,
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
@@ -256,7 +256,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                       const SizedBox(width: 4),
                       Text(
                         'Quỹ đạo 360°',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 11,
                           fontWeight: _showOrbitRings
                               ? FontWeight.bold
@@ -286,7 +286,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                   const SizedBox(width: 6),
                   Text(
                     'Tương tác lớp phối đồ (Chạm để bật/tắt lớp):',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       color: Colors.white70,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -312,7 +312,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                         ),
                         label: Text(
                           '${item.name} (${item.category.displayName})',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 11,
                             fontWeight:
                                 isVisible ? FontWeight.bold : FontWeight.normal,
@@ -359,7 +359,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
           Text(
             '${widget.heightCm.toInt()}\ncm',
             textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
               color: AppTheme.primaryLight,
               fontSize: 10,
               fontWeight: FontWeight.bold,
@@ -381,7 +381,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
           ),
           Text(
             '0',
-            style: GoogleFonts.inter(color: Colors.white30, fontSize: 9),
+            style: AppFonts.inter(color: Colors.white30, fontSize: 9),
           ),
         ],
       ),
@@ -620,7 +620,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                       ),
                       child: Text(
                         badgeText,
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           color: Colors.white,
                           fontSize: isCompact ? 8 : 9,
                           fontWeight: FontWeight.bold,
@@ -632,7 +632,7 @@ class _LayeringCanvas2DWidgetState extends State<LayeringCanvas2DWidget>
                     const SizedBox(height: 2),
                     Text(
                       item.name,
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         color: Colors.white,
                         fontSize: isCompact ? 9.5 : 11,
                         fontWeight: FontWeight.w600,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/localization/language_provider.dart';
@@ -74,7 +74,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
         ),
         title: Text(
           isEn ? 'Settings' : 'Cài Đặt Ứng Dụng',
-          style: GoogleFonts.outfit(
+          style: AppFonts.outfit(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: const Color(0xFF111827),
@@ -307,7 +307,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     color: Color(0xFFEF4444), size: 20),
                 label: Text(
                   isEn ? 'Log Out' : 'Đăng Xuất Khỏi Tài Khoản',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFFEF4444),
@@ -325,7 +325,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 children: [
                   Text(
                     'WEARSY 2026 • Your Wardrobe, Smarter',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: const Color(0xFF9CA3AF),
@@ -334,7 +334,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'Crafted with ❤️ by WEARSY Team',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 11,
                       color: const Color(0xFFD1D5DB),
                     ),
@@ -361,7 +361,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
           const SizedBox(width: 8),
           Text(
             title,
-            style: GoogleFonts.inter(
+            style: AppFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.8,
@@ -434,7 +434,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 14.5,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF111827),
@@ -443,7 +443,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 12,
                       color: const Color(0xFF6B7280),
                     ),
@@ -460,7 +460,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 ),
                 child: Text(
                   trailingText,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF374151),
@@ -507,7 +507,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF111827),
@@ -516,7 +516,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
                   ),
@@ -559,7 +559,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF111827),
@@ -568,7 +568,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
                   ),
@@ -613,7 +613,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 18),
               Text(
                 isEn ? 'Choose Language' : 'Chọn Ngôn Ngữ',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -682,7 +682,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             Expanded(
               child: Text(
                 name,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 15,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected
@@ -731,7 +731,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 const SizedBox(height: 18),
                 Text(
                   isEn ? 'Notification Settings 🔔' : 'Cài Đặt Thông Báo 🔔',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF111827),
@@ -742,7 +742,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   isEn
                       ? 'Customize alerts and reminders for your wardrobe'
                       : 'Tùy chỉnh các thông báo và nhắc nhở thời trang',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 13,
                     color: const Color(0xFF6B7280),
                   ),
@@ -753,14 +753,14 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   activeColor: AppTheme.primaryColor,
                   title: Text(
                     isEn ? 'Daily Outfit Suggestions' : 'Gợi ý outfit mỗi sáng',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                         fontWeight: FontWeight.w600, fontSize: 14.5),
                   ),
                   subtitle: Text(
                     isEn
                         ? 'Receive smart combination picks at 07:00 AM'
                         : 'Nhận gợi ý phối đồ thông minh lúc 7:00 sáng',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                         fontSize: 12, color: const Color(0xFF6B7280)),
                   ),
                   value: _dailyOutfitReminder,
@@ -776,14 +776,14 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   activeColor: AppTheme.primaryColor,
                   title: Text(
                     isEn ? 'Smart Weather Styling' : 'Cập nhật thời tiết thông minh',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                         fontWeight: FontWeight.w600, fontSize: 14.5),
                   ),
                   subtitle: Text(
                     isEn
                         ? 'Alert when rain or temperature shifts suddenly'
                         : 'Nhắc nhở khi trời mưa, nhiệt độ thay đổi đột ngột',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                         fontSize: 12, color: const Color(0xFF6B7280)),
                   ),
                   value: _weatherSmartAlerts,
@@ -799,14 +799,14 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   activeColor: AppTheme.primaryColor,
                   title: Text(
                     isEn ? 'Fashion Tips & Deals' : 'Mẹo thời trang & Ưu đãi',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                         fontWeight: FontWeight.w600, fontSize: 14.5),
                   ),
                   subtitle: Text(
                     isEn
                         ? 'New trends and WEARSY PREMIUM promotions'
                         : 'Xu hướng mới và ưu đãi WEARSY PREMIUM',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                         fontSize: 12, color: const Color(0xFF6B7280)),
                   ),
                   value: _promotionUpdates,
@@ -830,7 +830,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     onPressed: () => Navigator.pop(modalCtx),
                     child: Text(
                       isEn ? 'Done' : 'Hoàn Tất',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                           fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -866,7 +866,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             Expanded(
               child: Text(
                 isEn ? 'Device Permissions' : 'Quyền Truy Cập Thiết Bị',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                     fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
@@ -911,7 +911,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text(
               isEn ? 'Close' : 'Đã Hiểu',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                   color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
@@ -936,7 +936,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             children: [
               Text(
                 title,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                     fontWeight: FontWeight.bold,
                     fontSize: 13.5,
                     color: const Color(0xFF111827)),
@@ -944,7 +944,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 2),
               Text(
                 description,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
                     height: 1.3),
@@ -1035,7 +1035,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 16),
               Text(
                 isEn ? 'Frequently Asked Questions (FAQ)' : 'Câu Hỏi Thường Gặp (FAQ)',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -1057,7 +1057,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                       shape: const Border(),
                       title: Text(
                         faqs[i]['q']!,
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF111827),
@@ -1069,7 +1069,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                               left: 16, right: 16, bottom: 14),
                           child: Text(
                             faqs[i]['a']!,
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 13,
                               color: const Color(0xFF4B5563),
                               height: 1.45,
@@ -1117,7 +1117,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 16),
               Text(
                 isEn ? 'Contact & Support 💬' : 'Liên Hệ & Hỗ Trợ 💬',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -1128,7 +1128,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 isEn
                     ? 'Our team is available 24/7 to assist you'
                     : 'Đội ngũ hỗ trợ WEARSY luôn sẵn sàng giải đáp thắc mắc',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 13,
                   color: const Color(0xFF6B7280),
                 ),
@@ -1168,7 +1168,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   onPressed: () => Navigator.pop(sheetCtx),
                   child: Text(
                     isEn ? 'Close' : 'Đóng',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                         fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -1202,12 +1202,12 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             children: [
               Text(
                 title,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                     fontSize: 12, color: const Color(0xFF6B7280)),
               ),
               Text(
                 value,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF111827)),
@@ -1254,7 +1254,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             const SizedBox(height: 16),
             Text(
               isEn ? 'Feedback & Bug Report 💡' : 'Báo Lỗi & Góp Ý Cải Tiến 💡',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 fontSize: 19,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF111827),
@@ -1265,7 +1265,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               isEn
                   ? 'Tell us what you encountered or suggestions to improve WEARSY'
                   : 'Hãy chia sẻ lỗi bạn gặp phải hoặc ý tưởng giúp WEARSY hoàn thiện hơn',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 fontSize: 13,
                 color: const Color(0xFF6B7280),
               ),
@@ -1274,12 +1274,12 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             TextField(
               controller: feedbackController,
               maxLines: 4,
-              style: GoogleFonts.inter(color: const Color(0xFF111827)),
+              style: AppFonts.inter(color: const Color(0xFF111827)),
               decoration: InputDecoration(
                 hintText: isEn
                     ? 'Write your feedback or bug details here...'
                     : 'Nhập nội dung góp ý hoặc mô tả lỗi chi tiết...',
-                hintStyle: GoogleFonts.inter(
+                hintStyle: AppFonts.inter(
                     color: const Color(0xFF9CA3AF), fontSize: 13.5),
                 filled: true,
                 fillColor: const Color(0xFFF9FAFB),
@@ -1316,7 +1316,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                         isEn
                             ? '💌 Thank you for your feedback! Our team will review it promptly.'
                             : '💌 Cảm ơn bạn đã gửi phản hồi! Đội ngũ WEARSY sẽ ghi nhận và cải thiện.',
-                        style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                        style: AppFonts.inter(fontWeight: FontWeight.w500),
                       ),
                       backgroundColor: AppTheme.primaryColor,
                       behavior: SnackBarBehavior.floating,
@@ -1327,7 +1327,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 },
                 child: Text(
                   isEn ? 'Send Feedback' : 'Gửi Phản Hồi',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                       fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -1371,7 +1371,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 16),
               Text(
                 isEn ? 'Terms of Service' : 'Điều Khoản Sử Dụng WEARSY',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -1391,7 +1391,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                             '2. Quyền sở hữu tủ đồ & AI Stylist\nToàn bộ hình ảnh quần áo tải lên được mã hóa bảo mật phục vụ tủ đồ số cá nhân của bạn. Gợi ý từ AI Stylist mang tính chất tư vấn thẩm mỹ cá nhân hóa.\n\n'
                             '3. Bảo mật tài khoản\nNgười dùng có trách nhiệm bảo mật mật khẩu và thông tin đăng nhập của mình.\n\n'
                             '4. Cập nhật điều khoản\nWEARSY có quyền cập nhật các điều khoản dịch vụ để phù hợp với pháp luật và nâng cao chất lượng trải nghiệm.',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 13.5,
                       color: const Color(0xFF4B5563),
                       height: 1.6,
@@ -1439,7 +1439,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 16),
               Text(
                 isEn ? 'Privacy Policy' : 'Chính Sách Bảo Mật Dữ Liệu',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -1459,7 +1459,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                             '2. Cam kết bảo mật hình ảnh\nHình ảnh quần áo của bạn được mã hóa an toàn qua giao thức SSL/TLS tiêu chuẩn. Chúng tôi tuyệt đối không chia sẻ hình ảnh cá nhân cho bên thứ ba vì mục đích quảng cáo.\n\n'
                             '3. Quyền xóa dữ liệu\nBạn có toàn quyền xóa từng món đồ hoặc xóa vĩnh viễn tài khoản cùng toàn bộ dữ liệu bất kỳ lúc nào.\n\n'
                             '4. Liên hệ bảo mật\nMọi thắc mắc về quyền riêng tư, vui lòng gửi email về privacy@wearsy.app.',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 13.5,
                       color: const Color(0xFF4B5563),
                       height: 1.6,
@@ -1488,7 +1488,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
           title: Text(
             isEn ? 'Rate WEARSY ⭐' : 'Đánh Giá WEARSY ⭐',
             textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
                 fontSize: 19, fontWeight: FontWeight.bold),
           ),
           content: Column(
@@ -1499,7 +1499,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     ? 'How has your experience with WEARSY been so far?'
                     : 'Trải nghiệm quản lý tủ đồ & AI Stylist của bạn như thế nào?',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                     fontSize: 13.5, color: const Color(0xFF6B7280)),
               ),
               const SizedBox(height: 18),
@@ -1529,7 +1529,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               onPressed: () => Navigator.pop(dialogCtx),
               child: Text(
                 isEn ? 'Later' : 'Để Sau',
-                style: GoogleFonts.inter(color: const Color(0xFF6B7280)),
+                style: AppFonts.inter(color: const Color(0xFF6B7280)),
               ),
             ),
             ElevatedButton(
@@ -1546,7 +1546,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                       isEn
                           ? '🌟 Thank you for your $selectedRating-star review!'
                           : '🌟 Cảm ơn bạn đã đánh giá $selectedRating sao cho WEARSY!',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                      style: AppFonts.inter(fontWeight: FontWeight.bold),
                     ),
                     backgroundColor: AppTheme.primaryColor,
                     behavior: SnackBarBehavior.floating,
@@ -1557,7 +1557,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               },
               child: Text(
                 isEn ? 'Submit' : 'Gửi Đánh Giá',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                     color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
@@ -1608,7 +1608,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 14),
               Text(
                 'WEARSY Fashion AI',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -1617,7 +1617,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               const SizedBox(height: 4),
               Text(
                 'Version 1.2.0 • Build 2026.10',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 12.5,
                   color: const Color(0xFF6B7280),
                 ),
@@ -1628,7 +1628,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     ? 'WEARSY is your personalized digital wardrobe and smart AI fashion stylist. Effortlessly organize clothing, discover color palettes, and dress with confidence every single day.'
                     : 'WEARSY là nền tảng quản lý tủ đồ số hóa và trợ lý thời trang AI thông minh. Giúp bạn phân loại trang phục, khám phá bảng màu cá nhân và luôn tự tin với outfit mỗi ngày.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 13,
                   color: const Color(0xFF4B5563),
                   height: 1.5,
@@ -1648,7 +1648,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   onPressed: () => Navigator.pop(sheetCtx),
                   child: Text(
                     isEn ? 'Close' : 'Đóng',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                         fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -1683,7 +1683,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             Expanded(
               child: Text(
                 isEn ? 'Log Out?' : 'Đăng Xuất Tài Khoản?',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -1696,7 +1696,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
           isEn
               ? 'Are you sure you want to log out of WEARSY? You can always log back in anytime.'
               : 'Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng WEARSY không? Bạn có thể đăng nhập lại bất cứ lúc nào.',
-          style: GoogleFonts.inter(
+          style: AppFonts.inter(
             fontSize: 13.5,
             color: const Color(0xFF4B5563),
             height: 1.45,
@@ -1707,7 +1707,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text(
               isEn ? 'Cancel' : 'Hủy',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 color: const Color(0xFF6B7280),
                 fontWeight: FontWeight.bold,
               ),
@@ -1734,7 +1734,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             },
             child: Text(
               isEn ? 'Log Out' : 'Đăng Xuất',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 fontWeight: FontWeight.bold,
               ),
             ),

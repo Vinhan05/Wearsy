@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import '../../../core/services/smart_fit_engine.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/outfit_model.dart';
@@ -84,7 +84,7 @@ class SmartFitCard extends StatelessWidget {
                   children: [
                     Text(
                       'Tư Vấn Smart Fit & Thể Trạng',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -92,7 +92,7 @@ class SmartFitCard extends StatelessWidget {
                     ),
                     Text(
                       '${currentHeightCm.toInt()}cm • ${currentWeightKg.toInt()}kg • BMI $displayBmi ($displayFrame)',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         color: AppTheme.primaryLight,
                         fontSize: 11.5,
                         fontWeight: FontWeight.w500,
@@ -115,7 +115,7 @@ class SmartFitCard extends StatelessWidget {
                   label: Text(
                     'Đổi số đo',
                     style:
-                        GoogleFonts.inter(color: Colors.white70, fontSize: 11),
+                        AppFonts.inter(color: Colors.white70, fontSize: 11),
                   ),
                   onPressed: () => _showQuickAdjustDialog(context),
                 ),
@@ -230,12 +230,12 @@ class SmartFitCard extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                           color: Colors.white54, fontSize: 10),
                     ),
                     Text(
                       '${score.toStringAsFixed(1)} / 10',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
@@ -279,18 +279,18 @@ class SmartFitCard extends StatelessWidget {
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: GoogleFonts.inter(fontSize: 12.5, height: 1.4),
+                style: AppFonts.inter(fontSize: 12.5, height: 1.4),
                 children: [
                   TextSpan(
                     text: '$title ',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontWeight: FontWeight.bold,
                       color: highlightColor ?? Colors.white,
                     ),
                   ),
                   TextSpan(
                     text: content,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       color: textColor,
                       fontWeight: FontWeight.w400,
                     ),
@@ -337,7 +337,7 @@ class SmartFitCard extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     'Điều Chỉnh Thể Trạng Thử Nghiệm',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -346,7 +346,7 @@ class SmartFitCard extends StatelessWidget {
                   Text(
                     'Thử nghiệm xem Layering Canvas và Smart Fit tự động thích ứng với thể trạng:',
                     style:
-                        GoogleFonts.inter(color: Colors.white60, fontSize: 12),
+                        AppFonts.inter(color: Colors.white60, fontSize: 12),
                   ),
                   const SizedBox(height: 16),
                   // Slider Chiều cao
@@ -354,10 +354,10 @@ class SmartFitCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Chiều cao:',
-                          style: GoogleFonts.inter(color: Colors.white)),
+                          style: AppFonts.inter(color: Colors.white)),
                       Text(
                         '${h.toInt()} cm',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                           color: AppTheme.primaryLight,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -378,10 +378,10 @@ class SmartFitCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Cân nặng:',
-                          style: GoogleFonts.inter(color: Colors.white)),
+                          style: AppFonts.inter(color: Colors.white)),
                       Text(
                         '${w.toInt()} kg (BMI: ${bmi.toStringAsFixed(1)})',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                           color: AppTheme.accentColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -411,7 +411,7 @@ class SmartFitCard extends StatelessWidget {
                     },
                     child: Text(
                       'Áp Dụng Thể Trạng Mới',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),

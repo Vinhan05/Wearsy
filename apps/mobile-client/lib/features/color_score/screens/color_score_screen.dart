@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
@@ -146,7 +146,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
       appBar: AppBar(
         title: Text(
           widget.initialTitle ?? 'Phân Tích Màu Sắc AI',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          style: AppFonts.outfit(fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppTheme.darkCard,
         elevation: 0,
@@ -187,7 +187,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 indicatorWeight: 3,
                 labelColor: AppTheme.primaryLight,
                 unselectedLabelColor: AppTheme.darkTextSecondary,
-                labelStyle: GoogleFonts.outfit(
+                labelStyle: AppFonts.outfit(
                     fontWeight: FontWeight.bold, fontSize: 13),
                 tabs: const [
                   Tab(text: '📊 Tủ Đồ 60-30-10'),
@@ -275,7 +275,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                       children: [
                         Text(
                           score.toStringAsFixed(1),
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.outfit(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -283,7 +283,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                         ),
                         Text(
                           '/ 10',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 10,
                             color: AppTheme.darkTextSecondary,
                           ),
@@ -317,7 +317,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                               const SizedBox(width: 4),
                               Text(
                                 'TIÊU CHUẨN VÀNG',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.amber,
@@ -331,7 +331,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     const SizedBox(height: 6),
                     Text(
                       'Bậc Thầy Phối Màu ✨',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -340,7 +340,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     const SizedBox(height: 4),
                     Text(
                       'Tủ đồ $wardrobeCount món đạt độ cân bằng 60-30-10 xuất sắc.',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         fontSize: 12,
                         color: Colors.white.withOpacity(0.8),
                         height: 1.3,
@@ -360,7 +360,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
             children: [
               Text(
                 'Phổ màu tủ đồ chính:',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                     fontSize: 11, color: AppTheme.darkTextSecondary),
               ),
               Row(
@@ -405,7 +405,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
           ),
           const SizedBox(width: 4),
           Text(label,
-              style: GoogleFonts.inter(fontSize: 9, color: Colors.white70)),
+              style: AppFonts.inter(fontSize: 9, color: Colors.white70)),
         ],
       ),
     );
@@ -436,7 +436,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     const SizedBox(width: 8),
                     Text(
                       'Tỷ Lệ Vàng Thời Trang: 60 - 30 - 10',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -517,7 +517,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     const SizedBox(width: 8),
                     Text(
                       'Lời Khuyên Từ Chuyên Gia AI Stylist',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -561,7 +561,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
           ),
           child: Text(
             percent,
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
               fontWeight: FontWeight.bold,
               fontSize: 12,
               color: color,
@@ -575,7 +575,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
             children: [
               Text(
                 title,
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -584,7 +584,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
               const SizedBox(height: 2),
               Text(
                 desc,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 12,
                   color: AppTheme.darkTextSecondary,
                   height: 1.3,
@@ -608,7 +608,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                   fontSize: 12, color: Colors.white70, height: 1.4),
             ),
           ),
@@ -628,7 +628,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
         children: [
           Text(
             'Chọn Mùa Màu Sắc Cá Nhân Của Bạn:',
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
                 fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
@@ -646,7 +646,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     selected: isSelected,
                     selectedColor: AppTheme.primaryColor,
                     backgroundColor: AppTheme.darkCard,
-                    labelStyle: GoogleFonts.outfit(
+                    labelStyle: AppFonts.outfit(
                       color: isSelected
                           ? Colors.white
                           : AppTheme.darkTextSecondary,
@@ -677,7 +677,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
               children: [
                 Text(
                   profile.seasonName,
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
@@ -685,7 +685,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 const SizedBox(height: 4),
                 Text(
                   profile.subtitle,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                       fontSize: 12,
                       color: AppTheme.primaryLight,
                       fontWeight: FontWeight.w600),
@@ -693,7 +693,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 const SizedBox(height: 10),
                 Text(
                   profile.description,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                       fontSize: 13, color: Colors.white70, height: 1.4),
                 ),
               ],
@@ -704,7 +704,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
           // Best Colors Section
           Text(
             'Bảng Màu Tôn Da Nhất (Best Palette) ✨',
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
                 fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
@@ -718,7 +718,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
           // Avoid Colors Section
           Text(
             'Bảng Màu Nên Tiết Chế (Colors to Avoid) ⚠️',
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
                 fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
@@ -770,14 +770,14 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                   children: [
                     Text(
                       item.name,
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
                     Text(
                       item.hex,
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                           fontSize: 11, color: AppTheme.darkTextSecondary),
                     ),
                   ],
@@ -785,7 +785,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 const SizedBox(height: 2),
                 Text(
                   item.usageTip,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                       fontSize: 12,
                       color: isBest
                           ? Colors.white70
@@ -808,7 +808,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
         children: [
           Text(
             'Chọn 2 - 4 Màu Để Kiểm Tra Độ Ăn Ý:',
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
                 fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 10),
@@ -835,7 +835,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 backgroundColor: AppTheme.darkCard,
                 side: BorderSide(
                     color: isSelected ? AppTheme.primaryLight : Colors.white12),
-                labelStyle: GoogleFonts.inter(
+                labelStyle: AppFonts.inter(
                   fontSize: 12,
                   color: isSelected ? Colors.white : AppTheme.darkTextSecondary,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -895,7 +895,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                           const SizedBox(width: 8),
                           Text(
                             'Điểm Phối Màu AI',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -912,7 +912,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                         ),
                         child: Text(
                           '${_labResult!.score.toStringAsFixed(1)} / 10',
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.outfit(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -924,7 +924,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                   const SizedBox(height: 14),
                   Text(
                     _labResult!.ruleApplied,
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.primaryLight,
@@ -933,7 +933,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                   const SizedBox(height: 8),
                   Text(
                     _labResult!.feedback,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 13,
                       color: Colors.white.withOpacity(0.9),
                       height: 1.4,
@@ -954,7 +954,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                         Expanded(
                           child: Text(
                             _labResult!.colorRatioEvaluation,
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 12,
                               color: Colors.white70,
                               fontWeight: FontWeight.w500,
@@ -967,7 +967,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                   const SizedBox(height: 14),
                   Text(
                     'Styling Tips:',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -1025,7 +1025,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     children: [
                       Text(
                         'Huy Hiệu Thời Trang Đã Đạt',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -1034,7 +1034,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                       const SizedBox(height: 4),
                       Text(
                         'Đã mở khóa 3 / 8 danh hiệu • 750 Fashion Points',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                             fontSize: 12, color: Colors.white70),
                       ),
                     ],
@@ -1047,7 +1047,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
 
           Text(
             'Thử Thách Phối Đồ Tuần Này 🎯',
-            style: GoogleFonts.outfit(
+            style: AppFonts.outfit(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -1077,7 +1077,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                         Expanded(
                           child: Text(
                             challenge.title,
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -1101,7 +1101,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                                 : challenge.status == 'IN_PROGRESS'
                                     ? 'Đang thực hiện'
                                     : 'Có sẵn',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                               color: challenge.status == 'COMPLETED'
@@ -1117,7 +1117,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                     const SizedBox(height: 8),
                     Text(
                       challenge.description,
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         fontSize: 12,
                         color: AppTheme.darkTextSecondary,
                         height: 1.3,
@@ -1134,7 +1134,7 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                             const SizedBox(width: 4),
                             Text(
                               '+${challenge.rewardPoints} Pts • ${challenge.rewardBadge}',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 fontSize: 11,
                                 color: Colors.amber,
                                 fontWeight: FontWeight.w600,

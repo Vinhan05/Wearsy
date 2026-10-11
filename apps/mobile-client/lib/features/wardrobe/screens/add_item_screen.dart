@@ -1,8 +1,8 @@
 import 'dart:io';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -294,7 +294,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             Expanded(
               child: Text(
                 'Định Dạng Không Hỗ Trợ',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 18),
@@ -308,7 +308,7 @@ class _AddItemScreenState extends State<AddItemScreen>
           children: [
             Text(
               'Tệp bạn vừa chọn không phải định dạng ảnh hợp lệ${filename != null ? ' ("$filename")' : ''}.',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                   color: AppTheme.darkTextSecondary, fontSize: 13, height: 1.4),
             ),
             const SizedBox(height: 14),
@@ -327,7 +327,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   Expanded(
                     child: Text(
                       'Hệ thống hỗ trợ các định dạng ảnh: .jpg, .jpeg, .png, .webp, .heic, .heif, .bmp, .gif',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                           color: Colors.white70, fontSize: 12, height: 1.4),
                     ),
                   ),
@@ -517,7 +517,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                         isEn
                             ? '✨ Background removed & clothing recognized!'
                             : '✨ AI đã tách 100% phông nền & nhận diện trang phục!',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
                             color: Colors.white),
@@ -525,7 +525,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                       const SizedBox(height: 2),
                       Text(
                         '${result.category.icon} ${TagLocalization.getCategoryName(result.category, isEn)} • ${isEn ? "Color" : "Màu"} ${TagLocalization.getColorName(result.color, isEn)} • ${TagLocalization.getLocalizedName(result.name, isEn)}',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                             fontSize: 12, color: const Color(0xFFCFC3F5)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -561,7 +561,7 @@ class _AddItemScreenState extends State<AddItemScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Dán URL ảnh',
-          style: GoogleFonts.outfit(
+          style: AppFonts.outfit(
               color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Column(
@@ -585,7 +585,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             const SizedBox(height: 8),
             Text(
               '* Hỗ trợ .jpg, .jpeg, .png, .webp, .heic',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                   color: AppTheme.darkTextSecondary, fontSize: 11),
             ),
           ],
@@ -670,7 +670,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 Expanded(
                   child: Text(
                     'Đang tải ảnh lên hệ thống tủ đồ...',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -747,7 +747,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   widget.existingItem != null
                       ? (isEn ? '✨ Updated "$localizedItemName"!' : '✨ Đã cập nhật "${newItem.name}"!')
                       : (isEn ? '✨ Added "$localizedItemName" to ${targetWardrobe.icon} $localizedWardrobeName!' : '✨ Đã thêm "${newItem.name}" vào ${targetWardrobe.icon} ${targetWardrobe.name}!'),
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                  style: AppFonts.inter(fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -786,7 +786,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                     : (widget.existingItem != null
                         ? (isEn ? 'Edit Item' : 'Chỉnh Sửa Món Đồ')
                         : (isEn ? 'Add New Item' : 'Thêm Đồ Vào Tủ')),
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                   color: AppTheme.darkTextPrimary,
@@ -859,7 +859,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                               children: [
                                 Text(
                                   isEn ? 'Gemini AI Analysis:' : 'Gemini AI đã phân tích:',
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.outfit(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: AppTheme.darkTextPrimary,
@@ -887,7 +887,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                             const SizedBox(height: 4),
                             Text(
                               TagLocalization.getLocalizedAiReason(_aiAnalysisReason!, isEn),
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 fontSize: 12,
                                 color: AppTheme.darkTextSecondary,
                                 height: 1.3,
@@ -968,7 +968,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                         const Icon(Icons.add_task_rounded, color: Colors.white),
                     label: Text(
                       isEn ? 'SAVE TO WARDROBE' : 'LƯU VÀO TỦ ĐỒ',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -990,7 +990,7 @@ class _AddItemScreenState extends State<AddItemScreen>
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: GoogleFonts.outfit(
+      style: AppFonts.outfit(
         fontSize: 18,
         fontWeight: FontWeight.bold,
         color: AppTheme.darkTextPrimary,
@@ -1063,7 +1063,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                           isLocal
                               ? (isEn ? 'Device Photo' : 'Ảnh từ thiết bị')
                               : (isEn ? 'Sample Photo' : 'Ảnh mẫu WEARSY'),
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -1093,7 +1093,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                     const SizedBox(width: 4),
                     Text(
                       'AI Match: ${_aiMatchScore.toStringAsFixed(1)}',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -1165,7 +1165,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                               isEn
                                   ? 'AI is extracting colors & style features...'
                                   : 'AI đang bóc tách màu sắc & nhận diện dáng đồ...',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                   color: Colors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600),
@@ -1272,7 +1272,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             icon: const Icon(Icons.cleaning_services_rounded, size: 20),
             label: Text(
               isEn ? 'Interactive Eraser & Refine' : 'Xóa Phông & Dặm Vá Thủ Công',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -1305,7 +1305,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             const SizedBox(height: 6),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.darkTextPrimary,
@@ -1334,7 +1334,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               children: [
                 Text(
                   isEn ? 'Photo Library' : 'Thư Viện Ảnh',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.darkTextPrimary,
@@ -1352,7 +1352,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   ),
                   child: Text(
                     'JPG • PNG • WEBP • HEIC',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.primaryLight,
@@ -1363,7 +1363,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             ),
             Text(
               isEn ? '${allDisplayList.length} photos' : '${allDisplayList.length} ảnh',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                 fontSize: 12,
                 color: AppTheme.darkTextSecondary,
               ),
@@ -1407,7 +1407,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                         Text(
                           isEn ? '+ Add photo\nfrom device' : '+ Thêm ảnh\ntừ máy',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.secondaryColor,
@@ -1474,7 +1474,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                                 : _getPresetName(itemPath, isEn),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -1551,7 +1551,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: [
               Text(
                 isEn ? 'Save to Wardrobe 🚪' : 'Lưu vào Tủ Đồ 🚪',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: AppTheme.darkTextPrimary,
@@ -1559,7 +1559,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               ),
               Text(
                 isEn ? '${collections.length} wardrobes' : '${collections.length} tủ đồ',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 11,
                   color: AppTheme.primaryLight,
                   fontWeight: FontWeight.bold,
@@ -1617,7 +1617,7 @@ class _AddItemScreenState extends State<AddItemScreen>
         children: [
           Text(
             isEn ? 'Category' : 'Danh mục phân loại',
-            style: GoogleFonts.inter(
+            style: AppFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.darkTextPrimary),
@@ -1681,7 +1681,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               ),
               label: Text(
                 TagLocalization.getColorName(colorName, isEn),
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 12,
                   color: isSelected ? Colors.white : AppTheme.darkTextPrimary,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
@@ -1718,7 +1718,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: [
               Text(
                 isEn ? 'Style / Tags' : 'Phong cách / Thẻ gợi ý',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: AppTheme.darkTextPrimary,
@@ -1736,7 +1736,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   ),
                   child: Text(
                     isEn ? '${_selectedTags.length} selected' : '${_selectedTags.length} đã chọn',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.primaryLight,
@@ -1803,7 +1803,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   isEn
                       ? 'Extended Styles (AI Recognized / Custom):'
                       : 'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryLight,
@@ -1839,7 +1839,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                       Text(
                         TagLocalization.getLocalizedTag(
                             tag, isEn),
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 12,
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -1895,7 +1895,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 Expanded(
                   child: TextField(
                     controller: _customTagController,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                         fontSize: 13, color: AppTheme.darkTextPrimary),
                     textInputAction: TextInputAction.done,
                     onSubmitted: (val) => _addCustomTag(val),
@@ -1904,7 +1904,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                       hintText: isEn
                           ? 'Add custom style (e.g. School, Y2K, Gym...)'
                           : 'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
-                      hintStyle: GoogleFonts.inter(
+                      hintStyle: AppFonts.inter(
                         fontSize: 12,
                         color: AppTheme.darkTextSecondary,
                       ),
@@ -2009,7 +2009,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   isEn
                       ? 'AI Style Compatibility: ${_aiMatchScore.toStringAsFixed(1)} / 10'
                       : 'AI Tương Thích Phong Cách: ${_aiMatchScore.toStringAsFixed(1)} / 10',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.darkTextPrimary,
@@ -2020,7 +2020,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   isEn
                       ? 'This item seamlessly coordinates with $outfitCount+ outfits in your digital wardrobe.'
                       : 'Món đồ này phối hợp mượt mà với hơn $outfitCount outfits sẵn có trong tủ đồ số của bạn.',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 12,
                     color: AppTheme.darkTextSecondary,
                     height: 1.3,
@@ -2042,11 +2042,11 @@ class _AddItemScreenState extends State<AddItemScreen>
   }) {
     return TextFormField(
       controller: controller,
-      style: GoogleFonts.inter(color: AppTheme.darkTextPrimary),
+      style: AppFonts.inter(color: AppTheme.darkTextPrimary),
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: GoogleFonts.inter(color: AppTheme.darkTextSecondary),
+        labelStyle: AppFonts.inter(color: AppTheme.darkTextSecondary),
         prefixIcon: Icon(icon, color: AppTheme.primaryLight, size: 22),
         filled: true,
         fillColor: AppTheme.darkSurface,
@@ -2117,7 +2117,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                         const SizedBox(width: 6),
                         Text(
                           'AI Auto-Detecting',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                               fontSize: 12,
                               color: Colors.white,
                               fontWeight: FontWeight.bold),
@@ -2160,7 +2160,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                         child: Text(
                           'Đặt trang phục nằm trọn trong khung ngắm',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 12,
                             color: Colors.white,
                             backgroundColor: Colors.black54,
@@ -2181,7 +2181,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   Text(
                     'Chạm nút chụp để AI phân tích trang phục',
                     style:
-                        GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                        AppFonts.inter(color: Colors.white70, fontSize: 13),
                   ),
                   const SizedBox(height: 18),
                   Row(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import 'app_theme.dart';
 import 'app_theme_palette.dart';
@@ -79,7 +79,7 @@ class ThemePickerSheet extends StatelessWidget {
                   children: [
                     Text(
                       'Chủ Đề & Màu Sắc',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.outfit(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.darkTextPrimary,
@@ -88,7 +88,7 @@ class ThemePickerSheet extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'Chọn phong cách màu bạn yêu thích',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         fontSize: 13,
                         color: AppTheme.darkTextSecondary,
                       ),
@@ -171,7 +171,7 @@ class ThemePickerSheet extends StatelessWidget {
                           child: Center(
                             child: Text(
                               '${index + 1}',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -188,7 +188,7 @@ class ThemePickerSheet extends StatelessWidget {
                             children: [
                               Text(
                                 palette.name,
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: palette.textPrimary,
@@ -197,7 +197,7 @@ class ThemePickerSheet extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 palette.description,
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   fontSize: 12,
                                   color: palette.textSecondary,
                                 ),
@@ -260,7 +260,7 @@ class ThemePickerSheet extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Theme 1 là giao diện hiện tại. Bạn có thể tự do tùy biến màu sắc của Theme 2 - 5 trong code.',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 11,
                       color: const Color(0xFF6E698F),
                     ),

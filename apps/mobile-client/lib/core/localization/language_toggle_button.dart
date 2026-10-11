@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../theme/theme_provider.dart';
@@ -89,7 +89,7 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
                   prevIsVi
                       ? 'Switched to English'
                       : 'Đã đổi sang Tiếng Việt',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                     color: Colors.white,
@@ -173,7 +173,7 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
                 // Code
                 Text(
                   langProvider.currentShortCode,
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
@@ -261,7 +261,7 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
         ),
         child: Text(
           title,
-          style: GoogleFonts.outfit(
+          style: AppFonts.outfit(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
             color: isSelected
@@ -323,7 +323,7 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
                 children: [
                   Text(
                     isVi ? 'Ngôn ngữ ứng dụng' : 'App Language',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: activePalette.textPrimary,
@@ -332,7 +332,7 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
                   const SizedBox(height: 2),
                   Text(
                     isVi ? 'Tiếng Việt (Mặc định)' : 'English (US)',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: activePalette.primary,
@@ -358,7 +358,7 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
                   const SizedBox(width: 4),
                   Text(
                     langProvider.currentShortCode,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: activePalette.primary,

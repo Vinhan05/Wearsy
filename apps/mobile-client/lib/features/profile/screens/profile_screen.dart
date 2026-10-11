@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/user_avatar.dart';
@@ -59,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         Text(
                           name,
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.outfit(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF111827),
@@ -70,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
                           isEn
                               ? 'Fashion lover, your own way.'
                               : 'Yêu thời trang, theo cách riêng.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 12.5,
                             color: const Color(0xFF6B7280),
                           ),
@@ -104,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
                                 const SizedBox(width: 6),
                                 Text(
                                   isEn ? 'Edit Profile' : 'Chỉnh sửa hồ sơ',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.w600,
                                     color: const Color(0xFF374151),
@@ -151,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           Text(
                             isEn ? 'PERSONAL STYLE' : 'PHONG CÁCH CÁ NHÂN',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 10.5,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
@@ -161,7 +161,7 @@ class ProfileScreen extends StatelessWidget {
                           const SizedBox(height: 6),
                           Text(
                             'Smart casual',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: const Color(0xFF111827),
@@ -172,7 +172,7 @@ class ProfileScreen extends StatelessWidget {
                             isEn
                                 ? 'Elegant, minimal\nand versatile.'
                                 : 'Thanh lịch, tối giản\nvà linh hoạt.',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 12.5,
                               height: 1.35,
                               color: const Color(0xFF6B7280),
@@ -191,7 +191,7 @@ class ProfileScreen extends StatelessWidget {
                             },
                             child: Text(
                               isEn ? 'View Details' : 'Xem chi tiết',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: AppTheme.primaryLight,
@@ -232,7 +232,7 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     Text(
                       isEn ? 'YOUR WARDROBE' : 'TỦ ĐỒ CỦA BẠN',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
@@ -307,7 +307,7 @@ class ProfileScreen extends StatelessWidget {
                             children: [
                               Text(
                                 isEn ? 'UPGRADE' : 'NÂNG CẤP',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 0.8,
@@ -317,7 +317,7 @@ class ProfileScreen extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 'WEARSY PREMIUM',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -328,7 +328,7 @@ class ProfileScreen extends StatelessWidget {
                                 isEn
                                     ? 'Unlock advanced personalized features.'
                                     : 'Mở khóa trải nghiệm cá nhân hóa nâng cao.',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   fontSize: 11.5,
                                   color: Colors.white70,
                                 ),
@@ -407,7 +407,7 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               count,
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF111827),
@@ -418,7 +418,7 @@ class ProfileScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: GoogleFonts.inter(
+          style: AppFonts.inter(
             fontSize: 11.5,
             color: const Color(0xFF6B7280),
           ),
@@ -439,7 +439,7 @@ class ProfileScreen extends StatelessWidget {
       leading: Icon(icon, color: iconColor ?? const Color(0xFF374151), size: 22),
       title: Text(
         title,
-        style: GoogleFonts.inter(
+        style: AppFonts.inter(
           fontSize: 13.5,
           fontWeight: FontWeight.w500,
           color: textColor ?? const Color(0xFF111827),

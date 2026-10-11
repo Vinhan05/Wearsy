@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               Text(
                                 'Xác thực mã OTP Email',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -189,7 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 'Mã 6 chữ số đã được gửi đến:',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   fontSize: 13,
                                   color: AppTheme.darkTextSecondary,
                                 ),
@@ -213,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       child: Text(
                         email,
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontWeight: FontWeight.bold,
                           color: AppTheme.primaryLight,
                           fontSize: 14,
@@ -238,7 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Expanded(
                             child: Text(
                               'Mã OTP 6 số đã được gửi qua Gmail thật tới hộp thư của bạn. Vui lòng kiểm tra Hộp thư đến (hoặc thư mục Spam).',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 color: Colors.white70,
                                 fontSize: 12,
                                 height: 1.4,
@@ -261,7 +261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             maxLength: 1,
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -299,7 +299,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 12),
                       Text(
                         otpError!,
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                             color: Colors.redAccent, fontSize: 13),
                       ),
                     ],
@@ -326,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: Colors.white, size: 20)
                               : Text(
                                   'XÁC NHẬN OTP & ĐĂNG KÝ',
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.outfit(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
                                     letterSpacing: 1.0,
@@ -366,7 +366,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             size: 16, color: AppTheme.primaryLight),
                         label: Text(
                           'Chưa nhận được? Gửi lại mã OTP',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             color: AppTheme.primaryLight,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -463,7 +463,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 10),
                   Text(
                     'wearsy',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.outfit(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       letterSpacing: -0.5,
@@ -473,7 +473,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'Trợ lý Thời trang & Tủ đồ Thông minh AI',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.inter(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w500,
                       color: AppTheme.darkTextSecondary,
@@ -505,7 +505,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // Full Name Field
                           Text(
                             'Họ và Tên',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.darkTextPrimary,
@@ -541,7 +541,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // Email Field
                           Text(
                             'Email',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.darkTextPrimary,
@@ -574,7 +574,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // Password Field
                           Text(
                             'Mật khẩu',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.darkTextPrimary,
@@ -622,7 +622,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           // Confirm Password Field
                           Text(
                             'Nhập lại mật khẩu',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.darkTextPrimary,
@@ -710,7 +710,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       )
                                     : Text(
                                         'Đăng Ký',
-                                        style: GoogleFonts.outfit(
+                                        style: AppFonts.outfit(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
@@ -733,7 +733,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     const EdgeInsets.symmetric(horizontal: 16),
                                 child: Text(
                                   'Hoặc',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     color: AppTheme.darkTextSecondary,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
@@ -787,7 +787,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child: RichText(
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     fontSize: 13,
                                     color: AppTheme.darkTextSecondary,
                                   ),
@@ -796,7 +796,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         text: 'Đã có tài khoản Wearsy? - '),
                                     TextSpan(
                                       text: 'Đăng nhập ngay',
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.inter(
                                         color: AppTheme.primaryColor,
                                         fontWeight: FontWeight.bold,
                                       ),

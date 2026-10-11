@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../localization/language_provider.dart';
 import 'app_theme.dart';
 import 'app_theme_palette.dart';
 
@@ -13,7 +14,10 @@ class ThemeProvider extends ChangeNotifier {
 
   AppThemePalette get currentPalette => _currentPalette;
   String get currentThemeId => _currentPalette.id;
-  ThemeData get currentThemeData => AppTheme.buildTheme(_currentPalette);
+  ThemeData get currentThemeData => AppTheme.buildTheme(
+        _currentPalette,
+        isVietnamese: LanguageProvider.isVietnameseStatic,
+      );
 
   Future<void> _loadThemeFromPrefs() async {
     try {

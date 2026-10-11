@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/wardrobe_collection_model.dart';
 import '../models/wardrobe_item_model.dart';
@@ -47,7 +47,7 @@ class WardrobeScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   isEn ? 'Choose Entry Method' : 'Chọn Phương Thức Nhập Đồ',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -96,7 +96,7 @@ class WardrobeScreen extends StatelessWidget {
                             children: [
                               Text(
                                 isEn ? 'Take Photo from Camera' : 'Chụp ảnh từ Camera',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
@@ -107,7 +107,7 @@ class WardrobeScreen extends StatelessWidget {
                                 isEn
                                     ? 'Take real photos of your clothes, AI will automatically analyze.'
                                     : 'Chụp trực tiếp trang phục thật của bạn, AI sẽ tự động phân tích.',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   color: const Color(0xFF5F597C),
                                   fontSize: 12,
                                 ),
@@ -163,7 +163,7 @@ class WardrobeScreen extends StatelessWidget {
                             children: [
                               Text(
                                 isEn ? 'Choose Photo from Gallery' : 'Chọn ảnh từ Thư viện',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
@@ -174,7 +174,7 @@ class WardrobeScreen extends StatelessWidget {
                                 isEn
                                     ? 'Upload available clothing photos from your phone gallery.'
                                     : 'Tải ảnh quần áo có sẵn từ bộ sưu tập điện thoại của bạn.',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   color: const Color(0xFF5F597C),
                                   fontSize: 12,
                                 ),
@@ -229,7 +229,7 @@ class WardrobeScreen extends StatelessWidget {
                             children: [
                               Text(
                                 isEn ? 'Paste Shopping Link (Smart Shopping)' : 'Dán link mua sắm (Smart Shopping)',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
@@ -240,7 +240,7 @@ class WardrobeScreen extends StatelessWidget {
                                 isEn
                                     ? 'Paste link from Shopee, TikTok, Zara... to check AI compatibility before buying.'
                                     : 'Dán link Shopee, TikTok, Zara... để AI kiểm tra tương thích trước khi mua.',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.inter(
                                   color: const Color(0xFF5F597C),
                                   fontSize: 12,
                                 ),
@@ -306,7 +306,7 @@ class WardrobeScreen extends StatelessWidget {
                           children: [
                             Text(
                               isEn ? 'Wardrobe Collections' : 'Bộ Sưu Tập Tủ Đồ',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 color: const Color(0xFF2C2849),
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -325,7 +325,7 @@ class WardrobeScreen extends StatelessWidget {
                               ),
                               child: Text(
                                 '${collections.length}',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.outfit(
                                   color: AppTheme.primaryColor,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -345,7 +345,7 @@ class WardrobeScreen extends StatelessWidget {
                       isEn
                           ? 'Create separate wardrobes for Work, Travel, Winter...'
                           : 'Tạo các tủ đồ riêng biệt cho Công sở, Du lịch, Mùa đông...',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.inter(
                         color: const Color(0xFF5F597C),
                         fontSize: 13,
                       ),
@@ -389,7 +389,7 @@ class WardrobeScreen extends StatelessWidget {
                             const SizedBox(width: 10),
                             Text(
                               isEn ? '+ Create New Wardrobe' : '+ Tạo Tủ Đồ Mới',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.outfit(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
@@ -451,7 +451,7 @@ class WardrobeScreen extends StatelessWidget {
                                     Expanded(
                                       child: Text(
                                         TagLocalization.getLocalizedWardrobeName(col.name, isEn),
-                                        style: GoogleFonts.outfit(
+                                        style: AppFonts.outfit(
                                           color: const Color(0xFF2C2849),
                                           fontWeight: isSelected
                                               ? FontWeight.bold
@@ -472,7 +472,7 @@ class WardrobeScreen extends StatelessWidget {
                                         ),
                                         child: Text(
                                           isEn ? 'Default' : 'Mặc định',
-                                          style: GoogleFonts.inter(
+                                          style: AppFonts.inter(
                                             color: AppTheme.primaryColor,
                                             fontSize: 10,
                                             fontWeight: FontWeight.bold,
@@ -487,7 +487,7 @@ class WardrobeScreen extends StatelessWidget {
                                     col.description.isNotEmpty
                                         ? '$itemCount món đồ • ${col.description}'
                                         : '$itemCount món đồ',
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.inter(
                                       color: const Color(0xFF5F597C),
                                       fontSize: 12,
                                     ),
@@ -541,7 +541,7 @@ class WardrobeScreen extends StatelessWidget {
                                                     size: 18),
                                                 const SizedBox(width: 10),
                                                 Text('Đổi tên & Icon',
-                                                    style: GoogleFonts.inter(
+                                                    style: AppFonts.inter(
                                                         color: Colors.white)),
                                               ],
                                             ),
@@ -555,7 +555,7 @@ class WardrobeScreen extends StatelessWidget {
                                                     size: 18),
                                                 const SizedBox(width: 10),
                                                 Text('Xóa tủ đồ này',
-                                                    style: GoogleFonts.inter(
+                                                    style: AppFonts.inter(
                                                         color: AppTheme
                                                             .accentColor)),
                                               ],
@@ -594,7 +594,7 @@ class WardrobeScreen extends StatelessWidget {
                         icon: const Icon(Icons.delete_sweep_rounded, size: 18),
                         label: Text(
                           'Reset Tất Cả Quần Áo (Tài khoản trắng)',
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.outfit(
                               fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                         onPressed: () {
@@ -630,7 +630,7 @@ class WardrobeScreen extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               'Reset Tủ Đồ Trắng?',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
                 color: const Color(0xFF2C2849),
@@ -640,7 +640,7 @@ class WardrobeScreen extends StatelessWidget {
         ),
         content: Text(
           'Thao tác này sẽ xóa toàn bộ quần áo trong tủ đồ và chuyển tài khoản về trạng thái tủ đồ trắng (0 món đồ).\n\nBạn có chắc chắn muốn thực hiện?',
-          style: GoogleFonts.inter(
+          style: AppFonts.inter(
               fontSize: 14, color: const Color(0xFF5F597C), height: 1.4),
         ),
         actions: [
@@ -648,7 +648,7 @@ class WardrobeScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text(
               'Hủy',
-              style: GoogleFonts.inter(
+              style: AppFonts.inter(
                   color: const Color(0xFF5F597C), fontWeight: FontWeight.bold),
             ),
           ),
@@ -666,7 +666,7 @@ class WardrobeScreen extends StatelessWidget {
                   SnackBar(
                     content: Text(
                       '✨ Đã reset tủ đồ thành công! Tài khoản của bạn hiện là tủ đồ trắng (0 quần áo).',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                      style: AppFonts.inter(fontWeight: FontWeight.bold),
                     ),
                     backgroundColor: AppTheme.primaryColor,
                     behavior: SnackBarBehavior.floating,
@@ -678,7 +678,7 @@ class WardrobeScreen extends StatelessWidget {
             },
             child: Text(
               'Xác Nhận Reset',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                   color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
@@ -705,7 +705,7 @@ class WardrobeScreen extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               'Xóa Tủ Đồ?',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 color: const Color(0xFF2C2849),
                 fontWeight: FontWeight.bold,
               ),
@@ -714,7 +714,7 @@ class WardrobeScreen extends StatelessWidget {
         ),
         content: Text(
           'Bạn có chắc chắn muốn xóa "${col.icon} ${col.name}"? Tất cả món đồ trong tủ này sẽ được tự động chuyển về "Tủ Đồ Mặc Định" để bảo vệ dữ liệu.',
-          style: GoogleFonts.inter(
+          style: AppFonts.inter(
             color: const Color(0xFF5F597C),
             fontSize: 13,
             height: 1.4,
@@ -725,7 +725,7 @@ class WardrobeScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(dialogCtx),
             child: Text(
               'Hủy',
-              style: GoogleFonts.inter(color: const Color(0xFF5F597C)),
+              style: AppFonts.inter(color: const Color(0xFF5F597C)),
             ),
           ),
           ElevatedButton(
@@ -748,7 +748,7 @@ class WardrobeScreen extends StatelessWidget {
             },
             child: Text(
               'Xóa Tủ Đồ',
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+              style: AppFonts.outfit(fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -851,7 +851,7 @@ class WardrobeScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       Text(
                         isEditing ? 'Chỉnh Sửa Tủ Đồ' : 'Tạo Tủ Đồ Mới 🚪',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.outfit(
                           color: const Color(0xFF2C2849),
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -860,7 +860,7 @@ class WardrobeScreen extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         'Phân chia quần áo theo mục đích sử dụng để AI dễ dàng phối đồ.',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           color: const Color(0xFF5F597C),
                           fontSize: 13,
                         ),
@@ -871,7 +871,7 @@ class WardrobeScreen extends StatelessWidget {
                       if (!isEditing) ...[
                         Text(
                           'Mẫu Tủ Đồ Phổ Biến:',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             color: AppTheme.primaryColor,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -894,7 +894,7 @@ class WardrobeScreen extends StatelessWidget {
                                         AppTheme.primaryColor.withOpacity(0.2)),
                                 label: Text(
                                   '${p['icon']} ${p['name']!.split('/')[0].replaceAll('Tủ Đồ ', '')}',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.inter(
                                     color: AppTheme.darkTextPrimary,
                                     fontSize: 12,
                                   ),
@@ -916,7 +916,7 @@ class WardrobeScreen extends StatelessWidget {
                       // Chọn Biểu tượng / Emoji
                       Text(
                         'Chọn Biểu Tượng:',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           color: const Color(0xFF5F597C),
                           fontSize: 12,
                         ),
@@ -960,14 +960,14 @@ class WardrobeScreen extends StatelessWidget {
                       TextField(
                         controller: nameCtrl,
                         style:
-                            GoogleFonts.inter(color: const Color(0xFF2C2849)),
+                            AppFonts.inter(color: const Color(0xFF2C2849)),
                         decoration: InputDecoration(
                           labelText: 'Tên Tủ Đồ',
                           hintText: 'Ví dụ: Tủ Đồ Đi Làm, Tủ Đồ Mùa Hè...',
                           labelStyle:
-                              GoogleFonts.inter(color: const Color(0xFF5F597C)),
+                              AppFonts.inter(color: const Color(0xFF5F597C)),
                           hintStyle:
-                              GoogleFonts.inter(color: const Color(0xFF9E99B8)),
+                              AppFonts.inter(color: const Color(0xFF9E99B8)),
                           prefixIcon: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 10),
@@ -999,14 +999,14 @@ class WardrobeScreen extends StatelessWidget {
                       TextField(
                         controller: descCtrl,
                         style:
-                            GoogleFonts.inter(color: AppTheme.darkTextPrimary),
+                            AppFonts.inter(color: AppTheme.darkTextPrimary),
                         decoration: InputDecoration(
                           labelText: 'Mô tả ngắn (tùy chọn)',
                           hintText:
                               'Ví dụ: Quần áo thanh lịch cho ngày làm việc...',
-                          labelStyle: GoogleFonts.inter(
+                          labelStyle: AppFonts.inter(
                               color: AppTheme.darkTextSecondary),
-                          hintStyle: GoogleFonts.inter(
+                          hintStyle: AppFonts.inter(
                               color:
                                   AppTheme.darkTextSecondary.withOpacity(0.7)),
                           prefixIcon: Icon(Icons.notes_rounded,
@@ -1090,7 +1090,7 @@ class WardrobeScreen extends StatelessWidget {
                                         isEditing
                                             ? '✨ Đã cập nhật tủ đồ "$name"'
                                             : '🎉 Đã tạo tủ đồ mới "$name"',
-                                        style: GoogleFonts.inter(
+                                        style: AppFonts.inter(
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ],
@@ -1103,7 +1103,7 @@ class WardrobeScreen extends StatelessWidget {
                           },
                           child: Text(
                             isEditing ? 'CẬP NHẬT TỦ ĐỒ' : 'TẠO TỦ ĐỒ MỚI',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.outfit(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                               letterSpacing: 0.5,
@@ -1167,7 +1167,7 @@ class _WardrobeBody extends StatelessWidget {
               children: [
                 Text(
                   isEn ? 'Wardrobe' : 'Tủ đồ',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.outfit(
                     fontSize: 32,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF111827),
@@ -1176,7 +1176,7 @@ class _WardrobeBody extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   isEn ? 'Your wardrobe' : 'Tủ đồ của bạn',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF374151),
@@ -1187,7 +1187,7 @@ class _WardrobeBody extends StatelessWidget {
                   isEn
                       ? '$totalItems items • 2 outfits paired • Updated today'
                       : '$totalItems món đồ  •  2 set đã phối  •  Cập nhật hôm nay',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.inter(
                     fontSize: 11.5,
                     color: const Color(0xFF9CA3AF),
                   ),
@@ -1271,7 +1271,7 @@ class _WardrobeBody extends StatelessWidget {
               ),
               child: Text(
                 label,
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 12.5,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected ? Colors.white : const Color(0xFF374151),
@@ -1434,7 +1434,7 @@ class _WardrobeCardState extends State<_WardrobeCard> {
                     children: [
                       Text(
                         TagLocalization.getLocalizedName(item.name, isEn),
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF111827),
@@ -1446,7 +1446,7 @@ class _WardrobeCardState extends State<_WardrobeCard> {
                       const SizedBox(height: 2),
                       Text(
                         '${TagLocalization.getLocalizedTag(item.category.displayName, isEn)} • ${item.brand.isNotEmpty ? item.brand : 'Cotton'}',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 11,
                           color: const Color(0xFF6B7280),
                         ),
@@ -1552,7 +1552,7 @@ class _WardrobeCardState extends State<_WardrobeCard> {
           const SizedBox(height: 6),
           Text(
             item.category.displayName,
-            style: GoogleFonts.inter(
+            style: AppFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF6B7280),

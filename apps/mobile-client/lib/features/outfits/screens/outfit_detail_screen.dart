@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/outfit_model.dart';
 import '../providers/outfit_provider.dart';
@@ -51,7 +51,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               isEn
                   ? 'Choose replacement for "${TagLocalization.getLocalizedName(_items[index]['name']!, isEn)}"'
                   : 'Chọn món đồ thay thế cho "${_items[index]['name']}"',
-              style: GoogleFonts.outfit(
+              style: AppFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF111827),
@@ -111,7 +111,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 isEn
                     ? '✨ Saved outfit "${widget.outfit.name}" to Favorites!'
                     : '✨ Đã lưu outfit "${widget.outfit.name}" vào Bộ sưu tập yêu thích!',
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                style: AppFonts.inter(fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -171,7 +171,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         const SizedBox(width: 4),
                         Text(
                           '29°C • ${TagLocalization.getLocalizedCityName("Đà Nẵng", isEn)}',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF374151),
@@ -188,7 +188,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               // Title: "Outfit dành cho bạn"
               Text(
                 isEn ? 'Outfit For You' : 'Outfit dành cho bạn',
-                style: GoogleFonts.outfit(
+                style: AppFonts.outfit(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF111827),
@@ -209,7 +209,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           widget.outfit.name.isNotEmpty
                               ? TagLocalization.getLocalizedTag(widget.outfit.name, isEn)
                               : 'Smart casual',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF374151),
@@ -222,7 +222,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                               : (isEn
                                   ? 'Neat, modern, and suitable for various occasions during the day.'
                                   : 'Gọn gàng, hiện đại và phù hợp cho nhiều hoàn cảnh trong ngày.'),
-                          style: GoogleFonts.inter(
+                          style: AppFonts.inter(
                             fontSize: 12,
                             color: const Color(0xFF6B7280),
                             height: 1.35,
@@ -263,7 +263,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           const SizedBox(width: 4),
                           Text(
                             isEn ? 'Change outfit' : 'Đổi outfit',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xFF374151),
@@ -340,7 +340,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               // Section: "Chi tiết outfit"
               Text(
                 isEn ? 'Outfit details' : 'Chi tiết outfit',
-                style: GoogleFonts.inter(
+                style: AppFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
@@ -388,7 +388,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         Expanded(
                           child: Text(
                             TagLocalization.getLocalizedName(itm['name']!, isEn),
-                            style: GoogleFonts.inter(
+                            style: AppFonts.inter(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xFF111827),
@@ -412,7 +412,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                             ),
                             child: Text(
                               isEn ? 'Replace' : 'Thay',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFF2563EB),
@@ -462,7 +462,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         _isSaved
                             ? (isEn ? 'Saved outfit' : 'Đã lưu outfit')
                             : (isEn ? 'Save outfit' : 'Lưu outfit'),
-                        style: GoogleFonts.inter(
+                        style: AppFonts.inter(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
