@@ -7,6 +7,7 @@ import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../../outfits/providers/outfit_provider.dart';
 import 'edit_style_profile_screen.dart';
 import 'account_settings_screen.dart';
+import 'app_settings_screen.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/language_provider.dart';
@@ -376,7 +377,7 @@ class ProfileScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                               MaterialPageRoute(
-                              builder: (_) => const AccountSettingsScreen(),
+                              builder: (_) => const AppSettingsScreen(),
                             ),
                           );
                         },
