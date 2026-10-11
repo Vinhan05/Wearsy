@@ -32,7 +32,8 @@ Thumbs.db
 *.pem
 # AI & Heavy Models (AI module is independent)
 AI/
-**/models/
+/models/
+AI/models/
 *.gguf
 *.safetensors
 *.bin

@@ -3,7 +3,7 @@ services:
     name: wearsy-backend
     runtime: node
     rootDir: apps/api-server
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start:prod
     plan: free
     healthCheckPath: /v1/health
