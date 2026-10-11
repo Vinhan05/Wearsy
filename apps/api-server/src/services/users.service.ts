@@ -61,7 +61,7 @@ export class UsersService {
     return {
       success: true,
       message:
-        'Chúc mừng! Bạn đã nâng cấp thành công gói VIP Fashionista 1 năm.',
+        'Chúc mừng! Bạn đã nâng cấp thành công gói WEARSY PREMIUM Fashionista 1 năm.',
       is_vip: true,
       vip_expires_at: vipExpiresAt.toISOString(),
       days_added: 365,

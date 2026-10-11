@@ -304,7 +304,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Wearsy VIP',
+                            'WEARSY PREMIUM',
                             style: GoogleFonts.outfit(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

@@ -661,7 +661,7 @@ class AuthService {
       throw ApiException(
         statusCode: 400,
         message:
-            'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 1 năm VIP!',
+            'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY" để nhận 1 năm WEARSY PREMIUM!',
       );
     }
 
