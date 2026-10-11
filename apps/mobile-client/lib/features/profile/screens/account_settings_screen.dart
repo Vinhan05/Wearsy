@@ -1849,11 +1849,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   Future<void> _handleUpgradeVip() async {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final isEn = langProvider.isEnglish;
     final coupon = _couponController.text.trim().toUpperCase();
     if (coupon.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Vui lòng nhập mã Coupon.', style: AppFonts.inter()),
+          content: Text(
+            isEn ? 'Please enter a coupon code.' : 'Vui lòng nhập mã Coupon.',
+            style: AppFonts.inter(),
+          ),
           backgroundColor: AppTheme.accentColor,
           behavior: SnackBarBehavior.floating,
           shape:
@@ -1867,7 +1872,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY"!',
+            isEn
+                ? 'Invalid coupon code. Please enter the code "WEARSY"!'
+                : 'Mã Coupon không hợp lệ. Vui lòng nhập đúng mã "WEARSY"!',
             style: AppFonts.inter(),
           ),
           backgroundColor: AppTheme.accentColor,
@@ -1894,7 +1901,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
         SnackBar(
           content: Text(
             authProvider.errorMessage ??
-                'Nâng cấp WEARSY PREMIUM thất bại. Vui lòng thử lại.',
+                (isEn
+                    ? 'Failed to upgrade to WEARSY PREMIUM. Please try again.'
+                    : 'Nâng cấp WEARSY PREMIUM thất bại. Vui lòng thử lại.'),
             style: AppFonts.inter(),
           ),
           backgroundColor: AppTheme.accentColor,
@@ -1907,9 +1916,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   void _showVipSuccessDialog(BuildContext context, dynamic user) {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final isEn = langProvider.isEnglish;
     final expiryDateStr = user?.vipExpiresAt != null
         ? DateFormat('dd/MM/yyyy - HH:mm').format(user!.vipExpiresAt!)
-        : '1 năm tới';
+        : (isEn ? 'Next 1 year' : '1 năm tới');
 
     showDialog(
       context: context,
@@ -1949,7 +1960,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             const SizedBox(height: 18),
             Text(
-              '🎉 NÂNG CẤP WEARSY PREMIUM THÀNH CÔNG!',
+              isEn
+                  ? '🎉 WEARSY PREMIUM UPGRADE SUCCESSFUL!'
+                  : '🎉 NÂNG CẤP WEARSY PREMIUM THÀNH CÔNG!',
               textAlign: TextAlign.center,
               style: AppFonts.outfit(
                 fontSize: 19,
@@ -1959,7 +1972,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Chúc mừng bạn đã kích hoạt gói WEARSY PREMIUM trong 1 năm bằng mã Coupon WEARSY!',
+              isEn
+                  ? 'Congratulations! You have activated the 1-year WEARSY PREMIUM plan with coupon code WEARSY!'
+                  : 'Chúc mừng bạn đã kích hoạt gói WEARSY PREMIUM trong 1 năm bằng mã Coupon WEARSY!',
               textAlign: TextAlign.center,
               style: AppFonts.inter(
                 fontSize: 13,
@@ -1982,7 +1997,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Gói hội viên:',
+                        isEn ? 'Membership Plan:' : 'Gói hội viên:',
                         style: AppFonts.inter(
                           fontSize: 12,
                           color: const Color(0xFF4A4B6B),
@@ -2003,7 +2018,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Hạn sử dụng:',
+                        isEn ? 'Valid Until:' : 'Hạn sử dụng:',
                         style: AppFonts.inter(
                           fontSize: 12,
                           color: const Color(0xFF4A4B6B),
@@ -2037,7 +2052,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 ),
                 onPressed: () => Navigator.pop(dialogCtx),
                 child: Text(
-                  'TRẢI NGHIỆM NGAY',
+                  isEn ? 'EXPERIENCE NOW' : 'TRẢI NGHIỆM NGAY',
                   style: AppFonts.outfit(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
