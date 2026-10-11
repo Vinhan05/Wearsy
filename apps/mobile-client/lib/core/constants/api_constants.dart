@@ -1,10 +1,9 @@
 class ApiConstants {
-  // Base URL hỗ trợ truyền biến môi trường từ Render.com:
-  // ví dụ: flutter run --dart-define=BACKEND_URL=https://wearsy-backend.onrender.com/v1
+  // Base URL trỏ trực tiếp đến máy chủ backend chạy trên laptop
   static String get baseUrl {
     const envUrl = String.fromEnvironment('BACKEND_URL');
-    // Backend API chính thức trên Render.com (PostgreSQL Supabase DB)
-    return _customBaseUrl ?? 'https://wearsy-wd0c.onrender.com/v1';
+    if (envUrl.isNotEmpty) return envUrl;
+    return _customBaseUrl ?? 'http://10.30.1.50:8000/v1';
   }
   static String? _customBaseUrl;
   static void setBaseUrl(String url) => _customBaseUrl = url;
