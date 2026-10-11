@@ -5,6 +5,10 @@ import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/user_avatar.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../../outfits/providers/outfit_provider.dart';
+import '../../outfits/models/outfit_model.dart';
+import '../../outfits/screens/outfit_screen.dart';
+import '../../outfits/screens/outfit_detail_screen.dart';
+import '../../wardrobe/screens/wardrobe_screen.dart';
 import 'edit_style_profile_screen.dart';
 import 'account_settings_screen.dart';
 import 'app_settings_screen.dart';
@@ -13,7 +17,9 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/language_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final Function(int)? onSwitchTab;
+
+  const ProfileScreen({super.key, this.onSwitchTab});
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +38,7 @@ class ProfileScreen extends StatelessWidget {
 
     final totalItems = wardrobeProvider.allItemsAcrossAllWardrobes.length;
     final totalOutfits = outfitProvider.outfits.length;
+    final totalFavorites = outfitProvider.favoriteOutfits.length;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -245,20 +252,46 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         _buildStatItem(
                           icon: Icons.checkroom_outlined,
-                          count: totalItems > 0 ? '$totalItems' : '128',
+                          count: '$totalItems',
                           label: isEn ? 'Items' : 'Món đồ',
+                          onTap: () {
+                            if (onSwitchTab != null) {
+                              onSwitchTab!(1);
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const WardrobeScreen(),
+                                ),
+                              );
+                            }
+                          },
                         ),
                         Container(width: 1, height: 32, color: const Color(0xFFE5E7EB)),
                         _buildStatItem(
                           icon: Icons.dry_cleaning_outlined,
-                          count: totalOutfits > 0 ? '$totalOutfits' : '32',
+                          count: '$totalOutfits',
                           label: isEn ? 'Outfits' : 'Set đồ',
+                          onTap: () {
+                            if (onSwitchTab != null) {
+                              onSwitchTab!(2);
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const OutfitScreen(),
+                                ),
+                              );
+                            }
+                          },
                         ),
                         Container(width: 1, height: 32, color: const Color(0xFFE5E7EB)),
                         _buildStatItem(
                           icon: Icons.favorite_border_rounded,
-                          count: '18',
+                          count: '$totalFavorites',
                           label: isEn ? 'Favorites' : 'Yêu thích',
+                          onTap: () => _showFavoritesModal(
+                              context, outfitProvider.favoriteOutfits, isEn),
                         ),
                       ],
                     ),
@@ -397,33 +430,171 @@ class ProfileScreen extends StatelessWidget {
     required IconData icon,
     required String count,
     required String label,
+    required VoidCallback onTap,
   }) {
-    return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        child: Column(
           children: [
-            Icon(icon, size: 20, color: const Color(0xFF374151)),
-            const SizedBox(width: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 20, color: const Color(0xFF374151)),
+                const SizedBox(width: 8),
+                Text(
+                  count,
+                  style: AppFonts.outfit(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
             Text(
-              count,
-              style: AppFonts.outfit(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF111827),
+              label,
+              style: AppFonts.inter(
+                fontSize: 11.5,
+                color: const Color(0xFF6B7280),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: AppFonts.inter(
-            fontSize: 11.5,
-            color: const Color(0xFF6B7280),
+      ),
+    );
+  }
+
+  void _showFavoritesModal(
+      BuildContext context, List<OutfitModel> favoriteOutfits, bool isEn) {
+    if (favoriteOutfits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isEn
+                ? 'No favorite outfits yet. Tap the ❤️ icon on any outfit to save!'
+                : 'Chưa có set đồ yêu thích nào. Hãy nhấn biểu tượng ❤️ trên set đồ để lưu!',
+            style: AppFonts.inter(),
           ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
         ),
-      ],
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.65,
+        maxChildSize: 0.9,
+        minChildSize: 0.4,
+        expand: false,
+        builder: (_, scrollController) => Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFCBD5E1),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  const Icon(Icons.favorite_rounded,
+                      color: Color(0xFFEF4444), size: 24),
+                  const SizedBox(width: 10),
+                  Text(
+                    isEn
+                        ? 'Favorite Outfits (${favoriteOutfits.length})'
+                        : 'Set Đồ Yêu Thích (${favoriteOutfits.length})',
+                    style: AppFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1E293B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            Expanded(
+              child: ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: favoriteOutfits.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (_, index) {
+                  final outfit = favoriteOutfits[index];
+                  return ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    tileColor: const Color(0xFFF8FAFC),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: const BorderSide(color: Color(0xFFE2E8F0)),
+                    ),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        outfit.coverImageUrl,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 50,
+                          height: 50,
+                          color: const Color(0xFFE2E8F0),
+                          child: const Icon(Icons.checkroom_rounded,
+                              color: Color(0xFF64748B)),
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      outfit.name,
+                      style: AppFonts.outfit(
+                          fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    subtitle: Text(
+                      outfit.aiReason,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppFonts.inter(
+                          fontSize: 12, color: const Color(0xFF64748B)),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                        size: 14, color: Color(0xFF94A3B8)),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => OutfitDetailScreen(outfit: outfit),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

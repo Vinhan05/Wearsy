@@ -44,7 +44,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         DashboardScreen(onSwitchTab: _switchTab),
         const WardrobeScreen(),
         const OutfitScreen(),
-        const ProfileScreen(),
+        ProfileScreen(onSwitchTab: _switchTab),
       ];
 
   @override
