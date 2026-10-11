@@ -5,7 +5,6 @@ import '../models/outfit_model.dart';
 import 'ai_stylist_chat_screen.dart';
 import 'outfit_detail_screen.dart';
 import '../../../core/theme/theme_provider.dart';
-import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/language_provider.dart';
 
 class OutfitScreen extends StatefulWidget {
@@ -217,12 +216,12 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? AppTheme.primaryLight.withOpacity(0.08)
+                                      ? const Color(0xFF2563EB).withOpacity(0.08)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
                                     color: isSelected
-                                        ? AppTheme.primaryLight
+                                        ? const Color(0xFF2563EB)
                                         : const Color(0xFFE5E7EB),
                                     width: isSelected ? 1.5 : 1.0,
                                   ),
@@ -233,7 +232,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                       c['icon'] as IconData,
                                       size: 24,
                                       color: isSelected
-                                          ? AppTheme.primaryLight
+                                          ? const Color(0xFF2563EB)
                                           : const Color(0xFF4B5563),
                                     ),
                                     const SizedBox(height: 8),
@@ -245,7 +244,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                             ? FontWeight.bold
                                             : FontWeight.w500,
                                         color: isSelected
-                                            ? AppTheme.primaryLight
+                                            ? const Color(0xFF2563EB)
                                             : const Color(0xFF374151),
                                       ),
                                     ),
@@ -299,12 +298,12 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? AppTheme.primaryLight.withOpacity(0.08)
+                                      ? const Color(0xFF2563EB).withOpacity(0.08)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
                                     color: isSelected
-                                        ? AppTheme.primaryLight
+                                        ? const Color(0xFF2563EB)
                                         : const Color(0xFFE5E7EB),
                                     width: isSelected ? 1.5 : 1.0,
                                   ),
@@ -315,7 +314,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                       w['icon'] as IconData,
                                       size: 20,
                                       color: isSelected
-                                          ? AppTheme.primaryLight
+                                          ? const Color(0xFF2563EB)
                                           : const Color(0xFF4B5563),
                                     ),
                                     const SizedBox(height: 6),
@@ -327,7 +326,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                             ? FontWeight.bold
                                             : FontWeight.w500,
                                         color: isSelected
-                                            ? AppTheme.primaryLight
+                                            ? const Color(0xFF2563EB)
                                             : const Color(0xFF374151),
                                       ),
                                       maxLines: 1,
@@ -384,12 +383,12 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                     horizontal: 14, vertical: 8),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? AppTheme.primaryLight.withOpacity(0.08)
+                                      ? const Color(0xFF2563EB).withOpacity(0.08)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
                                     color: isSelected
-                                        ? AppTheme.primaryLight
+                                        ? const Color(0xFF2563EB)
                                         : const Color(0xFFE5E7EB),
                                     width: isSelected ? 1.5 : 1.0,
                                   ),
@@ -403,7 +402,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                           : Icons.radio_button_off,
                                       size: 16,
                                       color: isSelected
-                                          ? AppTheme.primaryLight
+                                          ? const Color(0xFF2563EB)
                                           : const Color(0xFF9CA3AF),
                                     ),
                                     const SizedBox(width: 6),
@@ -415,7 +414,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                             ? FontWeight.bold
                                             : FontWeight.w500,
                                         color: isSelected
-                                            ? AppTheme.primaryLight
+                                            ? const Color(0xFF2563EB)
                                             : const Color(0xFF374151),
                                       ),
                                     ),
@@ -544,7 +543,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
       height: 8,
       decoration: BoxDecoration(
         color: isActive
-            ? AppTheme.primaryLight
+            ? const Color(0xFF2563EB)
             : (isCompleted ? const Color(0xFF9CA3AF) : const Color(0xFFE5E7EB)),
         shape: BoxShape.circle,
       ),
@@ -553,7 +552,7 @@ class _OutfitScreenState extends State<OutfitScreen> {
 
   Widget _buildStepLine() {
     return Container(
-      width: 24,
+      width: 32,
       height: 2,
       color: const Color(0xFFE5E7EB),
     );

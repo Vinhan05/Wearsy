@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/user_avatar.dart';
-import '../../auth/screens/welcome_screen.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../../outfits/providers/outfit_provider.dart';
 import 'edit_style_profile_screen.dart';
@@ -271,14 +270,14 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF8A6728), Color(0xFF5C4418)],
+                    colors: [Color(0xFF86591D), Color(0xFF6B4515)],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF8A6728).withOpacity(0.3),
+                      color: const Color(0xFF86591D).withOpacity(0.25),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -287,16 +286,8 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                 child: Row(
                   children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.diamond_outlined,
-                          color: Colors.white, size: 24),
-                    ),
+                    const Icon(Icons.diamond_outlined,
+                        color: Colors.white, size: 36),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
@@ -371,28 +362,10 @@ class ProfileScreen extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
+                              MaterialPageRoute(
                               builder: (_) => const AccountSettingsScreen(),
                             ),
                           );
-                        },
-                      ),
-                      const Divider(color: Color(0xFFF3F4F6), height: 1),
-                      _buildMenuItem(
-                        icon: Icons.logout_rounded,
-                        title: isEn ? 'Log Out' : 'Đăng xuất',
-                        textColor: const Color(0xFFEF4444),
-                        iconColor: const Color(0xFFEF4444),
-                        onTap: () async {
-                          await authProvider.logout();
-                          if (context.mounted) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const WelcomeScreen()),
-                              (route) => false,
-                            );
-                          }
                         },
                       ),
                     ],

@@ -5,10 +5,9 @@ import '../models/outfit_model.dart';
 import '../providers/outfit_provider.dart';
 import '../../fitting_room/screens/virtual_fitting_room_screen.dart';
 import '../../../core/theme/theme_provider.dart';
-import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/language_provider.dart';
-import '../../../core/localization/language_toggle_button.dart';
 import '../../../core/utils/tag_localization.dart';
+import '../../../shared/widgets/wearsy_bottom_nav_bar.dart';
 
 class OutfitDetailScreen extends StatefulWidget {
   final OutfitModel outfit;
@@ -26,11 +25,11 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
   void initState() {
     super.initState();
     _items = [
-      {'name': 'Áo overshirt', 'icon': '🧥', 'color': 'Be sữa'},
-      {'name': 'Áo thun trắng', 'icon': '👕', 'color': 'Trắng trơn'},
-      {'name': 'Quần chino navy', 'icon': '👖', 'color': 'Xanh navy'},
-      {'name': 'Sneaker trắng', 'icon': '👟', 'color': 'Trắng da'},
-      {'name': 'Túi đeo chéo', 'icon': '👜', 'color': 'Đen da'},
+      {'name': 'Áo overshirt', 'thumb': 'assets/images/thumb_overshirt.png'},
+      {'name': 'Áo thun trắng', 'thumb': 'assets/images/thumb_tshirt.png'},
+      {'name': 'Qquân chino navy', 'thumb': 'assets/images/thumb_chino.png'},
+      {'name': 'Sneaker trắng', 'thumb': 'assets/images/thumb_sneaker.png'},
+      {'name': 'Túi đeo chéo', 'thumb': 'assets/images/thumb_bag.png'},
     ];
   }
 
@@ -63,13 +62,12 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               leading: const Text('👕', style: TextStyle(fontSize: 24)),
               title: Text(isEn ? 'Minimalist Plain Polo Shirt' : 'Áo Polo trơn tối giản'),
               subtitle: Text(isEn ? 'Torano • Off-White' : 'Torano • Trắng ngà'),
-              trailing: Icon(Icons.swap_horiz_rounded, color: AppTheme.primaryLight),
+              trailing: const Icon(Icons.swap_horiz_rounded, color: Color(0xFF2563EB)),
               onTap: () {
                 setState(() {
                   _items[index] = {
-                    'name': 'Áo Polo trơn tối giản',
-                    'icon': '👕',
-                    'color': 'Trắng ngà'
+                    'name': 'Áo Polo trơn',
+                    'thumb': 'assets/images/thumb_tshirt.png',
                   };
                 });
                 Navigator.pop(ctx);
@@ -79,13 +77,12 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               leading: const Text('👖', style: TextStyle(fontSize: 24)),
               title: Text(isEn ? 'Relaxed Pleated Trousers' : 'Quần tây xếp ly relaxed'),
               subtitle: Text(isEn ? 'Zara • Charcoal Grey' : 'Zara • Đen xám'),
-              trailing: Icon(Icons.swap_horiz_rounded, color: AppTheme.primaryLight),
+              trailing: const Icon(Icons.swap_horiz_rounded, color: Color(0xFF2563EB)),
               onTap: () {
                 setState(() {
                   _items[index] = {
-                    'name': 'Quần tây xếp ly relaxed',
-                    'icon': '👖',
-                    'color': 'Đen xám'
+                    'name': 'Quần tây xếp ly',
+                    'thumb': 'assets/images/thumb_chino.png',
                   };
                 });
                 Navigator.pop(ctx);
@@ -119,7 +116,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF8A6728),
+        backgroundColor: const Color(0xFF7A5420),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
@@ -133,15 +130,16 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      extendBody: true,
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Bar: Back Button & Language Toggle & Weather Badge
+              // Top Bar: Back Button & Weather Badge (Image 5)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -159,34 +157,28 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           size: 20, color: Color(0xFF111827)),
                     ),
                   ),
-                  Row(
-                    children: [
-                      const LanguageToggleButton(style: LanguageToggleStyle.compact),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text('⛅', style: TextStyle(fontSize: 13)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '29°C • ${TagLocalization.getLocalizedCityName("Đà Nẵng", isEn)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF374151),
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            const Text('⛅', style: TextStyle(fontSize: 13)),
-                            const SizedBox(width: 4),
-                            Text(
-                              '29°C • ${TagLocalization.getLocalizedCityName("Đà Nẵng", isEn)}',
-                              style: GoogleFonts.inter(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF374151),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -306,7 +298,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         ),
                       ),
                     ),
-                    // Expand/Fitting Room Button
+                    // Expand/Fitting Room Button (Bottom Right)
                     Positioned(
                       bottom: 14,
                       right: 14,
@@ -354,80 +346,76 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                   color: const Color(0xFF111827),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
 
-              // List of 5 outfit items
+              // List of 5 outfit items (Clean rows on pure white canvas matching Image 5)
               Column(
                 children: List.generate(_items.length, (idx) {
                   final itm = _items[idx];
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFAFAFC),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                    ),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6.0),
                     child: Row(
                       children: [
-                        // Thumbnail Icon Container
+                        // Thumbnail
                         Container(
-                          width: 40,
-                          height: 40,
+                          width: 44,
+                          height: 44,
+                          padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border:
-                                Border.all(color: const Color(0xFFE5E7EB)),
+                            color: const Color(0xFFF9FAFB),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFE5E7EB)),
                           ),
                           alignment: Alignment.center,
-                          child: Text(itm['icon']!,
-                              style: const TextStyle(fontSize: 18)),
-                        ),
-                        const SizedBox(width: 12),
-                        // Item Details
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                TagLocalization.getLocalizedName(itm['name']!, isEn),
-                                style: GoogleFonts.inter(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF111827),
-                                ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.asset(
+                              itm['thumb']!,
+                              width: 38,
+                              height: 38,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.checkroom_outlined,
+                                size: 20,
+                                color: Color(0xFF6B7280),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                TagLocalization.getColorName(itm['color']!, isEn),
-                                style: GoogleFonts.inter(
-                                  fontSize: 11.5,
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                        // [Thay] Action Button
+                        const SizedBox(width: 14),
+
+                        // Item Name
+                        Expanded(
+                          child: Text(
+                            TagLocalization.getLocalizedName(itm['name']!, isEn),
+                            style: GoogleFonts.inter(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF111827),
+                            ),
+                          ),
+                        ),
+
+                        // [ Thay ] Action Button with light blue border
                         GestureDetector(
                           onTap: () => _replaceItem(idx),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 6),
+                                horizontal: 18, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border:
-                                  Border.all(color: AppTheme.primaryLight),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: const Color(0xFF93C5FD),
+                                width: 1.2,
+                              ),
                             ),
                             child: Text(
                               isEn ? 'Replace' : 'Thay',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryLight,
+                                color: const Color(0xFF2563EB),
                               ),
                             ),
                           ),
@@ -438,9 +426,9 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                 }),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              // Bottom Button: "Lưu outfit"
+              // Bottom Button: "Lưu outfit" (Warm Bronze / Gold pill button)
               GestureDetector(
                 onTap: _isSaved ? null : _saveOutfit,
                 child: Container(
@@ -448,12 +436,12 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                   height: 52,
                   decoration: BoxDecoration(
                     color: _isSaved
-                        ? const Color(0xFF6E521C)
-                        : const Color(0xFF8A6728),
-                    borderRadius: BorderRadius.circular(16),
+                        ? const Color(0xFF634114)
+                        : const Color(0xFF7A5420),
+                    borderRadius: BorderRadius.circular(26),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF8A6728).withOpacity(0.3),
+                        color: const Color(0xFF7A5420).withOpacity(0.25),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -487,6 +475,12 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: WearsyBottomNavBar(
+        currentIndex: 2,
+        onTabSelected: (index) {
+          Navigator.pop(context);
+        },
       ),
     );
   }

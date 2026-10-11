@@ -1165,26 +1165,12 @@ class _WardrobeBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => WardrobeScreen.showWardrobeSwitcherModal(context),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        isEn ? 'Wardrobe' : 'Tủ đồ',
-                        style: GoogleFonts.outfit(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF111827),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: AppTheme.primaryLight,
-                        size: 26,
-                      ),
-                    ],
+                Text(
+                  isEn ? 'Wardrobe' : 'Tủ đồ',
+                  style: GoogleFonts.outfit(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF111827),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -1459,7 +1445,7 @@ class _WardrobeCardState extends State<_WardrobeCard> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${TagLocalization.getLocalizedTag(item.category.displayName, isEn)} • Cotton',
+                        '${TagLocalization.getLocalizedTag(item.category.displayName, isEn)} • ${item.brand.isNotEmpty ? item.brand : 'Cotton'}',
                         style: GoogleFonts.inter(
                           fontSize: 11,
                           color: const Color(0xFF6B7280),
@@ -1516,6 +1502,14 @@ class _WardrobeCardState extends State<_WardrobeCard> {
 
   Widget _buildItemImage(
       BuildContext context, WardrobeItemModel item, bool isNetworkImage) {
+    if (item.imageUrl.startsWith('assets/')) {
+      return Image.asset(
+        item.imageUrl,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.contain,
+      );
+    }
     return isNetworkImage
         ? Image.network(
             item.imageUrl,
