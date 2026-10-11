@@ -92,7 +92,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
     } catch (_) {}
   }
 
-  void _showVipModal(BuildContext context) {
+  void _showVipModal() {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final isEn = langProvider.isEnglish;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -122,7 +124,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             const SizedBox(height: 12),
             Text(
-              'Mở khóa trọn bộ tính năng AI Stylist không giới hạn, phối đồ đa bối cảnh thời gian thực và tự động quản lý tủ đồ chuẩn studio.',
+              isEn
+                  ? 'Unlock full unlimited AI Stylist features, real-time contextual outfits, and automated studio-grade wardrobe management.'
+                  : 'Mở khóa trọn bộ tính năng AI Stylist không giới hạn, phối đồ đa bối cảnh thời gian thực và tự động quản lý tủ đồ chuẩn studio.',
               style: GoogleFonts.inter(
                 fontSize: 13.5,
                 color: const Color(0xFF4B5563),
@@ -137,10 +141,22 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
               ),
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Kích hoạt WEARSY PREMIUM ngay (Trải nghiệm)',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
+              onPressed: () async {
+                Navigator.pop(ctx);
+                final authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
+                final success = await authProvider.upgradeVip('WEARSY');
+                if (mounted && success) {
+                  _showVipSuccessDialog(context, authProvider.user);
+                }
+              },
+              child: Text(
+                isEn
+                    ? 'Activate WEARSY PREMIUM Now (Trial)'
+                    : 'Kích hoạt WEARSY PREMIUM ngay (Trải nghiệm)',
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -677,9 +693,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             ),
             const SizedBox(height: 20),
 
-            // Wearsy VIP Upgrade Banner (Chuyển vào Cài đặt)
-            GestureDetector(
-              onTap: () => _showVipModal(context),
+            // Wearsy Premium Upgrade Banner (Ẩn nếu đã là Premium)
+            if (user == null || (!user.hasActiveVip && !user.isVip)) ...[
+              GestureDetector(
+              onTap: _showVipModal,
               child: Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
@@ -744,6 +761,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               ),
             ),
             const SizedBox(height: 28),
+          ],
 
             // Section Reset Tủ Đồ
             Container(

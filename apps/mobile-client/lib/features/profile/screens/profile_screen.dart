@@ -23,6 +23,7 @@ class ProfileScreen extends StatelessWidget {
     final wardrobeProvider = Provider.of<WardrobeProvider>(context);
     final outfitProvider = Provider.of<OutfitProvider>(context);
     final user = authProvider.user;
+    final isPremium = user != null && (user.hasActiveVip || user.isVip);
 
     final name = (user?.fullName != null && user!.fullName.trim().isNotEmpty)
         ? user.fullName
@@ -264,71 +265,83 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16),
-
-              // 4. WEARSY VIP Gold/Bronze Banner Card (NÂNG CẤP Wearsy VIP)
-              Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF86591D), Color(0xFF6B4515)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF86591D).withOpacity(0.25),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                child: Row(
-                  children: [
-                    const Icon(Icons.diamond_outlined,
-                        color: Colors.white, size: 36),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isEn ? 'UPGRADE' : 'NÂNG CẤP',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.8,
-                              color: const Color(0xFFFFD700),
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'WEARSY PREMIUM',
-                            style: GoogleFonts.outfit(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            isEn
-                                ? 'Unlock advanced personalized features.'
-                                : 'Mở khóa trải nghiệm cá nhân hóa nâng cao.',
-                            style: GoogleFonts.inter(
-                              fontSize: 11.5,
-                              color: Colors.white70,
-                            ),
-                          ),
-                        ],
+              // 4. WEARSY PREMIUM Gold/Bronze Banner Card (Ẩn nếu đã nâng cấp Premium)
+              if (!isPremium) ...[
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AccountSettingsScreen(),
                       ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF86591D), Color(0xFF6B4515)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF86591D).withOpacity(0.25),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    const Icon(Icons.chevron_right_rounded,
-                        color: Colors.white, size: 24),
-                  ],
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.diamond_outlined,
+                            color: Colors.white, size: 36),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isEn ? 'UPGRADE' : 'NÂNG CẤP',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.8,
+                                  color: const Color(0xFFFFD700),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'WEARSY PREMIUM',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                isEn
+                                    ? 'Unlock advanced personalized features.'
+                                    : 'Mở khóa trải nghiệm cá nhân hóa nâng cao.',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right_rounded,
+                            color: Colors.white, size: 24),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
 
               const SizedBox(height: 18),
 
