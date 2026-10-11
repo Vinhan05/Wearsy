@@ -48,18 +48,27 @@ class AppVersion {
 }
 ```
 
-### Bước 3: Build APK
-Chạy lệnh biên dịch:
+### Bước 3: Build & Lưu trữ APK (Tự động giữ lại mọi bản cũ đề phòng)
+Dự án có sẵn script tự động build và lưu trữ vào kho `releases/apk/`:
 ```bash
-cd apps/mobile-client
-flutter build apk --debug
+# Cách 1: Chạy file Batch (Khuyên dùng)
+.\build_and_archive_apk.bat
+
+# Hoặc Cách 2: Chạy script PowerShell
+powershell -ExecutionPolicy Bypass -File .\build_and_archive_apk.ps1
 ```
 
-File APK sẽ được sinh ra tại:
-* `apps/mobile-client/build/app/outputs/flutter-apk/app-debug.apk`
-* `apps/mobile-client/build/app/outputs/apk/debug/app-debug.apk`
+Script sẽ tự động:
+1. Đọc số version trong `app_version.dart`.
+2. Build APK hoàn chỉnh (`flutter build apk`).
+3. Sao chép và lưu thành: `releases/apk/wearsy-beta-X.Y.Z.apk`.
+4. Cập nhật bản dùng nhanh: `releases/apk/wearsy-latest.apk`.
+5. **ĐẶC BIỆT (ROLLBACK SAFETY):** Giữ nguyên vẹn toàn bộ các bản APK cũ trước đó (vd: `wearsy-beta-1.0.0.apk`, `wearsy-beta-1.0.1.apk`, ...). Tuyệt đối không xóa app cũ để người dùng hoặc lập trình viên có thể quay lui bất cứ lúc nào nếu app mới phát sinh lỗi.
 
-### Bước 4: Commit và Push lên Git
+> [!NOTE]
+> File APK nhị phân (~213MB) được cấu hình trong `.gitignore` để không bị push lên GitHub (tránh lỗi giới hạn 100MB của GitHub), nhưng toàn bộ lịch sử file APK được lưu trữ đầy đủ tại máy tính cục bộ trong thư mục `releases/apk/`.
+
+### Bước 4: Commit và Push mã nguồn lên Git
 Commit kèm thông điệp rõ ràng theo chuẩn:
 ```bash
 git add .
@@ -70,7 +79,25 @@ git push origin feature/breakthrough-innovation
 
 ---
 
-## 4. Lịch sử các phiên bản (Release Changelog)
+## 4. Danh mục lưu trữ APK & Chính sách Rollback (Bảo hiểm sự cố)
+
+Tất cả các bản dựng APK được bảo lưu vĩnh viễn tại thư mục:
+📂 `D:\wearsy\Wearsy\releases\apk\`
+
+```text
+releases/apk/
+├── wearsy-beta-1.0.0.apk   <-- Bản gốc ban đầu (luôn giữ đề phòng)
+├── wearsy-beta-1.0.1.apk   <-- Bản cập nhật kế tiếp
+├── wearsy-beta-1.0.2.apk   <-- Bản cập nhật tiếp theo nữa
+└── wearsy-latest.apk       <-- Shortcut trỏ tới bản mới nhất hiện tại
+```
+
+* **Khi app mới gặp sự cố:** Chỉ cần mở thư mục `releases/apk/` và cài lại file APK của phiên bản ổn định gần nhất trước đó.
+* **Người dùng / Tester:** Luôn có thể lấy `wearsy-latest.apk` để trải nghiệm bản mới nhất mà không sợ mất bản cũ.
+
+---
+
+## 5. Lịch sử các phiên bản (Release Changelog)
 
 | Phiên bản | Build | Ngày phát hành | Tác giả | Nội dung cập nhật chính |
 | :--- | :---: | :---: | :--- | :--- |
