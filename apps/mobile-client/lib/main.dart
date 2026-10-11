@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'core/services/email_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
+import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/welcome_screen.dart';
 import 'features/home/screens/main_navigation_screen.dart';
 import 'features/outfits/providers/outfit_provider.dart';
@@ -118,6 +119,10 @@ class AuthWrapperScreen extends StatelessWidget {
 
         if (authProvider.isAuthenticated) {
           return const MainNavigationScreen();
+        }
+
+        if (authProvider.hasLoggedOut) {
+          return const LoginScreen();
         }
 
         return const WelcomeScreen();

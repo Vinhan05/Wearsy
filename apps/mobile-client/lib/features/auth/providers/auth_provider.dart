@@ -15,12 +15,14 @@ class AuthProvider with ChangeNotifier {
   UserModel? _user;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _hasLoggedOut = false;
 
   AuthStatus get status => _status;
   UserModel? get user => _user;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  bool get hasLoggedOut => _hasLoggedOut;
 
   AuthProvider() {
     checkAuthStatus();
@@ -31,6 +33,8 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      final prefs = await SharedPreferences.getInstance();
+      _hasLoggedOut = prefs.getBool('has_logged_out') ?? false;
       final hasToken = await TokenStorage.hasToken();
       if (hasToken) {
         _user = await _authService.getProfile();
@@ -49,6 +53,14 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<void> _setHasLoggedOut(bool value) async {
+    _hasLoggedOut = value;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('has_logged_out', value);
+    } catch (_) {}
+  }
+
   Future<bool> login(String email, String password) async {
     _setLoading(true);
     _clearError();
@@ -58,6 +70,7 @@ class AuthProvider with ChangeNotifier {
           await _authService.login(email: email, password: password);
       _user = authData.user;
       _status = AuthStatus.authenticated;
+      await _setHasLoggedOut(false);
       notifyListeners();
       return true;
     } on ApiException catch (e) {
@@ -79,6 +92,7 @@ class AuthProvider with ChangeNotifier {
       final authData = await _authService.loginWithGoogle();
       _user = authData.user;
       _status = AuthStatus.authenticated;
+      await _setHasLoggedOut(false);
       notifyListeners();
       return true;
     } catch (e) {
@@ -97,6 +111,7 @@ class AuthProvider with ChangeNotifier {
       final authData = await _authService.loginWithFacebook();
       _user = authData.user;
       _status = AuthStatus.authenticated;
+      await _setHasLoggedOut(false);
       notifyListeners();
       return true;
     } catch (e) {
@@ -127,6 +142,7 @@ class AuthProvider with ChangeNotifier {
       );
       _user = authData.user;
       _status = AuthStatus.authenticated;
+      await _setHasLoggedOut(false);
       notifyListeners();
       return true;
     } on ApiException catch (e) {
@@ -262,6 +278,7 @@ class AuthProvider with ChangeNotifier {
     await _authService.logout();
     _user = null;
     _status = AuthStatus.unauthenticated;
+    await _setHasLoggedOut(true);
     notifyListeners();
   }
 
@@ -272,6 +289,7 @@ class AuthProvider with ChangeNotifier {
       await _authService.deleteAccount();
       _user = null;
       _status = AuthStatus.unauthenticated;
+      await _setHasLoggedOut(true);
       notifyListeners();
       return true;
     } catch (e) {

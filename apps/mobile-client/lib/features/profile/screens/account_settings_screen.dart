@@ -8,6 +8,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/localization/localization.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/screens/login_screen.dart';
 import '../../../shared/widgets/user_avatar.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 
@@ -1183,7 +1184,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               final success = await authProvider.deleteAccount();
               if (context.mounted) {
                 if (success) {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (route) => false,
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
