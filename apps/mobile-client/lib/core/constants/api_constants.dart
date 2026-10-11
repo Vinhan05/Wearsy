@@ -3,8 +3,8 @@ class ApiConstants {
   // ví dụ: flutter run --dart-define=BACKEND_URL=https://wearsy-backend.onrender.com/v1
   static String get baseUrl {
     const envUrl = String.fromEnvironment('BACKEND_URL');
-    // Trỏ trực tiếp đến backend đang chạy trên laptop qua mạng Wi-Fi nội bộ
-    return _customBaseUrl ?? 'http://10.30.1.50:8000/v1';
+    // Backend API chính thức trên Render.com (PostgreSQL Supabase DB)
+    return _customBaseUrl ?? 'https://wearsy-wd0c.onrender.com/v1';
   }
   static String? _customBaseUrl;
   static void setBaseUrl(String url) => _customBaseUrl = url;
