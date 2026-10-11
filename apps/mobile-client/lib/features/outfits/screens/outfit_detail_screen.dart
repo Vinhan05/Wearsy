@@ -20,10 +20,14 @@ class OutfitDetailScreen extends StatefulWidget {
 class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
   late List<Map<String, String>> _items;
   bool _isSaved = false;
+  late String _outfitName;
+  int _userReaction = 0; // 0: none, 1: liked, -1: disliked
 
   @override
   void initState() {
     super.initState();
+    _outfitName =
+        widget.outfit.name.isNotEmpty ? widget.outfit.name : 'Smart casual';
     _items = [
       {'name': 'Áo overshirt', 'thumb': 'assets/images/thumb_overshirt.png'},
       {'name': 'Áo thun trắng', 'thumb': 'assets/images/thumb_tshirt.png'},
@@ -31,6 +35,214 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
       {'name': 'Sneaker trắng', 'thumb': 'assets/images/thumb_sneaker.png'},
       {'name': 'Túi đeo chéo', 'thumb': 'assets/images/thumb_bag.png'},
     ];
+  }
+
+  void _showRenameOutfitDialog() {
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final controller = TextEditingController(text: _outfitName);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.drive_file_rename_outline_rounded,
+                color: Color(0xFF7A5420), size: 24),
+            const SizedBox(width: 8),
+            Text(
+              isEn ? 'Rename Outfit' : 'Đặt / Đổi tên outfit',
+              style: AppFonts.outfit(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: const Color(0xFF111827),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isEn
+                  ? 'Give this outfit a custom name to easily remember:'
+                  : 'Đặt tên riêng cho bộ trang phục để dễ nhớ:',
+              style:
+                  AppFonts.inter(fontSize: 13, color: const Color(0xFF4B5563)),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              style: AppFonts.inter(
+                fontSize: 14.5,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF111827),
+              ),
+              decoration: InputDecoration(
+                hintText: isEn
+                    ? 'e.g. Work Monday, Weekend Vibe'
+                    : 'VD: Đi làm thứ Hai, Cafe cuối tuần...',
+                hintStyle: AppFonts.inter(
+                    fontSize: 13, color: const Color(0xFF9CA3AF)),
+                filled: true,
+                fillColor: const Color(0xFFF9FAFB),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      const BorderSide(color: Color(0xFF7A5420), width: 1.5),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              isEn ? 'Cancel' : 'Hủy',
+              style: AppFonts.inter(
+                color: const Color(0xFF6B7280),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF7A5420),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            ),
+            onPressed: () {
+              final newName = controller.text.trim();
+              if (newName.isNotEmpty) {
+                setState(() {
+                  _outfitName = newName;
+                });
+                final outfitProvider =
+                    Provider.of<OutfitProvider>(context, listen: false);
+                outfitProvider.updateOutfitName(widget.outfit.id, newName);
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(isEn
+                        ? '✏️ Outfit renamed to "$newName"'
+                        : '✏️ Đã đổi tên outfit thành "$newName"'),
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            child: Text(
+              isEn ? 'Save' : 'Lưu',
+              style: AppFonts.inter(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleReaction(bool isLike) {
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final outfitProvider = Provider.of<OutfitProvider>(context, listen: false);
+
+    setState(() {
+      if (isLike) {
+        if (_userReaction == 1) {
+          _userReaction = 0;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text(isEn ? 'Removed like reaction' : 'Đã bỏ thích outfit'),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        } else {
+          _userReaction = 1;
+          outfitProvider.recordOutfitReaction(widget.outfit.id, 1);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.thumb_up_rounded,
+                      color: Colors.greenAccent, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      isEn
+                          ? '👍 Liked! WEARSY AI will suggest more styles like this.'
+                          : '👍 Đã thích! WEARSY AI sẽ gợi ý thêm các phong cách tương tự.',
+                      style: AppFonts.inter(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color(0xFF1E293B),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        if (_userReaction == -1) {
+          _userReaction = 0;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  isEn ? 'Removed dislike reaction' : 'Đã hủy phản hồi không thích'),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        } else {
+          _userReaction = -1;
+          outfitProvider.recordOutfitReaction(widget.outfit.id, -1);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.thumb_down_rounded,
+                      color: Colors.orangeAccent, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      isEn
+                          ? '👎 Noted! WEARSY AI will reduce recommendations like this.'
+                          : '👎 Đã ghi nhận! WEARSY AI sẽ hạn chế gợi ý phong cách này.',
+                      style: AppFonts.inter(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color(0xFF1E293B),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    });
   }
 
   void _replaceItem(int index) {
@@ -98,7 +310,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
     setState(() => _isSaved = true);
     final provider = Provider.of<OutfitProvider>(context, listen: false);
     final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
-    provider.addOutfit(widget.outfit);
+    final outfitToSave = widget.outfit.copyWith(name: _outfitName);
+    provider.addOutfit(outfitToSave);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -109,8 +322,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
             Expanded(
               child: Text(
                 isEn
-                    ? '✨ Saved outfit "${widget.outfit.name}" to Favorites!'
-                    : '✨ Đã lưu outfit "${widget.outfit.name}" vào Bộ sưu tập yêu thích!',
+                    ? '✨ Saved outfit "$_outfitName" to Favorites!'
+                    : '✨ Đã lưu outfit "$_outfitName" vào Bộ sưu tập yêu thích!',
                 style: AppFonts.inter(fontWeight: FontWeight.bold),
               ),
             ),
@@ -205,17 +418,55 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.outfit.name.isNotEmpty
-                              ? TagLocalization.getLocalizedTag(widget.outfit.name, isEn)
-                              : 'Smart casual',
-                          style: AppFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF374151),
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                TagLocalization.getLocalizedTag(_outfitName, isEn),
+                                style: AppFonts.inter(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF374151),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Nút đặt / sửa tên outfit
+                            GestureDetector(
+                              onTap: _showRenameOutfitDialog,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF3F4F6),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                      color: const Color(0xFFE5E7EB)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.edit_outlined,
+                                      size: 13,
+                                      color: Color(0xFF4B5563),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      isEn ? 'Edit name' : 'Sửa tên',
+                                      style: AppFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF4B5563),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
                           widget.outfit.aiReason.isNotEmpty
                               ? TagLocalization.getLocalizedAiReason(widget.outfit.aiReason, isEn)
@@ -428,49 +679,133 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
 
               const SizedBox(height: 24),
 
-              // Bottom Button: "Lưu outfit" (Warm Bronze / Gold pill button)
-              GestureDetector(
-                onTap: _isSaved ? null : _saveOutfit,
-                child: Container(
-                  width: double.infinity,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: _isSaved
-                        ? const Color(0xFF634114)
-                        : const Color(0xFF7A5420),
-                    borderRadius: BorderRadius.circular(26),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF7A5420).withOpacity(0.25),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+              // Bottom Action Row: Dislike + Like + Save Outfit (Image 3)
+              Row(
+                children: [
+                  // Nút Dislike (Không thích)
+                  GestureDetector(
+                    onTap: () => _handleReaction(false),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: _userReaction == -1
+                            ? const Color(0xFFFEE2E2)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(26),
+                        border: Border.all(
+                          color: _userReaction == -1
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFFE5E7EB),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ],
+                      child: Icon(
+                        _userReaction == -1
+                            ? Icons.thumb_down_rounded
+                            : Icons.thumb_down_outlined,
+                        color: _userReaction == -1
+                            ? const Color(0xFFDC2626)
+                            : const Color(0xFF4B5563),
+                        size: 22,
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _isSaved
-                            ? Icons.bookmark_added_rounded
-                            : Icons.bookmark_outline_rounded,
-                        color: Colors.white,
-                        size: 20,
+                  const SizedBox(width: 10),
+
+                  // Nút Like (Thích)
+                  GestureDetector(
+                    onTap: () => _handleReaction(true),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: _userReaction == 1
+                            ? const Color(0xFFDCFCE7)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(26),
+                        border: Border.all(
+                          color: _userReaction == 1
+                              ? const Color(0xFF22C55E)
+                              : const Color(0xFFE5E7EB),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _isSaved
-                            ? (isEn ? 'Saved outfit' : 'Đã lưu outfit')
-                            : (isEn ? 'Save outfit' : 'Lưu outfit'),
-                        style: AppFonts.inter(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      child: Icon(
+                        _userReaction == 1
+                            ? Icons.thumb_up_rounded
+                            : Icons.thumb_up_outlined,
+                        color: _userReaction == 1
+                            ? const Color(0xFF16A34A)
+                            : const Color(0xFF4B5563),
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+
+                  // Nút Lưu outfit (Warm Bronze / Gold pill button)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _isSaved ? null : _saveOutfit,
+                      child: Container(
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: _isSaved
+                              ? const Color(0xFF634114)
+                              : const Color(0xFF7A5420),
+                          borderRadius: BorderRadius.circular(26),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7A5420).withOpacity(0.25),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _isSaved
+                                  ? Icons.bookmark_added_rounded
+                                  : Icons.bookmark_outline_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _isSaved
+                                  ? (isEn ? 'Saved' : 'Đã lưu')
+                                  : (isEn ? 'Save outfit' : 'Lưu outfit'),
+                              style: AppFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),

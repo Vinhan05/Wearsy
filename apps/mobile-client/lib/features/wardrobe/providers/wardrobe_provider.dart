@@ -14,6 +14,8 @@ class WardrobeProvider with ChangeNotifier {
   ];
   String _activeWardrobeId = 'default';
   WardrobeCategory? _selectedCategory;
+  String? _selectedColor;
+  String _sortBy = 'default'; // 'default', 'ai_score', 'name'
   bool _isLoading = false;
 
   /// Danh sách tất cả các tủ đồ của người dùng
@@ -46,14 +48,29 @@ class WardrobeProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
   WardrobeCategory? get selectedCategory => _selectedCategory;
+  String? get selectedColor => _selectedColor;
+  String get sortBy => _sortBy;
+  bool get hasActiveFilter =>
+      _selectedCategory != null || _selectedColor != null || _sortBy != 'default';
 
-  /// Danh sách món đồ trong tủ đồ hiện tại sau khi áp dụng bộ lọc phân loại (Áo, Quần,...)
+  /// Danh sách món đồ trong tủ đồ hiện tại sau khi áp dụng bộ lọc phân loại (Áo, Quần, Màu sắc, Sắp xếp)
   List<WardrobeItemModel> get filteredItems {
-    final currentClosetItems = allItems;
-    if (_selectedCategory == null) return currentClosetItems;
-    return currentClosetItems
-        .where((item) => item.category == _selectedCategory)
-        .toList();
+    var items = List<WardrobeItemModel>.from(allItems);
+    if (_selectedCategory != null) {
+      items = items.where((item) => item.category == _selectedCategory).toList();
+    }
+    if (_selectedColor != null && _selectedColor!.isNotEmpty) {
+      items = items
+          .where((item) =>
+              item.color.toLowerCase().contains(_selectedColor!.toLowerCase()))
+          .toList();
+    }
+    if (_sortBy == 'ai_score') {
+      items.sort((a, b) => b.aiMatchScore.compareTo(a.aiMatchScore));
+    } else if (_sortBy == 'name') {
+      items.sort((a, b) => a.name.compareTo(b.name));
+    }
+    return items;
   }
 
   /// Đếm số lượng món đồ theo danh mục trong tủ đồ hiện tại
@@ -215,6 +232,8 @@ class WardrobeProvider with ChangeNotifier {
     _collections = [WardrobeCollectionModel.defaultWardrobe()];
     _activeWardrobeId = 'default';
     _selectedCategory = null;
+    _selectedColor = null;
+    _sortBy = 'default';
     _isLoading = false;
     notifyListeners();
   }
@@ -224,11 +243,41 @@ class WardrobeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setColorFilter(String? color) {
+    _selectedColor = color;
+    notifyListeners();
+  }
+
+  void setSortBy(String sort) {
+    _sortBy = sort;
+    notifyListeners();
+  }
+
+  void resetFilters() {
+    _selectedCategory = null;
+    _selectedColor = null;
+    _sortBy = 'default';
+    notifyListeners();
+  }
+
+  void applyFilters({
+    WardrobeCategory? category,
+    String? color,
+    String? sortBy,
+  }) {
+    _selectedCategory = category;
+    _selectedColor = color;
+    if (sortBy != null) _sortBy = sortBy;
+    notifyListeners();
+  }
+
   /// Chuyển đổi tủ đồ đang xem
   Future<void> switchWardrobe(String wardrobeId) async {
     if (_activeWardrobeId == wardrobeId) return;
     _activeWardrobeId = wardrobeId;
     _selectedCategory = null; // Reset category filter khi chuyển tủ
+    _selectedColor = null;
+    _sortBy = 'default';
     notifyListeners();
 
     try {

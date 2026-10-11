@@ -1231,9 +1231,304 @@ class _WardrobeBody extends StatelessWidget {
     );
   }
 
+  void _showFilterBottomSheet(BuildContext context) {
+    final provider = Provider.of<WardrobeProvider>(context, listen: false);
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+
+    WardrobeCategory? tempCategory = provider.selectedCategory;
+    String? tempColor = provider.selectedColor;
+    String tempSort = provider.sortBy;
+
+    final categories = [
+      {'key': null, 'label': isEn ? 'All' : 'Tất cả'},
+      {'key': WardrobeCategory.tops, 'label': isEn ? 'Shirts' : 'Áo sơ mi'},
+      {'key': WardrobeCategory.outerwear, 'label': isEn ? 'Jackets' : 'Áo khoác'},
+      {'key': WardrobeCategory.dresses, 'label': isEn ? 'T-Shirts' : 'Áo thun'},
+      {'key': WardrobeCategory.bottoms, 'label': isEn ? 'Pants' : 'Quần'},
+      {'key': WardrobeCategory.shoes, 'label': isEn ? 'Shoes' : 'Giày'},
+      {'key': WardrobeCategory.accessories, 'label': isEn ? 'Accessories' : 'Phụ kiện'},
+    ];
+
+    final colors = [
+      {'key': null, 'label': isEn ? 'All' : 'Tất cả'},
+      {'key': 'Trắng', 'label': isEn ? 'White' : 'Trắng'},
+      {'key': 'Đen', 'label': isEn ? 'Black' : 'Đen'},
+      {'key': 'Xám', 'label': isEn ? 'Grey' : 'Xám'},
+      {'key': 'Be', 'label': isEn ? 'Beige' : 'Be'},
+      {'key': 'Navy', 'label': isEn ? 'Navy' : 'Xanh Navy'},
+      {'key': 'Nâu', 'label': isEn ? 'Brown' : 'Nâu'},
+    ];
+
+    final sortOptions = [
+      {'key': 'default', 'label': isEn ? 'Default' : 'Mặc định'},
+      {
+        'key': 'ai_score',
+        'label': isEn ? 'Top AI Match' : 'Điểm phối AI cao nhất'
+      },
+      {'key': 'name', 'label': isEn ? 'Name (A-Z)' : 'Tên (A-Z)'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD1D5DB),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Header: Title & Reset Button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF3F4F6),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.tune_rounded,
+                                size: 18, color: Color(0xFF1F2937)),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            isEn ? 'Filter Wardrobe' : 'Bộ lọc trang phục',
+                            style: AppFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF111827),
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setModalState(() {
+                            tempCategory = null;
+                            tempColor = null;
+                            tempSort = 'default';
+                          });
+                        },
+                        child: Text(
+                          isEn ? 'Reset' : 'Đặt lại',
+                          style: AppFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFDC2626),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+
+                  // 1. Phân loại (Category)
+                  Text(
+                    isEn ? 'Category' : 'Phân loại trang phục',
+                    style: AppFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF374151),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: categories.map((c) {
+                      final cat = c['key'] as WardrobeCategory?;
+                      final isSelected = tempCategory == cat;
+                      return ChoiceChip(
+                        label: Text(c['label'] as String),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFF27272A),
+                        backgroundColor: Colors.white,
+                        labelStyle: AppFonts.inter(
+                          fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF374151),
+                        ),
+                        side: BorderSide(
+                          color: isSelected
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFE5E7EB),
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        onSelected: (_) {
+                          setModalState(() => tempCategory = cat);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 18),
+
+                  // 2. Màu sắc (Color)
+                  Text(
+                    isEn ? 'Color Tone' : 'Tông màu chủ đạo',
+                    style: AppFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF374151),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: colors.map((col) {
+                      final key = col['key'];
+                      final isSelected = tempColor == key;
+                      return ChoiceChip(
+                        label: Text(col['label'] as String),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFF27272A),
+                        backgroundColor: Colors.white,
+                        labelStyle: AppFonts.inter(
+                          fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF374151),
+                        ),
+                        side: BorderSide(
+                          color: isSelected
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFE5E7EB),
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        onSelected: (_) {
+                          setModalState(() => tempColor = key);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 18),
+
+                  // 3. Sắp xếp (Sort)
+                  Text(
+                    isEn ? 'Sort by' : 'Sắp xếp theo',
+                    style: AppFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF374151),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: sortOptions.map((s) {
+                      final key = s['key'] as String;
+                      final isSelected = tempSort == key;
+                      return ChoiceChip(
+                        label: Text(s['label'] as String),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFF27272A),
+                        backgroundColor: Colors.white,
+                        labelStyle: AppFonts.inter(
+                          fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF374151),
+                        ),
+                        side: BorderSide(
+                          color: isSelected
+                              ? const Color(0xFF27272A)
+                              : const Color(0xFFE5E7EB),
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        onSelected: (_) {
+                          setModalState(() => tempSort = key);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Apply Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF18181B),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      onPressed: () {
+                        provider.applyFilters(
+                          category: tempCategory,
+                          color: tempColor,
+                          sortBy: tempSort,
+                        );
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(isEn
+                                ? '✨ Filters applied (${provider.filteredItems.length} items)'
+                                : '✨ Đã áp dụng bộ lọc (${provider.filteredItems.length} món đồ)'),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        isEn ? 'Apply Filter' : 'Áp dụng bộ lọc',
+                        style: AppFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildCategoryFilter(BuildContext context) {
     final provider = Provider.of<WardrobeProvider>(context);
     final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+    final bool hasCustomFilter =
+        provider.selectedColor != null || provider.sortBy != 'default';
 
     final filterOptions = [
       {'key': null, 'label': isEn ? 'All' : 'Tất cả'},
@@ -1242,48 +1537,127 @@ class _WardrobeBody extends StatelessWidget {
       {'key': WardrobeCategory.dresses, 'label': isEn ? 'T-Shirts' : 'Áo thun'},
       {'key': WardrobeCategory.bottoms, 'label': isEn ? 'Pants' : 'Quần'},
       {'key': WardrobeCategory.shoes, 'label': isEn ? 'Shoes' : 'Giày'},
+      {
+        'key': WardrobeCategory.accessories,
+        'label': isEn ? 'Accessories' : 'Phụ kiện'
+      },
     ];
 
     return SizedBox(
       height: 38,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: filterOptions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final opt = filterOptions[index];
-          final cat = opt['key'] as WardrobeCategory?;
-          final isSelected = provider.selectedCategory == cat;
-          final label = opt['label'] as String;
-
-          return GestureDetector(
-            onTap: () => provider.setCategory(cat),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xFF27272A)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected
+      child: Row(
+        children: [
+          // Nút bộ lọc phễu (Ảnh 1)
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 8),
+            child: GestureDetector(
+              onTap: () => _showFilterBottomSheet(context),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                height: 38,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: hasCustomFilter
                       ? const Color(0xFF27272A)
-                      : const Color(0xFFE5E7EB),
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: hasCustomFilter
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFE5E7EB),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-              ),
-              child: Text(
-                label,
-                style: AppFonts.inter(
-                  fontSize: 12.5,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? Colors.white : const Color(0xFF374151),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.tune_rounded,
+                      size: 16,
+                      color: hasCustomFilter
+                          ? Colors.white
+                          : const Color(0xFF27272A),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      isEn ? 'Filter' : 'Bộ lọc',
+                      style: AppFonts.inter(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: hasCustomFilter
+                            ? Colors.white
+                            : const Color(0xFF374151),
+                      ),
+                    ),
+                    if (hasCustomFilter) ...[
+                      const SizedBox(width: 5),
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: Colors.amberAccent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
-          );
-        },
+          ),
+          // Danh mục lựa chọn nằm ngang
+          Expanded(
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(right: 20),
+              itemCount: filterOptions.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final opt = filterOptions[index];
+                final cat = opt['key'] as WardrobeCategory?;
+                final isSelected = provider.selectedCategory == cat;
+                final label = opt['label'] as String;
+
+                return GestureDetector(
+                  onTap: () => provider.setCategory(cat),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFF27272A)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFF27272A)
+                            : const Color(0xFFE5E7EB),
+                      ),
+                    ),
+                    child: Text(
+                      label,
+                      style: AppFonts.inter(
+                        fontSize: 12.5,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: isSelected
+                            ? Colors.white
+                            : const Color(0xFF374151),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

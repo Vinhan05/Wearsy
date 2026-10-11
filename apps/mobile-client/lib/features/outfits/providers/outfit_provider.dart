@@ -159,6 +159,48 @@ class OutfitProvider with ChangeNotifier {
     } catch (_) {}
   }
 
+  Future<void> updateOutfitName(String outfitId, String newName) async {
+    final index = _outfits.indexWhere((o) => o.id == outfitId);
+    if (index != -1) {
+      _outfits[index] = _outfits[index].copyWith(name: newName);
+      notifyListeners();
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final email =
+            (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+        final storageKey = _getStorageKey(email);
+        final customJson =
+            _outfits.map((o) => jsonEncode(o.toJson())).toList();
+        await prefs.setStringList(storageKey, customJson);
+      } catch (e) {
+        debugPrint('[OutfitProvider] updateOutfitName error: $e');
+      }
+    }
+  }
+
+  Future<void> recordOutfitReaction(String outfitId, int reaction) async {
+    final index = _outfits.indexWhere((o) => o.id == outfitId);
+    if (index != -1) {
+      final currentScore = _outfits[index].aiScore;
+      final newScore = reaction == 1
+          ? (currentScore + 0.2).clamp(0.0, 10.0)
+          : (currentScore - 0.5).clamp(0.0, 10.0);
+      _outfits[index] = _outfits[index].copyWith(aiScore: newScore);
+      notifyListeners();
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final email =
+            (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
+        final storageKey = _getStorageKey(email);
+        final customJson =
+            _outfits.map((o) => jsonEncode(o.toJson())).toList();
+        await prefs.setStringList(storageKey, customJson);
+      } catch (e) {
+        debugPrint('[OutfitProvider] recordOutfitReaction error: $e');
+      }
+    }
+  }
+
   /// Thêm outfit được tạo từ màn hình chat AI Stylist
   Future<void> addOutfitFromChat(OutfitModel outfit) async {
     // Tránh trùng lặp
