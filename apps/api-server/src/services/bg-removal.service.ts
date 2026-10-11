@@ -1,17 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AiGatewayService } from './ai-gateway.service';
 import axios from 'axios';
 
 @Injectable()
 export class BgRemovalService {
   private readonly logger = new Logger(BgRemovalService.name);
-  private aiOrchestratorUrl: string;
 
-  constructor(private readonly configService: ConfigService) {
-    this.aiOrchestratorUrl = this.configService.get<string>(
-      'AI_ORCHESTRATOR_URL',
-      process.env.AI_ORCHESTRATOR_URL || 'http://127.0.0.1:8000',
-    );
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly aiGatewayService: AiGatewayService,
+  ) {}
+
+  private get aiOrchestratorUrl(): string {
+    return this.aiGatewayService.getOrchestratorUrl();
   }
 
   /**

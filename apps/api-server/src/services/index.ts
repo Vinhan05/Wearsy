@@ -10,3 +10,4 @@ export * from './gamification.service';
 export * from './cloudinary.service';
 export * from './cloudinary.provider';
 export * from './bg-removal.service';
+export * from './ai-gateway.service';

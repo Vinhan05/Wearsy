@@ -5,3 +5,4 @@ export * from './wardrobe.controller';
 export * from './outfits.controller';
 export * from './shopping.controller';
 export * from './gamification.controller';
+export * from './system.controller';

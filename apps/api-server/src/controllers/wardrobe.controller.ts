@@ -24,6 +24,7 @@ import {
 import { CloudinaryService } from '../services/cloudinary.service';
 import { WardrobeScannerService } from '../services/wardrobe-scanner.service';
 import { WardrobeService } from '../services/wardrobe.service';
+import { AiGatewayService } from '../services/ai-gateway.service';
 import axios from 'axios';
 import {
   ScanBulkBodyDto,
@@ -38,6 +39,7 @@ export class WardrobeController {
     private readonly cloudinaryService: CloudinaryService,
     private readonly wardrobeScannerService: WardrobeScannerService,
     private readonly wardrobeService: WardrobeService,
+    private readonly aiGatewayService: AiGatewayService,
   ) {}
 
   @Post('upload')
@@ -155,8 +157,7 @@ export class WardrobeController {
     }
 
     try {
-      const orchestratorUrl =
-        process.env.AI_ORCHESTRATOR_URL || 'http://127.0.0.1:8000';
+      const orchestratorUrl = this.aiGatewayService.getOrchestratorUrl();
       const response = await axios.post(
         `${orchestratorUrl}/api/v1/wardrobe/enhance-garment`,
         {

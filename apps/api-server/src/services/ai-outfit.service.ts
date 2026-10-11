@@ -47,16 +47,19 @@ export interface UserBodySummaryDto {
   estimated_size: string;
 }
 
+import { AiGatewayService } from './ai-gateway.service';
+
 @Injectable()
 export class AiOutfitService {
   private readonly logger = new Logger(AiOutfitService.name);
-  private aiOrchestratorUrl: string;
 
-  constructor(private configService: ConfigService) {
-    this.aiOrchestratorUrl = this.configService.get<string>(
-      'AI_ORCHESTRATOR_URL',
-      'http://127.0.0.1:8000',
-    );
+  constructor(
+    private configService: ConfigService,
+    private aiGatewayService: AiGatewayService,
+  ) {}
+
+  private get orchestratorUrl(): string {
+    return this.aiGatewayService.getOrchestratorUrl();
   }
 
   /**
@@ -100,10 +103,10 @@ export class AiOutfitService {
 
     try {
       this.logger.log(
-        `Connecting to AI Orchestrator at: ${this.aiOrchestratorUrl}/api/v1/stylist/recommend`,
+        `Connecting to AI Orchestrator at: ${this.orchestratorUrl}/api/v1/stylist/recommend`,
       );
       const response = await axios.post(
-        `${this.aiOrchestratorUrl}/api/v1/stylist/recommend`,
+        `${this.orchestratorUrl}/api/v1/stylist/recommend`,
         payload,
         { timeout: 1800000 },
       );
@@ -120,7 +123,7 @@ export class AiOutfitService {
           ? validItemIds
           : wardrobeItems.slice(0, 3).map((i) => String(i.id));
 
-      const orchestratorBase = this.aiOrchestratorUrl.replace(/\/+$/, '');
+      const orchestratorBase = this.orchestratorUrl.replace(/\/+$/, '');
       const formattedImageUrl = data.image_url
         ? (data.image_url.startsWith('http')
             ? data.image_url
@@ -207,16 +210,16 @@ export class AiOutfitService {
 
     try {
       this.logger.log(
-        `Connecting to AI Stylist Chat: ${this.aiOrchestratorUrl}/api/v1/stylist/chat`,
+        `Connecting to AI Stylist Chat: ${this.orchestratorUrl}/api/v1/stylist/chat`,
       );
       const response = await axios.post(
-        `${this.aiOrchestratorUrl}/api/v1/stylist/chat`,
+        `${this.orchestratorUrl}/api/v1/stylist/chat`,
         payload,
         { timeout: 60000 },
       );
       const data = response.data;
       if (data.action === 'FINALIZE_OUTFIT') {
-        const orchestratorBase = this.aiOrchestratorUrl.replace(/\/+$/, '');
+        const orchestratorBase = this.orchestratorUrl.replace(/\/+$/, '');
         const formattedImageUrl = data.image_url
           ? (data.image_url.startsWith('http')
               ? data.image_url

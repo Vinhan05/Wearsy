@@ -23,6 +23,7 @@ import {
   OutfitsController,
   ShoppingController,
   GamificationController,
+  SystemController,
 } from '../controllers';
 
 // Services (Business Logic Layer)
@@ -39,6 +40,7 @@ import {
   CloudinaryService,
   CloudinaryProvider,
   BgRemovalService,
+  AiGatewayService,
 } from '../services';
 
 @Module({
@@ -72,6 +74,7 @@ import {
     OutfitsController,
     ShoppingController,
     GamificationController,
+    SystemController,
   ],
   providers: [
     AuthService,
@@ -86,6 +89,7 @@ import {
     CloudinaryService,
     CloudinaryProvider,
     BgRemovalService,
+    AiGatewayService,
   ],
   exports: [
     AuthService,
@@ -98,6 +102,7 @@ import {
     GamificationService,
     CloudinaryService,
     BgRemovalService,
+    AiGatewayService,
     JwtModule,
     TypeOrmModule,
   ],
