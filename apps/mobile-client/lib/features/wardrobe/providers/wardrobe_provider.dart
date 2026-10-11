@@ -93,44 +93,8 @@ class WardrobeProvider with ChangeNotifier {
   static bool isPreSeededDemoAccount(String? email, SharedPreferences prefs) =>
       false;
 
-  static List<WardrobeItemModel> get defaultSampleItems => [
-        WardrobeItemModel(
-          id: 'item_shirt',
-          name: 'Áo sơ mi',
-          category: WardrobeCategory.tops,
-          color: 'Xanh nhạt',
-          brand: 'Cotton',
-          imageUrl: 'assets/images/wardrobe_shirt.png',
-          wardrobeId: 'default',
-        ),
-        WardrobeItemModel(
-          id: 'item_skirt',
-          name: 'Váy ngắn nâu',
-          category: WardrobeCategory.tops,
-          color: 'Nâu đen',
-          brand: 'Cotton',
-          imageUrl: 'assets/images/wardrobe_skirt.png',
-          wardrobeId: 'default',
-        ),
-        WardrobeItemModel(
-          id: 'item_jeans',
-          name: 'Jeans dài',
-          category: WardrobeCategory.bottoms,
-          color: 'Xanh denim',
-          brand: 'Denim',
-          imageUrl: 'assets/images/wardrobe_jeans.png',
-          wardrobeId: 'default',
-        ),
-        WardrobeItemModel(
-          id: 'item_sneaker',
-          name: 'Sneaker trắng',
-          category: WardrobeCategory.shoes,
-          color: 'Trắng',
-          brand: 'Da',
-          imageUrl: 'assets/images/wardrobe_sneaker.png',
-          wardrobeId: 'default',
-        ),
-      ];
+  /// Tài khoản mới tạo luôn là tủ đồ trắng hoàn toàn (0 món đồ)
+  static List<WardrobeItemModel> get defaultSampleItems => [];
 
   WardrobeProvider() {
     loadItems();
@@ -187,8 +151,8 @@ class WardrobeProvider with ChangeNotifier {
                 jsonDecode(str) as Map<String, dynamic>))
             .toList();
       } else {
-        // Tủ đồ khởi đầu chuẩn 100% giống thiết kế (4 món đồ)
-        customItems = List.from(defaultSampleItems);
+        // Tài khoản mới tạo luôn là tủ đồ trắng hoàn toàn (0 món đồ)
+        customItems = [];
       }
     } catch (e) {
       debugPrint('[WardrobeProvider] loadItems error: $e');
@@ -211,11 +175,6 @@ class WardrobeProvider with ChangeNotifier {
             _allItems = serverItems;
             _saveItems();
             notifyListeners();
-          } else if (customItems.isNotEmpty) {
-            // Đẩy dữ liệu lên Server Database nếu DB chưa có
-            for (final item in customItems) {
-              _wardrobeService.createItem(item, email: email);
-            }
           }
         });
       }

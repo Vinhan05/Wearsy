@@ -1185,8 +1185,12 @@ class _WardrobeBody extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   isEn
-                      ? '$totalItems items • 2 outfits paired • Updated today'
-                      : '$totalItems món đồ  •  2 set đã phối  •  Cập nhật hôm nay',
+                      ? (totalItems == 0
+                          ? '0 items • 0 outfits paired • Empty wardrobe'
+                          : '$totalItems items • Updated today')
+                      : (totalItems == 0
+                          ? '0 món đồ  •  0 set đã phối  •  Tủ đồ còn trống'
+                          : '$totalItems món đồ  •  Cập nhật hôm nay'),
                   style: AppFonts.inter(
                     fontSize: 11.5,
                     color: const Color(0xFF9CA3AF),
