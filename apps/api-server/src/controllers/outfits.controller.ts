@@ -71,13 +71,30 @@ export class OutfitsController {
       user_profile?: any;
       wardrobe_items?: any[];
       force_finalize?: boolean;
+      user_id?: string;
     },
+    @Headers('x-user-id') headerUserId?: string,
   ) {
+    const userId = headerUserId || dto.user_id;
+    let enrichedProfile = dto.user_profile;
+    let resolvedUserName = dto.user_name || 'Bạn';
+
+    if (userId) {
+      const dbProfile = await this.outfitsService.getUserFullProfile(userId);
+      if (dbProfile) {
+        resolvedUserName = dto.user_name || dbProfile.user_name;
+        enrichedProfile = {
+          ...dbProfile,
+          ...(dto.user_profile || {}),
+        };
+      }
+    }
+
     return this.aiOutfitService.chatWithStylist(
       dto.messages || [],
       dto.wardrobe_items || [],
-      dto.user_profile,
-      dto.user_name || 'Bạn',
+      enrichedProfile,
+      resolvedUserName,
       dto.force_finalize || false,
     );
   }
@@ -125,11 +142,34 @@ export class OutfitsController {
     summary: 'Gợi ý outfit kết hợp Layering Canvas 2D và Smart Fit AI',
   })
   @ApiResponse({ status: 200, description: 'Gợi ý outfit thành công' })
-  async recommendOutfits(@Body() body: RecommendOutfitDto) {
+  async recommendOutfits(
+    @Body() body: RecommendOutfitDto,
+    @Headers('x-user-id') headerUserId?: string,
+  ) {
+    let bodySummary = body.bodySummary;
+    let userName = 'Bạn';
+
+    if (headerUserId) {
+      const dbProfile = await this.outfitsService.getUserFullProfile(headerUserId);
+      if (dbProfile) {
+        userName = dbProfile.user_name;
+        bodySummary = {
+          gender: dbProfile.gender,
+          height_cm: dbProfile.height_cm,
+          weight_kg: dbProfile.weight_kg,
+          bmi: dbProfile.bmi,
+          body_frame: dbProfile.body_frame,
+          estimated_size: dbProfile.estimated_size,
+          ...(body.bodySummary || {}),
+        };
+      }
+    }
+
     const outfits = await this.aiOutfitService.generateOutfitRecommendations(
       body.contextPrompt || 'Đi làm văn phòng thanh lịch',
       body.wardrobeItems || [],
-      body.bodySummary,
+      bodySummary,
+      userName,
     );
     return {
       success: true,
@@ -143,7 +183,10 @@ export class OutfitsController {
     summary: 'Gợi ý outfit nâng cao theo ngữ cảnh thời tiết, địa điểm',
   })
   @ApiResponse({ status: 200, description: 'Gợi ý outfit thành công' })
-  async recommendByContext(@Body() body: RecommendOutfitDto) {
-    return this.recommendOutfits(body);
+  async recommendByContext(
+    @Body() body: RecommendOutfitDto,
+    @Headers('x-user-id') headerUserId?: string,
+  ) {
+    return this.recommendOutfits(body, headerUserId);
   }
 }

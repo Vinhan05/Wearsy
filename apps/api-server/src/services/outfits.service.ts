@@ -5,7 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { OutfitEntity, OutfitItemEntity, WardrobeItemEntity } from '../models';
+import {
+  OutfitEntity,
+  OutfitItemEntity,
+  WardrobeItemEntity,
+  UserEntity,
+  UserProfileEntity,
+} from '../models';
 import { AiOutfitService, UserBodySummaryDto } from './ai-outfit.service';
 
 export interface RecommendOutfitRequestDto {
@@ -26,8 +32,41 @@ export class OutfitsService {
     private readonly outfitItemRepo: Repository<OutfitItemEntity>,
     @InjectRepository(WardrobeItemEntity)
     private readonly wardrobeItemRepo: Repository<WardrobeItemEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepo: Repository<UserEntity>,
+    @InjectRepository(UserProfileEntity)
+    private readonly userProfileRepo: Repository<UserProfileEntity>,
     private readonly aiOutfitService: AiOutfitService,
   ) {}
+
+  /**
+   * Truy xuất hồ sơ người dùng đầy đủ (chiều cao, cân nặng, vóc dáng, gu ăn mặc)
+   */
+  async getUserFullProfile(userId?: string) {
+    if (!userId) return null;
+    try {
+      const user = await this.userRepo.findOne({
+        where: { id: userId },
+        relations: ['profile'],
+      });
+      if (!user) return null;
+      const profile = user.profile;
+      const measurements = profile?.body_measurements || {};
+      return {
+        user_name: user.full_name || 'Bạn',
+        gender: measurements.gender || 'Nữ',
+        height_cm: Number(measurements.height_cm) || 160,
+        weight_kg: Number(measurements.weight_kg) || 50,
+        bmi: Number(measurements.bmi) || 19.5,
+        body_frame: measurements.body_frame || 'Cân đối',
+        estimated_size: measurements.estimated_size || 'S',
+        preferred_styles: profile?.preferred_styles || ['Thanh lịch', 'Hiện đại'],
+        color_preferences: profile?.color_preferences || {},
+      };
+    } catch {
+      return null;
+    }
+  }
 
   /**
    * Tạo gợi ý outfit thông minh từ AI (Gemma 4 + ComfyUI)
