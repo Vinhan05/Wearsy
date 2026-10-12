@@ -13,13 +13,21 @@ export class AiGatewayService {
    * Người dùng thiết lập thủ công trên Render Dashboard / file .env.
    */
   getOrchestratorUrl(): string {
-    const envUrl = this.configService.get<string>('AI_ORCHESTRATOR_URL');
-    if (envUrl && envUrl.trim().length > 5) {
-      return envUrl.trim().replace(/\/+$/, '');
-    }
-    const procUrl = process.env.AI_ORCHESTRATOR_URL;
-    if (procUrl && procUrl.trim().length > 5) {
-      return procUrl.trim().replace(/\/+$/, '');
+    const rawEnv =
+      this.configService.get<string>('AI_ORCHESTRATOR_URL') ||
+      process.env.AI_ORCHESTRATOR_URL ||
+      '';
+    if (rawEnv && rawEnv.trim().length > 5) {
+      // Tách chuỗi nếu người dùng vô tình dán nhiều URL hoặc có khoảng trắng
+      const urls = rawEnv
+        .trim()
+        .split(/\s+/)
+        .filter((u) => u.startsWith('http'));
+      if (urls.length > 0) {
+        // Lấy URL cuối cùng được dán vào
+        return urls[urls.length - 1].trim().replace(/\/+$/, '');
+      }
+      return rawEnv.trim().replace(/\/+$/, '');
     }
     return 'http://127.0.0.1:8000';
   }
