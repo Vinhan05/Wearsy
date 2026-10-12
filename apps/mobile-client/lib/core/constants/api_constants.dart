@@ -1,9 +1,9 @@
 class ApiConstants {
-  // Base URL trỏ trực tiếp đến máy chủ backend chạy trên laptop
+  // Base URL Backend chính thức trên Render.com
   static String get baseUrl {
     const envUrl = String.fromEnvironment('BACKEND_URL');
     if (envUrl.isNotEmpty) return envUrl;
-    return _customBaseUrl ?? 'http://10.30.1.50:8000/v1';
+    return _customBaseUrl ?? 'https://wearsy-wd0c.onrender.com/v1';
   }
   static String? _customBaseUrl;
   static void setBaseUrl(String url) => _customBaseUrl = url;

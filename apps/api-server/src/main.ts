@@ -7,7 +7,9 @@ import helmet from 'helmet';
 import { json, urlencoded } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
+  });
   const configService = app.get(ConfigService);
 
   // Body Parser Limit: Tăng giới hạn 50MB để hỗ trợ tải ảnh Base64 cho AI tách nền & tân trang
