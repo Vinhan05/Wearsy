@@ -217,148 +217,16 @@ class _LoginScreenState extends State<LoginScreen> {
         (route) => false,
       );
     } else {
-      final msg = authProvider.errorMessage ?? '';
-      if (msg.contains('đã bị hủy')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(msg),
-            backgroundColor: const Color(0xFF6B7280),
-          ),
-        );
-      } else {
-        _showGoogleDirectConfirmDialog(context);
-      }
+      final msg = authProvider.errorMessage ?? 'Đăng nhập Google thất bại.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: msg.contains('đã bị hủy')
+              ? const Color(0xFF6B7280)
+              : Colors.redAccent,
+        ),
+      );
     }
-  }
-
-  void _showGoogleDirectConfirmDialog(BuildContext context) {
-    final emailCtrl = TextEditingController(text: 'vinhan168@gmail.com');
-    final nameCtrl = TextEditingController(text: 'Vi Nhân');
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetCtx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(sheetCtx).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEA4335).withOpacity(0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.g_mobiledata_rounded,
-                      color: Color(0xFFEA4335), size: 30),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Đăng nhập Google SSO',
-                    style: AppFonts.outfit(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF111827),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Xác nhận thông tin tài khoản Google của bạn để đăng nhập ngay lập tức:',
-              style: AppFonts.inter(
-                fontSize: 13.5,
-                color: const Color(0xFF6B7280),
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: emailCtrl,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: 'Địa chỉ Gmail',
-                prefixIcon: const Icon(Icons.email_outlined),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: nameCtrl,
-              decoration: InputDecoration(
-                labelText: 'Họ và tên',
-                prefixIcon: const Icon(Icons.person_outline),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
-            const SizedBox(height: 22),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              onPressed: () async {
-                final email = emailCtrl.text.trim();
-                final name = nameCtrl.text.trim();
-                if (email.isEmpty || !email.contains('@')) return;
-                Navigator.pop(sheetCtx);
-                final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
-                final ok = await authProvider.loginWithGoogle(
-                  fallbackEmail: email,
-                  fallbackName: name.isNotEmpty ? name : null,
-                );
-                if (!context.mounted) return;
-                if (ok) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                          'Đăng nhập thành công! Chào mừng ${authProvider.user?.fullName ?? name}.'),
-                      backgroundColor: AppTheme.primaryColor,
-                    ),
-                  );
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const MainNavigationScreen()),
-                    (route) => false,
-                  );
-                }
-              },
-              child: Text(
-                'Xác Nhận & Đăng Nhập',
-                style: AppFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override

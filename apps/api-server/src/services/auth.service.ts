@@ -221,8 +221,7 @@ export class AuthService {
 
   private generateToken(user: UserEntity): string {
     const secret =
-      process.env.JWT_SECRET ||
-      'wearsy_fallback_secret_2024_super_secure';
+      process.env.JWT_SECRET || 'wearsy_fallback_secret_2024_super_secure';
     return this.jwtService.sign(
       { sub: user.id, email: user.email, role: user.role },
       { secret, expiresIn: '24h' },

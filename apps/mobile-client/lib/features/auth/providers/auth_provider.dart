@@ -84,18 +84,12 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> loginWithGoogle({
-    String? fallbackEmail,
-    String? fallbackName,
-  }) async {
+  Future<bool> loginWithGoogle() async {
     _setLoading(true);
     _clearError();
 
     try {
-      final authData = await _authService.loginWithGoogle(
-        fallbackEmail: fallbackEmail,
-        fallbackName: fallbackName,
-      );
+      final authData = await _authService.loginWithGoogle();
       _user = authData.user;
       _status = AuthStatus.authenticated;
       await _setHasLoggedOut(false);

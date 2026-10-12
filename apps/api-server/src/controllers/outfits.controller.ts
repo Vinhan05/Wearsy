@@ -150,7 +150,8 @@ export class OutfitsController {
     let userName = 'Bạn';
 
     if (headerUserId) {
-      const dbProfile = await this.outfitsService.getUserFullProfile(headerUserId);
+      const dbProfile =
+        await this.outfitsService.getUserFullProfile(headerUserId);
       if (dbProfile) {
         userName = dbProfile.user_name;
         bodySummary = {
