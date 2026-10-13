@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { WardrobeScannerService } from './wardrobe-scanner.service';
 import { CloudinaryService } from './cloudinary.service';
+import { ImageSanitizerService } from './image-sanitizer.service';
 import { WardrobeItemEntity } from '../models/wardrobe-item.entity';
 import { CategoryEntity } from '../models/category.entity';
 
@@ -90,6 +91,14 @@ describe('WardrobeScannerService', () => {
         WardrobeScannerService,
         { provide: ConfigService, useValue: mockConfigService },
         { provide: CloudinaryService, useValue: mockCloudinaryService },
+        {
+          provide: ImageSanitizerService,
+          useValue: {
+            stripMetadata: jest
+              .fn()
+              .mockImplementation((b) => Promise.resolve(b)),
+          },
+        },
         {
           provide: getRepositoryToken(WardrobeItemEntity),
           useValue: mockWardrobeItemRepo,

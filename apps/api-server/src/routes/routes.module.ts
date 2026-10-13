@@ -41,6 +41,7 @@ import {
   CloudinaryProvider,
   BgRemovalService,
   AiGatewayService,
+  ImageSanitizerService,
 } from '../services';
 
 @Module({
@@ -90,6 +91,7 @@ import {
     CloudinaryProvider,
     BgRemovalService,
     AiGatewayService,
+    ImageSanitizerService,
   ],
   exports: [
     AuthService,
@@ -103,6 +105,7 @@ import {
     CloudinaryService,
     BgRemovalService,
     AiGatewayService,
+    ImageSanitizerService,
     JwtModule,
     TypeOrmModule,
   ],

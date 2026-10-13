@@ -28,6 +28,7 @@ export const ApiRoutes = {
     PREFIX: '/wardrobe',
     UPLOAD: '/wardrobe/upload',
     ANALYZE_IMAGE: '/wardrobe/analyze-image',
+    SANITIZE_IMAGE: '/wardrobe/sanitize-image',
     SCAN_BULK: '/wardrobe/scan-bulk',
     BULK_COMMIT: '/wardrobe/bulk-commit',
     ITEMS: '/wardrobe/items',
