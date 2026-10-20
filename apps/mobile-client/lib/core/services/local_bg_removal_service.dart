@@ -16,7 +16,8 @@ class LocalBgRemovalService {
 
       if (resultBytes == null) return null;
 
-      final outPath = filePath.replaceAll(RegExp(r'\.[a-zA-Z0-9]+$'), '_cutout.png');
+      final outPath =
+          filePath.replaceAll(RegExp(r'\.[a-zA-Z0-9]+$'), '_cutout.png');
       final outFile = File(outPath);
       await outFile.writeAsBytes(resultBytes);
       return outFile.path;
@@ -78,7 +79,8 @@ class LocalBgRemovalService {
           }
         }
 
-        final isBorderRegion = (x < w * 0.15 || x > w * 0.85 || y < h * 0.12 || y > h * 0.88);
+        final isBorderRegion =
+            (x < w * 0.15 || x > w * 0.85 || y < h * 0.12 || y > h * 0.88);
 
         if (isBorderRegion && isBg) {
           pixel.a = 0; // Đặt độ trong suốt bằng 0

@@ -107,6 +107,7 @@ class SmartShoppingAiService {
       return '';
     }
   }
+
   static const List<String> _geminiModels = [
     'gemini-flash-lite-latest',
     'gemini-3-flash-preview',
@@ -177,9 +178,33 @@ class SmartShoppingAiService {
     ),
   ];
 
+  /// Chuẩn hóa đường dẫn URL hoặc trích xuất liên kết từ đoạn văn bản người dùng dán vào
+  static String normalizeProductUrl(String input) {
+    var raw = input.trim();
+    if (raw.isEmpty) return '';
+
+    // Trích xuất link nếu người dùng dán kèm text tiêu đề (VD: copy từ Zalo, Messenger, Shopee)
+    final urlRegex = RegExp(
+        r'(https?://[^\s]+|//[^\s]+|(?:vn\.shp\.ee|shp\.ee|shopee\.vn|tiktok\.com|vt\.tiktok\.com|lazada\.vn|tiki\.vn)/[^\s]*)',
+        caseSensitive: false);
+    final match = urlRegex.firstMatch(raw);
+    if (match != null) {
+      raw = match.group(0)!;
+    }
+
+    // Xử lý tiền tố thiếu scheme hoặc bắt đầu bằng //
+    if (raw.startsWith('//')) {
+      raw = 'https:$raw';
+    } else if (!raw.startsWith('http://') && !raw.startsWith('https://')) {
+      raw = 'https://$raw';
+    }
+
+    return raw.trim();
+  }
+
   /// Trích xuất thông tin chi tiết từ URL (Shopee, TikTok, Lazada, Zara, Uniqlo...)
   static ProspectiveProduct parseProductFromUrl(String url) {
-    final cleanUrl = url.trim();
+    final cleanUrl = normalizeProductUrl(url);
     String decodedUrl = cleanUrl;
     try {
       decodedUrl = Uri.decodeFull(cleanUrl);
@@ -192,7 +217,7 @@ class SmartShoppingAiService {
     // 1. Xác định Nền tảng (Platform)
     final lowerUrl = decodedUrl.toLowerCase();
     String platform = 'E-Commerce';
-    if (lowerUrl.contains('shopee')) {
+    if (lowerUrl.contains('shopee') || lowerUrl.contains('shp.ee')) {
       platform = 'Shopee';
     } else if (lowerUrl.contains('tiktok') || lowerUrl.contains('vt.tiktok')) {
       platform = 'TikTok Shop';
@@ -241,20 +266,14 @@ class SmartShoppingAiService {
       }
     } catch (_) {}
 
-    // Làm sạch và khử trùng từ liên tiếp (ví dụ: "Nỉ Nỉ" -> "Nỉ")
-    if (extractedTitle.isNotEmpty) {
-      final words = extractedTitle.split(' ');
-      final dedupWords = <String>[];
-      for (final w in words) {
-        if (dedupWords.isEmpty ||
-            dedupWords.last.toLowerCase() != w.toLowerCase()) {
-          dedupWords.add(w);
-        }
-      }
-      extractedTitle = dedupWords.join(' ');
+    // Nếu chuỗi truyền vào chứa tiêu đề (từ enrichProductFromUrl hoặc người dùng dán text kèm link)
+    final textWithoutUrl = url.replaceAll(cleanUrl, '').trim();
+    if (extractedTitle.isEmpty && textWithoutUrl.isNotEmpty) {
+      extractedTitle = textWithoutUrl;
     }
 
-    final textToAnalyze = '$extractedTitle $decodedUrl'.toLowerCase();
+    final textToAnalyze =
+        '$extractedTitle $decodedUrl $url $textWithoutUrl'.toLowerCase();
 
     // 3. Nhận diện Danh mục (Category)
     WardrobeCategory cat = WardrobeCategory.tops;
@@ -264,7 +283,12 @@ class SmartShoppingAiService {
     if (textToAnalyze.contains('blazer') ||
         textToAnalyze.contains('khoác') ||
         textToAnalyze.contains('khoac') ||
+        textToAnalyze.contains('áo khoác') ||
+        textToAnalyze.contains('ao khoac') ||
+        textToAnalyze.contains('khoác gió') ||
+        textToAnalyze.contains('khoac gio') ||
         textToAnalyze.contains('jacket') ||
+        textToAnalyze.contains('windbreaker') ||
         textToAnalyze.contains('cardigan') ||
         textToAnalyze.contains('bomber') ||
         textToAnalyze.contains('varsity') ||
@@ -280,6 +304,11 @@ class SmartShoppingAiService {
           'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop';
     } else if (textToAnalyze.contains('quần') ||
         textToAnalyze.contains('quan') ||
+        textToAnalyze.contains('quần âu') ||
+        textToAnalyze.contains('quan au') ||
+        textToAnalyze.contains('quần tây') ||
+        textToAnalyze.contains('quan tay') ||
+        textToAnalyze.contains('vertical flex') ||
         textToAnalyze.contains('jean') ||
         textToAnalyze.contains('denim') ||
         textToAnalyze.contains('pant') ||
@@ -517,6 +546,11 @@ class SmartShoppingAiService {
     // 5. Nhận diện Thương hiệu (Brand)
     String brand = platform;
     final brands = [
+      'NORVÉN',
+      'Norven',
+      'GOZIN SHOP',
+      'GOZIN',
+      'Gozin',
       'Frozen Shark',
       'LEDATEX',
       'LOTNAM',
@@ -570,6 +604,19 @@ class SmartShoppingAiService {
         textToAnalyze.contains('măng tô') ||
         textToAnalyze.contains('khoác dạ')) {
       price = 890000;
+    } else if (textToAnalyze.contains('khoác gió') ||
+        textToAnalyze.contains('khoac gio') ||
+        textToAnalyze.contains('áo gió')) {
+      price = 314000;
+    } else if (textToAnalyze.contains('khoác') ||
+        textToAnalyze.contains('jacket')) {
+      price = 350000;
+    } else if (textToAnalyze.contains('quần âu') ||
+        textToAnalyze.contains('quan au') ||
+        textToAnalyze.contains('quần tây') ||
+        textToAnalyze.contains('quan tay') ||
+        textToAnalyze.contains('vertical flex')) {
+      price = 414000;
     } else if (textToAnalyze.contains('jean') ||
         textToAnalyze.contains('denim')) {
       price = 490000;
@@ -643,31 +690,66 @@ class SmartShoppingAiService {
   /// Trích xuất ảnh thật và tiêu đề chuẩn từ thẻ OpenGraph meta của URL sản phẩm (Shopee, TikTok, Lazada, v.v.)
   static Future<Map<String, String>> fetchRealMetadataFromUrl(
       String url) async {
-    final cleanUrl = url.trim();
+    final cleanUrl = normalizeProductUrl(url);
     if (!cleanUrl.startsWith('http')) return {};
 
+    // 1. Chuẩn bị danh sách candidate URLs (xử lý link rút gọn Shopee shp.ee có chữ hoa/thường)
+    final candidateUrls = <String>[cleanUrl];
+    if (cleanUrl.contains('shp.ee/')) {
+      final uri = Uri.tryParse(cleanUrl);
+      if (uri != null && uri.pathSegments.isNotEmpty) {
+        final code = uri.pathSegments.last;
+        // Nếu code có ký tự hoa (VD: LtJwxoww -> thử thêm Ltjwxoww và ltjwxoww)
+        if (code != code.toLowerCase()) {
+          final fixedCode = code[0] + code.substring(1).toLowerCase();
+          final url1 = cleanUrl.replaceAll(code, fixedCode);
+          final url2 = cleanUrl.replaceAll(code, code.toLowerCase());
+          if (!candidateUrls.contains(url1)) candidateUrls.add(url1);
+          if (!candidateUrls.contains(url2)) candidateUrls.add(url2);
+        }
+      }
+    }
+
+    for (final candidate in candidateUrls) {
+      final meta = await _fetchMetadataFromSingleUrl(candidate);
+      if (meta.containsKey('title') &&
+          meta['title']!.isNotEmpty &&
+          !meta['title']!.toLowerCase().contains('shopee - gì cũng có') &&
+          !meta['title']!.toLowerCase().contains('shopee việt nam') &&
+          !meta['title']!.toLowerCase().contains('login to see more')) {
+        return meta;
+      }
+    }
+
+    return {};
+  }
+
+  static Future<Map<String, String>> _fetchMetadataFromSingleUrl(
+      String targetUrl) async {
     final client = http.Client();
     try {
-      final request = http.Request('GET', Uri.parse(cleanUrl))
+      final request = http.Request('GET', Uri.parse(targetUrl))
         ..headers.addAll({
-          'User-Agent':
-              'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+          // User-Agent WhatsApp giúp vượt qua WAF/ALB của Shopee và lấy trọn vẹn thẻ OpenGraph
+          'User-Agent': 'WhatsApp/2.21.12.21 A',
           'Accept':
               'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7',
+          'Sec-Fetch-Site': 'none',
+          'Sec-Fetch-Mode': 'navigate',
         })
         ..followRedirects = true
-        ..maxRedirects = 5;
+        ..maxRedirects = 10;
 
       final streamedResponse =
-          await client.send(request).timeout(const Duration(seconds: 4));
+          await client.send(request).timeout(const Duration(seconds: 6));
 
       final buffer = StringBuffer();
-      // Chỉ đọc phần đầu (head) để lấy thẻ OpenGraph, không đợi tải toàn bộ HTML nặng
+      // Đọc phần head và thẻ OpenGraph
       await for (final chunk
           in streamedResponse.stream.transform(utf8.decoder)) {
         buffer.write(chunk);
-        if (buffer.length > 50000 ||
+        if (buffer.length > 80000 ||
             (buffer.toString().contains('og:image') &&
                 buffer.toString().contains('</head>'))) {
           break;
@@ -678,13 +760,13 @@ class SmartShoppingAiService {
       final html = buffer.toString();
       final result = <String, String>{};
 
-      // 1. Trích xuất og:image
+      // 1. Trích xuất og:image / og:square_image / twitter:image
       final ogImageMatch = RegExp(
-            r'''<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']''',
+            r'''<meta[^>]+property=["'](?:og:image|og:square_image|twitter:image)["'][^>]+content=["']([^"']+)["']''',
             caseSensitive: false,
           ).firstMatch(html) ??
           RegExp(
-            r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']''',
+            r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["'](?:og:image|og:square_image|twitter:image)["']''',
             caseSensitive: false,
           ).firstMatch(html);
 
@@ -696,13 +778,17 @@ class SmartShoppingAiService {
         }
       }
 
-      // 2. Trích xuất og:title
+      // 2. Trích xuất og:title / title / twitter:title
       final ogTitleMatch = RegExp(
-            r'''<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']''',
+            r'''<meta[^>]+property=["'](?:og:title|twitter:title)["'][^>]+content=["']([^"']+)["']''',
             caseSensitive: false,
           ).firstMatch(html) ??
           RegExp(
-            r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']''',
+            r'''<meta[^>]+content=["']([^"']+)["'][^>]+property=["'](?:og:title|twitter:title)["']''',
+            caseSensitive: false,
+          ).firstMatch(html) ??
+          RegExp(
+            r'''<title[^>]*>([^<]+)</title>''',
             caseSensitive: false,
           ).firstMatch(html);
 
@@ -722,11 +808,39 @@ class SmartShoppingAiService {
         }
       }
 
+      // 3. Trích xuất mô tả chi tiết (og:description)
+      final ogDescMatch = RegExp(
+            r'''<meta[^>]+property=["'](?:og:description|twitter:description)["'][^>]+content=["']([^"']+)["']''',
+            caseSensitive: false,
+          ).firstMatch(html) ??
+          RegExp(
+            r'''<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']''',
+            caseSensitive: false,
+          ).firstMatch(html);
+      if (ogDescMatch != null) {
+        result['description'] =
+            ogDescMatch.group(1)?.replaceAll('&amp;', '&').trim() ?? '';
+      }
+
+      // 4. Trích xuất giá từ HTML
+      final priceMatch = RegExp(
+        r'''(?:price|giá|amount|đ|₫)\s*[:=]?\s*["']?([0-9]{1,3}(?:[.,][0-9]{3})+|[0-9]{5,8})''',
+        caseSensitive: false,
+      ).firstMatch(html);
+      if (priceMatch != null) {
+        final rawPrice =
+            priceMatch.group(1)!.replaceAll('.', '').replaceAll(',', '');
+        final parsedPrice = double.tryParse(rawPrice);
+        if (parsedPrice != null && parsedPrice > 1000) {
+          result['price'] = parsedPrice.toString();
+        }
+      }
+
       return result;
     } catch (e) {
       client.close();
       debugPrint(
-          '[SmartShoppingAiService] Error fetching metadata from $url: $e');
+          '[SmartShoppingAiService] Error fetching metadata from $targetUrl: $e');
     }
 
     return {};
@@ -738,6 +852,7 @@ class SmartShoppingAiService {
     final meta = await fetchRealMetadataFromUrl(product.productUrl);
     String updatedImageUrl = product.imageUrl;
     String updatedTitle = product.title;
+    double updatedPrice = product.price;
 
     if (meta.containsKey('imageUrl') && meta['imageUrl']!.isNotEmpty) {
       updatedImageUrl = meta['imageUrl']!;
@@ -745,16 +860,28 @@ class SmartShoppingAiService {
     if (meta.containsKey('title') && meta['title']!.isNotEmpty) {
       updatedTitle = meta['title']!;
     }
+    if (meta.containsKey('price')) {
+      final p = double.tryParse(meta['price']!);
+      if (p != null && p > 1000) {
+        updatedPrice = p;
+      }
+    }
 
-    // Tái phân tích danh mục, màu sắc, giá cả dựa trên tiêu đề chuẩn mới lấy được
-    final reParsed = parseProductFromUrl('${product.productUrl} $updatedTitle');
+    final desc = meta['description'] ?? '';
+
+    // Tái phân tích danh mục, màu sắc, giá cả dựa trên tiêu đề chuẩn và mô tả thật mới lấy được
+    final reParsed =
+        parseProductFromUrl('${product.productUrl} $updatedTitle $desc');
 
     return product.copyWith(
       imageUrl: updatedImageUrl,
       title: updatedTitle,
       category: reParsed.category,
       color: reParsed.color != 'Trắng' ? reParsed.color : product.color,
-      price: reParsed.price != 350000 ? reParsed.price : product.price,
+      price: updatedPrice != 350000 ? updatedPrice : reParsed.price,
+      brand: reParsed.brand != 'E-Commerce' && reParsed.brand != 'Shopee'
+          ? reParsed.brand
+          : product.brand,
       tags: reParsed.tags.isNotEmpty ? reParsed.tags : product.tags,
     );
   }

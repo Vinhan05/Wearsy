@@ -315,7 +315,8 @@ class AuthProvider with ChangeNotifier {
       _setError(e.message);
       return false;
     } catch (e) {
-      _setError('Nâng cấp WEARSY PREMIUM thất bại. Vui lòng kiểm tra lại mã coupon.');
+      _setError(
+          'Nâng cấp WEARSY PREMIUM thất bại. Vui lòng kiểm tra lại mã coupon.');
       return false;
     } finally {
       _setLoading(false);

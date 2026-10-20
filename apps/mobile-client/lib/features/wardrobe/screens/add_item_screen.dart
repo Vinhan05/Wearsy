@@ -257,7 +257,9 @@ class _AddItemScreenState extends State<AddItemScreen>
       final savedList = prefs.getStringList('user_wardrobe_gallery') ?? [];
       setState(() {
         _galleryImages = savedList;
-        if (savedList.isNotEmpty && widget.existingItem == null && _localImagePath == null) {
+        if (savedList.isNotEmpty &&
+            widget.existingItem == null &&
+            _localImagePath == null) {
           final firstImg = savedList.first;
           if (firstImg.startsWith('http')) {
             _currentImageUrl = firstImg;
@@ -462,7 +464,9 @@ class _AddItemScreenState extends State<AddItemScreen>
     // BẮT BUỘC 100% XÓA NỀN NGAY KHI TẢI ẢNH TỪ ĐIỆN THOẠI / URL LÊN APP
     try {
       final wardrobeService = WardrobeService();
-      if (_localImagePath != null && _localImagePath!.isNotEmpty && !_localImagePath!.startsWith('http')) {
+      if (_localImagePath != null &&
+          _localImagePath!.isNotEmpty &&
+          !_localImagePath!.startsWith('http')) {
         final bgRemovedUrl =
             await wardrobeService.uploadImageWithBgRemoval(_localImagePath!);
         if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
@@ -501,12 +505,15 @@ class _AddItemScreenState extends State<AddItemScreen>
       final result = await ClothingAiService.analyzeImage(effectivePath);
 
       if (mounted) {
-        final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+        final isEn =
+            Provider.of<LanguageProvider>(context, listen: false).isEnglish;
         setState(() {
           _isAnalyzing = false;
-          _nameController.text = TagLocalization.getLocalizedName(result.name, isEn);
+          _nameController.text =
+              TagLocalization.getLocalizedName(result.name, isEn);
           _selectedCategory = result.category;
-          _colorController.text = TagLocalization.getColorName(result.color, isEn);
+          _colorController.text =
+              TagLocalization.getColorName(result.color, isEn);
           _brandController.text = result.brand;
           _selectedTags = List.from(result.tags);
           _aiMatchScore = result.aiMatchScore;
@@ -576,8 +583,8 @@ class _AddItemScreenState extends State<AddItemScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Dán URL ảnh',
-          style: AppFonts.outfit(
-              color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              AppFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -668,8 +675,8 @@ class _AddItemScreenState extends State<AddItemScreen>
           canPop: false,
           child: AlertDialog(
             backgroundColor: const Color(0xFF1E1C30),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             content: Row(
               children: [
                 const SizedBox(
@@ -701,14 +708,14 @@ class _AddItemScreenState extends State<AddItemScreen>
       try {
         final wardrobeService = WardrobeService();
         if (_localImagePath != null && _localImagePath!.isNotEmpty) {
-          final bgRemovedUrl = await wardrobeService
-              .uploadImageWithBgRemoval(_localImagePath!);
+          final bgRemovedUrl =
+              await wardrobeService.uploadImageWithBgRemoval(_localImagePath!);
           if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
             finalImageUrl = bgRemovedUrl;
           }
         } else if (_currentImageUrl.isNotEmpty) {
-          final bgRemovedUrl = await wardrobeService
-              .removeBackgroundFromUrl(_currentImageUrl);
+          final bgRemovedUrl =
+              await wardrobeService.removeBackgroundFromUrl(_currentImageUrl);
           if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
             finalImageUrl = bgRemovedUrl;
           }
@@ -746,9 +753,12 @@ class _AddItemScreenState extends State<AddItemScreen>
     }
 
     if (mounted) {
-      final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
-      final localizedItemName = TagLocalization.getLocalizedName(newItem.name, isEn);
-      final localizedWardrobeName = TagLocalization.getLocalizedWardrobeName(targetWardrobe.name, isEn);
+      final isEn =
+          Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+      final localizedItemName =
+          TagLocalization.getLocalizedName(newItem.name, isEn);
+      final localizedWardrobeName =
+          TagLocalization.getLocalizedWardrobeName(targetWardrobe.name, isEn);
 
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -760,8 +770,12 @@ class _AddItemScreenState extends State<AddItemScreen>
               Expanded(
                 child: Text(
                   widget.existingItem != null
-                      ? (isEn ? '✨ Updated "$localizedItemName"!' : '✨ Đã cập nhật "${newItem.name}"!')
-                      : (isEn ? '✨ Added "$localizedItemName" to ${targetWardrobe.icon} $localizedWardrobeName!' : '✨ Đã thêm "${newItem.name}" vào ${targetWardrobe.icon} ${targetWardrobe.name}!'),
+                      ? (isEn
+                          ? '✨ Updated "$localizedItemName"!'
+                          : '✨ Đã cập nhật "${newItem.name}"!')
+                      : (isEn
+                          ? '✨ Added "$localizedItemName" to ${targetWardrobe.icon} $localizedWardrobeName!'
+                          : '✨ Đã thêm "${newItem.name}" vào ${targetWardrobe.icon} ${targetWardrobe.name}!'),
                   style: AppFonts.inter(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -840,7 +854,9 @@ class _AddItemScreenState extends State<AddItemScreen>
               const SizedBox(height: 24),
 
               // Form fields
-              _buildSectionTitle(isEn ? 'Clothing Information 🏷️' : 'Thông Tin Trang Phục 🏷️'),
+              _buildSectionTitle(isEn
+                  ? 'Clothing Information 🏷️'
+                  : 'Thông Tin Trang Phục 🏷️'),
               const SizedBox(height: 14),
 
               if (_aiAnalysisReason != null &&
@@ -873,7 +889,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                             Row(
                               children: [
                                 Text(
-                                  isEn ? 'Gemini AI Analysis:' : 'Gemini AI đã phân tích:',
+                                  isEn
+                                      ? 'Gemini AI Analysis:'
+                                      : 'Gemini AI đã phân tích:',
                                   style: AppFonts.outfit(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
@@ -901,7 +919,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              TagLocalization.getLocalizedAiReason(_aiAnalysisReason!, isEn),
+                              TagLocalization.getLocalizedAiReason(
+                                  _aiAnalysisReason!, isEn),
                               style: AppFonts.inter(
                                 fontSize: 12,
                                 color: AppTheme.darkTextSecondary,
@@ -923,7 +942,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                 label: isEn ? 'Item Name' : 'Tên món đồ',
                 icon: Icons.checkroom_rounded,
                 validator: (val) => (val == null || val.trim().isEmpty)
-                    ? (isEn ? 'Please enter item name' : 'Vui lòng nhập tên món đồ')
+                    ? (isEn
+                        ? 'Please enter item name'
+                        : 'Vui lòng nhập tên món đồ')
                     : null,
               ),
               const SizedBox(height: 16),
@@ -1014,7 +1035,8 @@ class _AddItemScreenState extends State<AddItemScreen>
   }
 
   Widget _buildImageScannerHero() {
-    final bool isLocal = _localImagePath != null && !_localImagePath!.startsWith('http');
+    final bool isLocal =
+        _localImagePath != null && !_localImagePath!.startsWith('http');
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
@@ -1073,7 +1095,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                     const SizedBox(width: 6),
                     Builder(
                       builder: (ctx) {
-                        final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                        final isEn =
+                            Provider.of<LanguageProvider>(ctx).isEnglish;
                         return Text(
                           isLocal
                               ? (isEn ? 'Device Photo' : 'Ảnh từ thiết bị')
@@ -1175,7 +1198,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                       Expanded(
                         child: Builder(
                           builder: (ctx) {
-                            final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                            final isEn =
+                                Provider.of<LanguageProvider>(ctx).isEnglish;
                             return Text(
                               isEn
                                   ? 'AI is extracting colors & style features...'
@@ -1404,7 +1428,8 @@ class _AddItemScreenState extends State<AddItemScreen>
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: Colors.white),
                     )
-                  : const Icon(Icons.auto_awesome, size: 20, color: Colors.white),
+                  : const Icon(Icons.auto_awesome,
+                      size: 20, color: Colors.white),
               label: Text(
                 _isEnhancing
                     ? (isEn
@@ -1437,7 +1462,9 @@ class _AddItemScreenState extends State<AddItemScreen>
             ),
             icon: const Icon(Icons.cleaning_services_rounded, size: 20),
             label: Text(
-              isEn ? 'Interactive Eraser & Refine' : 'Xóa Phông & Dặm Vá Thủ Công',
+              isEn
+                  ? 'Interactive Eraser & Refine'
+                  : 'Xóa Phông & Dặm Vá Thủ Công',
               style: AppFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -1528,7 +1555,9 @@ class _AddItemScreenState extends State<AddItemScreen>
               ],
             ),
             Text(
-              isEn ? '${allDisplayList.length} photos' : '${allDisplayList.length} ảnh',
+              isEn
+                  ? '${allDisplayList.length} photos'
+                  : '${allDisplayList.length} ảnh',
               style: AppFonts.inter(
                 fontSize: 12,
                 color: AppTheme.darkTextSecondary,
@@ -1571,7 +1600,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          isEn ? '+ Add photo\nfrom device' : '+ Thêm ảnh\ntừ máy',
+                          isEn
+                              ? '+ Add photo\nfrom device'
+                              : '+ Thêm ảnh\ntừ máy',
                           textAlign: TextAlign.center,
                           style: AppFonts.inter(
                             fontSize: 10,
@@ -1724,7 +1755,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                 ),
               ),
               Text(
-                isEn ? '${collections.length} wardrobes' : '${collections.length} tủ đồ',
+                isEn
+                    ? '${collections.length} wardrobes'
+                    : '${collections.length} tủ đồ',
                 style: AppFonts.inter(
                   fontSize: 11,
                   color: AppTheme.primaryLight,
@@ -1740,7 +1773,8 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: collections.map((col) {
               final isSelected = col.id == currentWardrobeId;
               return ChoiceChip(
-                label: Text('${col.icon} ${TagLocalization.getLocalizedWardrobeName(col.name, isEn)}'),
+                label: Text(
+                    '${col.icon} ${TagLocalization.getLocalizedWardrobeName(col.name, isEn)}'),
                 selected: isSelected,
                 showCheckmark: isSelected,
                 checkmarkColor: Colors.white,
@@ -1795,7 +1829,8 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: WardrobeCategory.values.map((cat) {
               final isSelected = _selectedCategory == cat;
               return ChoiceChip(
-                label: Text('${cat.icon} ${TagLocalization.getCategoryName(cat, isEn)}'),
+                label: Text(
+                    '${cat.icon} ${TagLocalization.getCategoryName(cat, isEn)}'),
                 selected: isSelected,
                 showCheckmark: isSelected,
                 checkmarkColor: Colors.white,
@@ -1901,7 +1936,9 @@ class _AddItemScreenState extends State<AddItemScreen>
                         color: AppTheme.primaryLight.withOpacity(0.4)),
                   ),
                   child: Text(
-                    isEn ? '${_selectedTags.length} selected' : '${_selectedTags.length} đã chọn',
+                    isEn
+                        ? '${_selectedTags.length} selected'
+                        : '${_selectedTags.length} đã chọn',
                     style: AppFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -1920,8 +1957,7 @@ class _AddItemScreenState extends State<AddItemScreen>
             children: _popularTags.map((tag) {
               final isSelected = _selectedTags.contains(tag);
               return FilterChip(
-                label: Text(TagLocalization.getLocalizedTag(
-                    tag, isEn)),
+                label: Text(TagLocalization.getLocalizedTag(tag, isEn)),
                 selected: isSelected,
                 showCheckmark: isSelected,
                 checkmarkColor: Colors.white,
@@ -2003,8 +2039,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        TagLocalization.getLocalizedTag(
-                            tag, isEn),
+                        TagLocalization.getLocalizedTag(tag, isEn),
                         style: AppFonts.inter(
                           fontSize: 12,
                           color: Colors.white,
@@ -2346,8 +2381,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                 children: [
                   Text(
                     'Chạm nút chụp để AI phân tích trang phục',
-                    style:
-                        AppFonts.inter(color: Colors.white70, fontSize: 13),
+                    style: AppFonts.inter(color: Colors.white70, fontSize: 13),
                   ),
                   const SizedBox(height: 18),
                   Row(

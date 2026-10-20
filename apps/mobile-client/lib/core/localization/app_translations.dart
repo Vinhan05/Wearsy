@@ -24,7 +24,8 @@ class AppTranslations {
     'no_data': 'Chưa có dữ liệu',
     'welcome_tagline': 'Your wardrobe smarter',
     'welcome_title': 'Khám phá phong cách của bạn cùng WEARSY',
-    'welcome_subtitle': 'Quản lý tủ đồ thông minh và phối đồ chuẩn gu với trợ lý AI',
+    'welcome_subtitle':
+        'Quản lý tủ đồ thông minh và phối đồ chuẩn gu với trợ lý AI',
     'welcome_btn_start': 'Bắt đầu ngay',
     'login_title': 'Đăng nhập',
     'login_welcome': 'Chào mừng bạn quay trở lại!',
@@ -40,15 +41,18 @@ class AppTranslations {
     'login_no_account': 'Chưa có tài khoản?',
     'login_register_now': 'Đăng ký ngay',
     'login_success': 'Đăng nhập thành công! Chào mừng bạn đến với WEARSY.',
-    'login_lockout_1min': 'Bạn đã nhập sai 5 lần liên tiếp. Nút đăng nhập tạm khóa trong 1 phút.',
-    'login_lockout_5min': 'Bạn đã nhập sai 10 lần liên tiếp. Nút đăng nhập tạm khóa trong 5 phút.',
+    'login_lockout_1min':
+        'Bạn đã nhập sai 5 lần liên tiếp. Nút đăng nhập tạm khóa trong 1 phút.',
+    'login_lockout_5min':
+        'Bạn đã nhập sai 10 lần liên tiếp. Nút đăng nhập tạm khóa trong 5 phút.',
     'register_title': 'Tạo tài khoản',
     'register_subtitle': 'Bắt đầu hành trình định hình phong cách cá nhân',
     'register_fullname_label': 'Họ và tên',
     'register_fullname_hint': 'Nhập họ tên của bạn',
     'register_confirm_password_label': 'Xác nhận mật khẩu',
     'register_confirm_password_hint': 'Nhập lại mật khẩu',
-    'register_terms_agree': 'Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật',
+    'register_terms_agree':
+        'Tôi đồng ý với Điều khoản dịch vụ và Chính sách bảo mật',
     'register_btn_submit': 'Đăng ký',
     'register_has_account': 'Đã có tài khoản?',
     'register_login_now': 'Đăng nhập',
@@ -64,7 +68,8 @@ class AppTranslations {
     'home_greeting_evening': 'Chào buổi tối {userName}! 🌙',
     'home_weather_title': 'Thời tiết hôm nay',
     'home_weather_temp': '{temp}°C {weatherDesc}',
-    'home_weather_advice': 'Thời tiết lý tưởng cho các trang phục nhẹ nhàng thoáng mát.',
+    'home_weather_advice':
+        'Thời tiết lý tưởng cho các trang phục nhẹ nhàng thoáng mát.',
     'home_today_outfit_title': 'Gợi ý trang phục hôm nay',
     'home_view_all': 'Xem tất cả',
     'home_my_wardrobe_summary': 'Tổng quan tủ đồ',
@@ -83,7 +88,8 @@ class AppTranslations {
     'wardrobe_btn_add_item': 'Thêm món đồ mới',
     'wardrobe_btn_create_capsule': 'Tạo tủ đồ mới',
     'wardrobe_capsule_name_hint': 'Nhập tên tủ đồ...',
-    'wardrobe_delete_capsule_confirm': 'Bạn có chắc chắn muốn xóa tủ đồ "{name}" không?',
+    'wardrobe_delete_capsule_confirm':
+        'Bạn có chắc chắn muốn xóa tủ đồ "{name}" không?',
     'wardrobe_item_detail_title': 'Chi tiết trang phục',
     'wardrobe_item_name': 'Tên món đồ',
     'wardrobe_item_brand': 'Thương hiệu',
@@ -95,11 +101,13 @@ class AppTranslations {
     'wardrobe_item_occasion': 'Dịp mặc',
     'wardrobe_item_wear_count': 'Số lần đã mặc: {count}',
     'wardrobe_item_last_worn': 'Lần mặc gần nhất: {date}',
-    'wardrobe_item_delete_confirm': 'Bạn có chắc chắn muốn xóa món đồ này khỏi tủ không?',
+    'wardrobe_item_delete_confirm':
+        'Bạn có chắc chắn muốn xóa món đồ này khỏi tủ không?',
     'wardrobe_add_item_title': 'Thêm món đồ',
     'wardrobe_add_take_photo': 'Chụp ảnh',
     'wardrobe_add_choose_gallery': 'Chọn từ thư viện',
-    'wardrobe_ai_analyzing': 'AI đang nhận diện chất liệu kiểu dáng và màu sắc...',
+    'wardrobe_ai_analyzing':
+        'AI đang nhận diện chất liệu kiểu dáng và màu sắc...',
     'wardrobe_ai_completed': 'Đã nhận diện thành công!',
     'outfit_title': 'Phối đồ & AI Stylist',
     'outfit_tab_suggested': 'Gợi ý từ AI',
@@ -112,7 +120,8 @@ class AppTranslations {
     'outfit_occasion_date': 'Hẹn hò',
     'outfit_occasion_sport': 'Thể thao',
     'outfit_score_label': 'Điểm phong cách',
-    'outfit_score_desc': '{score}/100 - Phối màu và tỷ lệ trang phục rất hài hòa!',
+    'outfit_score_desc':
+        '{score}/100 - Phối màu và tỷ lệ trang phục rất hài hòa!',
     'outfit_save_success': 'Đã lưu bộ phối trang phục thành công!',
     'outfit_share': 'Chia sẻ bộ phối này',
     'color_score_title': 'Chấm điểm màu sắc',
@@ -122,9 +131,11 @@ class AppTranslations {
     'color_score_harmony': 'Mức độ hài hòa: {harmonyLevel}',
     'color_score_ai_tip': 'Lời khuyên từ AI Stylist: {tipText}',
     'shopping_title': 'Mua sắm thông minh',
-    'shopping_subtitle': 'Món đồ gợi ý bổ sung cho các bộ phối trong tủ của bạn',
+    'shopping_subtitle':
+        'Món đồ gợi ý bổ sung cho các bộ phối trong tủ của bạn',
     'shopping_why_recommend': 'Lý do gợi ý',
-    'shopping_why_recommend_desc': 'Kết hợp hoàn hảo với {itemCount} món đồ có sẵn trong tủ của bạn',
+    'shopping_why_recommend_desc':
+        'Kết hợp hoàn hảo với {itemCount} món đồ có sẵn trong tủ của bạn',
     'shopping_btn_buy_now': 'Mua ngay',
     'shopping_btn_add_cart': 'Thêm vào giỏ',
     'shopping_cart_title': 'Giỏ hàng',
@@ -146,7 +157,8 @@ class AppTranslations {
     'settings_about': 'Về WEARSY',
     'settings_version': 'Phiên bản {version}',
     'settings_logout': 'Đăng xuất',
-    'settings_logout_confirm': 'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?',
+    'settings_logout_confirm':
+        'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?',
     'error_network': 'Không có kết nối Internet. Vui lòng kiểm tra lại mạng.',
     'error_server': 'Hệ thống đang bận. Vui lòng thử lại sau.',
     'error_required_field': 'Trường này không được để trống.',
@@ -174,7 +186,8 @@ class AppTranslations {
     'no_data': 'No data available',
     'welcome_tagline': 'Your wardrobe smarter',
     'welcome_title': 'Discover your personal style with WEARSY',
-    'welcome_subtitle': 'Smart wardrobe management and AI-powered fashion styling',
+    'welcome_subtitle':
+        'Smart wardrobe management and AI-powered fashion styling',
     'welcome_btn_start': 'Get Started',
     'login_title': 'Log In',
     'login_welcome': 'Welcome back!',
@@ -190,15 +203,18 @@ class AppTranslations {
     'login_no_account': 'Don\'t have an account?',
     'login_register_now': 'Register now',
     'login_success': 'Login successful! Welcome to WEARSY.',
-    'login_lockout_1min': 'You entered incorrect password 5 times. Login is locked for 1 minute.',
-    'login_lockout_5min': 'You entered incorrect password 10 times. Login is locked for 5 minutes.',
+    'login_lockout_1min':
+        'You entered incorrect password 5 times. Login is locked for 1 minute.',
+    'login_lockout_5min':
+        'You entered incorrect password 10 times. Login is locked for 5 minutes.',
     'register_title': 'Create Account',
     'register_subtitle': 'Start your fashion journey today',
     'register_fullname_label': 'Full Name',
     'register_fullname_hint': 'Enter your full name',
     'register_confirm_password_label': 'Confirm Password',
     'register_confirm_password_hint': 'Re-enter your password',
-    'register_terms_agree': 'I agree to the Terms of Service and Privacy Policy',
+    'register_terms_agree':
+        'I agree to the Terms of Service and Privacy Policy',
     'register_btn_submit': 'Sign Up',
     'register_has_account': 'Already have an account?',
     'register_login_now': 'Log In',
@@ -233,7 +249,8 @@ class AppTranslations {
     'wardrobe_btn_add_item': 'Add New Item',
     'wardrobe_btn_create_capsule': 'Create Capsule',
     'wardrobe_capsule_name_hint': 'Enter capsule name...',
-    'wardrobe_delete_capsule_confirm': 'Are you sure you want to delete capsule "{name}"?',
+    'wardrobe_delete_capsule_confirm':
+        'Are you sure you want to delete capsule "{name}"?',
     'wardrobe_item_detail_title': 'Item Details',
     'wardrobe_item_name': 'Item Name',
     'wardrobe_item_brand': 'Brand',
@@ -245,7 +262,8 @@ class AppTranslations {
     'wardrobe_item_occasion': 'Occasion',
     'wardrobe_item_wear_count': 'Times worn: {count}',
     'wardrobe_item_last_worn': 'Last worn: {date}',
-    'wardrobe_item_delete_confirm': 'Are you sure you want to delete this item?',
+    'wardrobe_item_delete_confirm':
+        'Are you sure you want to delete this item?',
     'wardrobe_add_item_title': 'Add Item',
     'wardrobe_add_take_photo': 'Take Photo',
     'wardrobe_add_choose_gallery': 'Choose from Gallery',
@@ -262,7 +280,8 @@ class AppTranslations {
     'outfit_occasion_date': 'Date Night',
     'outfit_occasion_sport': 'Sport',
     'outfit_score_label': 'Style Score',
-    'outfit_score_desc': '{score}/100 - Great color harmony and outfit proportion!',
+    'outfit_score_desc':
+        '{score}/100 - Great color harmony and outfit proportion!',
     'outfit_save_success': 'Outfit saved successfully!',
     'outfit_share': 'Share this outfit',
     'color_score_title': 'Color Score',
@@ -274,7 +293,8 @@ class AppTranslations {
     'shopping_title': 'Smart Shopping',
     'shopping_subtitle': 'Items recommended to complete your wardrobe',
     'shopping_why_recommend': 'Why recommended',
-    'shopping_why_recommend_desc': 'Pairs perfectly with {itemCount} items in your wardrobe',
+    'shopping_why_recommend_desc':
+        'Pairs perfectly with {itemCount} items in your wardrobe',
     'shopping_btn_buy_now': 'Buy Now',
     'shopping_btn_add_cart': 'Add to Cart',
     'shopping_cart_title': 'Shopping Cart',

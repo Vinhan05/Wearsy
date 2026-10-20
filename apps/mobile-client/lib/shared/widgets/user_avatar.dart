@@ -51,7 +51,8 @@ class UserAvatar extends StatelessWidget {
         backgroundColor: const Color(0xFFF3F4F6),
         backgroundImage: _getImageProvider(effectiveUrl),
         onBackgroundImageError: (exception, stackTrace) {
-          debugPrint('UserAvatar error loading image ($effectiveUrl): $exception');
+          debugPrint(
+              'UserAvatar error loading image ($effectiveUrl): $exception');
         },
       );
     } else {

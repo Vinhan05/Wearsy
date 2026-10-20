@@ -51,13 +51,16 @@ class WardrobeProvider with ChangeNotifier {
   String? get selectedColor => _selectedColor;
   String get sortBy => _sortBy;
   bool get hasActiveFilter =>
-      _selectedCategory != null || _selectedColor != null || _sortBy != 'default';
+      _selectedCategory != null ||
+      _selectedColor != null ||
+      _sortBy != 'default';
 
   /// Danh sách món đồ trong tủ đồ hiện tại sau khi áp dụng bộ lọc phân loại (Áo, Quần, Màu sắc, Sắp xếp)
   List<WardrobeItemModel> get filteredItems {
     var items = List<WardrobeItemModel>.from(allItems);
     if (_selectedCategory != null) {
-      items = items.where((item) => item.category == _selectedCategory).toList();
+      items =
+          items.where((item) => item.category == _selectedCategory).toList();
     }
     if (_selectedColor != null && _selectedColor!.isNotEmpty) {
       items = items

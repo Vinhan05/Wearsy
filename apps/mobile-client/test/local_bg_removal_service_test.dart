@@ -11,7 +11,12 @@ void main() {
       // Tạo một ảnh mẫu 200x200 màu trắng với hình chữ nhật màu đen ở giữa
       final testImg = img.Image(width: 200, height: 200);
       img.fill(testImg, color: img.ColorRgb8(255, 255, 255)); // Phông nền trắng
-      img.fillRect(testImg, x1: 50, y1: 50, x2: 150, y2: 150, color: img.ColorRgb8(0, 0, 0)); // Trang phục đen
+      img.fillRect(testImg,
+          x1: 50,
+          y1: 50,
+          x2: 150,
+          y2: 150,
+          color: img.ColorRgb8(0, 0, 0)); // Trang phục đen
 
       final pngBytes = img.encodePng(testImg);
       tempInputFile = File('${Directory.systemTemp.path}/test_item_input.png');
@@ -24,8 +29,10 @@ void main() {
       }
     });
 
-    test('processImage returns a valid cutout PNG path for existing file', () async {
-      final cutoutPath = await LocalBgRemovalService.processImage(tempInputFile.path);
+    test('processImage returns a valid cutout PNG path for existing file',
+        () async {
+      final cutoutPath =
+          await LocalBgRemovalService.processImage(tempInputFile.path);
 
       expect(cutoutPath, isNotNull);
       expect(cutoutPath, endsWith('_cutout.png'));
@@ -44,7 +51,8 @@ void main() {
     });
 
     test('processImage returns null for non-existent file path', () async {
-      final result = await LocalBgRemovalService.processImage('/invalid/path/non_existent.png');
+      final result = await LocalBgRemovalService.processImage(
+          '/invalid/path/non_existent.png');
       expect(result, isNull);
     });
   });

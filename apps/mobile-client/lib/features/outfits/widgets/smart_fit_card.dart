@@ -114,8 +114,7 @@ class SmartFitCard extends StatelessWidget {
                       color: Colors.white70, size: 14),
                   label: Text(
                     'Đổi số đo',
-                    style:
-                        AppFonts.inter(color: Colors.white70, fontSize: 11),
+                    style: AppFonts.inter(color: Colors.white70, fontSize: 11),
                   ),
                   onPressed: () => _showQuickAdjustDialog(context),
                 ),
@@ -230,8 +229,8 @@ class SmartFitCard extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: AppFonts.inter(
-                          color: Colors.white54, fontSize: 10),
+                      style:
+                          AppFonts.inter(color: Colors.white54, fontSize: 10),
                     ),
                     Text(
                       '${score.toStringAsFixed(1)} / 10',
@@ -345,8 +344,7 @@ class SmartFitCard extends StatelessWidget {
                   ),
                   Text(
                     'Thử nghiệm xem Layering Canvas và Smart Fit tự động thích ứng với thể trạng:',
-                    style:
-                        AppFonts.inter(color: Colors.white60, fontSize: 12),
+                    style: AppFonts.inter(color: Colors.white60, fontSize: 12),
                   ),
                   const SizedBox(height: 16),
                   // Slider Chiều cao

@@ -6,6 +6,8 @@ import '../../features/wardrobe/models/wardrobe_item_model.dart';
 import 'smart_fit_engine.dart';
 
 import '../constants/api_constants.dart';
+import '../models/user_style_persona_model.dart';
+import '../storage/style_persona_storage.dart';
 
 class SmartFitAiService {
   // URLs kết nối đến Backend trên Render.com hoặc local
@@ -13,7 +15,7 @@ class SmartFitAiService {
   static String get _aiOrchestratorUrl {
     const envUrl = String.fromEnvironment('AI_ORCHESTRATOR_URL');
     if (envUrl.isNotEmpty) return envUrl;
-    return 'http://10.30.1.50:8000';
+    return _backendUrl;
   }
 
   /// Sinh gợi ý Outfit kết hợp giữa Gemma 4 Multimodal và ComfyUI Try-on
@@ -26,11 +28,20 @@ class SmartFitAiService {
     String stylePreference = 'Thanh lịch, hiện đại',
     String userName = 'Bạn',
   }) async {
+    // Tải hồ sơ phong cách lưu cục bộ trên máy
+    final persona = await StylePersonaStorage.loadPersona();
+    final effectiveStyle = (stylePreference.isNotEmpty &&
+            stylePreference != 'Thanh lịch, hiện đại')
+        ? stylePreference
+        : (persona.toPromptContext().isNotEmpty
+            ? persona.toPromptContext()
+            : stylePreference);
+
     // 1. Phân tích thể trạng qua Deterministic Engine (< 5ms)
     final bodyAnalysis = SmartFitEngine.analyzeBody(
-      heightCm: heightCm,
-      weightKg: weightKg,
-      gender: gender,
+      heightCm: heightCm > 0 ? heightCm : (persona.heightCm ?? 172.0),
+      weightKg: weightKg > 0 ? weightKg : (persona.weightKg ?? 65.0),
+      gender: gender.isNotEmpty ? gender : (persona.gender ?? 'Nam'),
     );
 
     if (wardrobeItems.isEmpty) {
@@ -38,6 +49,7 @@ class SmartFitAiService {
         wardrobeItems: [],
         bodyAnalysis: bodyAnalysis,
         occasion: occasion,
+        persona: persona,
       );
     }
 
@@ -47,8 +59,9 @@ class SmartFitAiService {
         wardrobeItems: wardrobeItems,
         bodyAnalysis: bodyAnalysis,
         occasion: occasion,
-        stylePreference: stylePreference,
+        stylePreference: effectiveStyle,
         userName: userName,
+        persona: persona,
       );
       if (aiResult != null) {
         return aiResult;
@@ -57,11 +70,12 @@ class SmartFitAiService {
       debugPrint('[SmartFitAiService] Wearsy AI Engine call exception: $e');
     }
 
-    // 3. Fallback: Heuristic Engine nội bộ đảm bảo app hoạt động 100% không gián đoạn
+    // 3. Fallback: Heuristic Engine nội bộ cá nhân hóa theo Persona
     return _buildFallbackOutfit(
       wardrobeItems: wardrobeItems,
       bodyAnalysis: bodyAnalysis,
       occasion: occasion,
+      persona: persona,
     );
   }
 
@@ -71,6 +85,7 @@ class SmartFitAiService {
     required String occasion,
     required String stylePreference,
     required String userName,
+    UserStylePersonaModel? persona,
   }) async {
     final wardrobeJson = wardrobeItems.map((item) {
       return {
@@ -84,12 +99,18 @@ class SmartFitAiService {
       };
     }).toList();
 
+    final promptPrefix = persona != null && persona.toPromptContext().isNotEmpty
+        ? '[Gu phong cách cá nhân: ${persona.toPromptContext()}] '
+        : '';
+
     final payload = {
-      'user_prompt': occasion,
+      'user_prompt': '$promptPrefix$occasion',
       'occasion': occasion,
+      'style_preference': stylePreference,
       'user_name': userName,
       'user_body_summary': bodyAnalysis.toJson(),
       'wardrobe_items': wardrobeJson,
+      if (persona != null) 'user_style_persona': persona.toJson(),
     };
 
     // 1st attempt: Call NestJS Backend
@@ -165,9 +186,8 @@ class SmartFitAiService {
         data['stylist_reasoning']?.toString() ??
         'Bộ outfit được AI phối hợp hài hòa, tôn dáng và phù hợp với dịp của bạn.';
 
-    final imageUrl = data['image_url']?.toString() ??
-        data['image_base64']?.toString() ??
-        '';
+    final imageUrl =
+        data['image_url']?.toString() ?? data['image_base64']?.toString() ?? '';
 
     final advice = SmartFitAdvice(
       sizeRecommendation: 'Size ${bodyAnalysis.estimatedSize}',
@@ -223,8 +243,40 @@ class SmartFitAiService {
     required List<WardrobeItemModel> wardrobeItems,
     required BodyAnalysisResult bodyAnalysis,
     required String occasion,
+    UserStylePersonaModel? persona,
   }) {
-    final selectedItems = wardrobeItems.take(3).toList();
+    // Sắp xếp các món đồ dựa trên mức độ phù hợp với Persona (màu yêu thích, style tags)
+    final sortedItems = List<WardrobeItemModel>.from(wardrobeItems);
+    if (persona != null && sortedItems.isNotEmpty) {
+      sortedItems.sort((a, b) {
+        int scoreA = 0;
+        int scoreB = 0;
+
+        // Điểm ưu tiên màu sắc yêu thích / tránh màu kỵ
+        for (final fav in persona.favoriteColors) {
+          if (a.color.toLowerCase().contains(fav.toLowerCase())) scoreA += 3;
+          if (b.color.toLowerCase().contains(fav.toLowerCase())) scoreB += 3;
+        }
+        for (final avoid in persona.avoidedColors) {
+          if (a.color.toLowerCase().contains(avoid.toLowerCase())) scoreA -= 5;
+          if (b.color.toLowerCase().contains(avoid.toLowerCase())) scoreB -= 5;
+        }
+
+        // Điểm ưu tiên gu thời trang
+        for (final st in persona.primaryStyles) {
+          if (a.tags.any((t) => t.toLowerCase().contains(st.toLowerCase()))) {
+            scoreA += 2;
+          }
+          if (b.tags.any((t) => t.toLowerCase().contains(st.toLowerCase()))) {
+            scoreB += 2;
+          }
+        }
+
+        return scoreB.compareTo(scoreA);
+      });
+    }
+
+    final selectedItems = sortedItems.take(3).toList();
     final itemIds = selectedItems.map((item) => item.id).toList();
 
     return OutfitModel(
@@ -236,7 +288,7 @@ class SmartFitAiService {
       eleganceScore: 9.0,
       colorScore: 8.8,
       aiReason: selectedItems.isNotEmpty
-          ? 'Sự kết hợp giữa ${selectedItems.map((e) => e.name).join(', ')} mang lại vẻ ngoài trẻ trung, thanh lịch và cân đối.'
+          ? 'Sự kết hợp giữa ${selectedItems.map((e) => e.name).join(', ')} được chọn lọc chuẩn theo gu phong cách và màu sắc ưa chuộng của bạn.'
           : 'Tủ đồ của bạn chưa có đủ món để phối.',
       itemIds: itemIds,
       coverImageUrl:
@@ -265,10 +317,12 @@ class SmartFitAiService {
     String userName = 'Bạn',
     bool forceFinalize = false,
   }) async {
+    final persona = await StylePersonaStorage.loadPersona();
+
     final bodyAnalysis = SmartFitEngine.analyzeBody(
-      heightCm: heightCm,
-      weightKg: weightKg,
-      gender: gender,
+      heightCm: heightCm > 0 ? heightCm : (persona.heightCm ?? 172.0),
+      weightKg: weightKg > 0 ? weightKg : (persona.weightKg ?? 65.0),
+      gender: gender.isNotEmpty ? gender : (persona.gender ?? 'Nam'),
     );
 
     final wardrobeJson = wardrobeItems.map((item) {
@@ -292,6 +346,8 @@ class SmartFitAiService {
         'bmi': bodyAnalysis.bmi,
         'body_frame': bodyAnalysis.bodyFrame,
         'estimated_size': bodyAnalysis.estimatedSize,
+        'style_persona': persona.toJson(),
+        'style_context': persona.toPromptContext(),
       },
       'wardrobe_items': wardrobeJson,
       'force_finalize': forceFinalize,
@@ -405,7 +461,8 @@ class SmartFitAiService {
     final salutation = gender.toLowerCase().contains('nam')
         ? 'anh'
         : (gender.toLowerCase().contains('nữ') ? 'chị' : 'bạn');
-    final sampleItem = wardrobeItems.isNotEmpty ? wardrobeItems.first.name : null;
+    final sampleItem =
+        wardrobeItems.isNotEmpty ? wardrobeItems.first.name : null;
     final hint = sampleItem != null
         ? 'Chào $salutation $userName! Em thấy tủ đồ của $salutation có "$sampleItem", mình có thể mix thêm cùng quần/váy phù hợp để tạo nên phong cách rất ấn tượng. $salutation muốn diện set này vào dịp nào thế ạ?'
         : 'Chào $salutation $userName! Stylist rất vui được hỗ trợ bạn. Hôm nay $salutation muốn tìm một phong cách năng động, thanh lịch hay cho dịp đặc biệt nào thế ạ?';

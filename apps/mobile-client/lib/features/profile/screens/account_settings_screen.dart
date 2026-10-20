@@ -697,72 +697,72 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             // Wearsy Premium Upgrade Banner (Ẩn nếu đã là Premium)
             if (user == null || (!user.hasActiveVip && !user.isVip)) ...[
               GestureDetector(
-              onTap: _showVipModal,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF8A6728), Color(0xFF6E521C)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF8A6728).withOpacity(0.25),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                onTap: _showVipModal,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF8A6728), Color(0xFF6E521C)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
-                ),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 18, vertical: 16),
-                child: Row(
-                  children: [
-                    const Icon(Icons.diamond_rounded,
-                        size: 34, color: Colors.white),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isEn ? 'UPGRADE' : 'NÂNG CẤP',
-                            style: AppFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                              color: Colors.white70,
-                            ),
-                          ),
-                          Text(
-                            'WEARSY PREMIUM',
-                            style: AppFonts.outfit(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            isEn
-                                ? 'Unlock advanced personalized experience.'
-                                : 'Mở khóa trải nghiệm cá nhân hóa nâng cao.',
-                            style: AppFonts.inter(
-                              fontSize: 11.5,
-                              color: Colors.white.withOpacity(0.85),
-                            ),
-                          ),
-                        ],
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF8A6728).withOpacity(0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                    const Icon(Icons.arrow_forward_ios_rounded,
-                        size: 16, color: Colors.white),
-                  ],
+                    ],
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.diamond_rounded,
+                          size: 34, color: Colors.white),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isEn ? 'UPGRADE' : 'NÂNG CẤP',
+                              style: AppFonts.inter(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            Text(
+                              'WEARSY PREMIUM',
+                              style: AppFonts.outfit(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              isEn
+                                  ? 'Unlock advanced personalized experience.'
+                                  : 'Mở khóa trải nghiệm cá nhân hóa nâng cao.',
+                              style: AppFonts.inter(
+                                fontSize: 11.5,
+                                color: Colors.white.withOpacity(0.85),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios_rounded,
+                          size: 16, color: Colors.white),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 28),
-          ],
+              const SizedBox(height: 28),
+            ],
 
             // Section Reset Tủ Đồ
             Container(
@@ -960,8 +960,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
               obscureText: _obscureOldPassword,
               onToggleVisibility: () =>
                   setState(() => _obscureOldPassword = !_obscureOldPassword),
-              validator: (v) =>
-                  (v == null || v.isEmpty) ? (isEn ? 'Please enter current password' : 'Vui lòng nhập mật khẩu cũ') : null,
+              validator: (v) => (v == null || v.isEmpty)
+                  ? (isEn
+                      ? 'Please enter current password'
+                      : 'Vui lòng nhập mật khẩu cũ')
+                  : null,
             ),
             const SizedBox(height: 16),
 
@@ -974,10 +977,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   setState(() => _obscureNewPassword = !_obscureNewPassword),
               validator: (v) {
                 if (v == null || v.length < 6) {
-                  return isEn ? 'New password must be at least 6 characters' : 'Mật khẩu mới tối thiểu 6 ký tự';
+                  return isEn
+                      ? 'New password must be at least 6 characters'
+                      : 'Mật khẩu mới tối thiểu 6 ký tự';
                 }
                 if (v == _oldPasswordController.text) {
-                  return isEn ? 'New password cannot match old password' : 'Mật khẩu mới không được trùng mật khẩu cũ';
+                  return isEn
+                      ? 'New password cannot match old password'
+                      : 'Mật khẩu mới không được trùng mật khẩu cũ';
                 }
                 return null;
               },
@@ -993,7 +1000,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   () => _obscureConfirmPassword = !_obscureConfirmPassword),
               validator: (v) {
                 if (v != _newPasswordController.text) {
-                  return isEn ? 'Password confirmation does not match' : 'Mật khẩu xác nhận không khớp';
+                  return isEn
+                      ? 'Password confirmation does not match'
+                      : 'Mật khẩu xác nhận không khớp';
                 }
                 return null;
               },
@@ -1190,10 +1199,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                          isEn
-                              ? '🗑️ Your account has been permanently deleted.'
-                              : '🗑️ Tài khoản của bạn đã được xóa vĩnh viễn khỏi hệ thống.'),
+                      content: Text(isEn
+                          ? '🗑️ Your account has been permanently deleted.'
+                          : '🗑️ Tài khoản của bạn đã được xóa vĩnh viễn khỏi hệ thống.'),
                       backgroundColor: AppTheme.primaryColor,
                     ),
                   );
@@ -1201,7 +1209,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(authProvider.errorMessage ??
-                          (isEn ? 'Failed to delete account.' : 'Xóa tài khoản thất bại.')),
+                          (isEn
+                              ? 'Failed to delete account.'
+                              : 'Xóa tài khoản thất bại.')),
                       backgroundColor: AppTheme.accentColor,
                     ),
                   );
@@ -1276,14 +1286,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
             onPressed: onToggle,
             child: Text(
               isLinked
-                  ? (Provider.of<LanguageProvider>(context, listen: false).isEnglish
+                  ? (Provider.of<LanguageProvider>(context, listen: false)
+                          .isEnglish
                       ? 'Unlink'
                       : 'Hủy liên kết')
-                  : (Provider.of<LanguageProvider>(context, listen: false).isEnglish
+                  : (Provider.of<LanguageProvider>(context, listen: false)
+                          .isEnglish
                       ? 'Link'
                       : 'Liên kết'),
-              style:
-                  AppFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+              style: AppFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -1292,12 +1303,17 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
   }
 
   void _showLinkToast(String provider, bool linked) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(linked
-            ? (isEn ? '✅ Linked $provider account' : '✅ Đã liên kết tài khoản $provider')
-            : (isEn ? 'Unlinked $provider account' : 'Đã hủy liên kết $provider')),
+            ? (isEn
+                ? '✅ Linked $provider account'
+                : '✅ Đã liên kết tài khoản $provider')
+            : (isEn
+                ? 'Unlinked $provider account'
+                : 'Đã hủy liên kết $provider')),
         backgroundColor: linked ? AppTheme.primaryColor : Colors.grey[800],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -1415,7 +1431,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isEn ? 'Upgrade WEARSY PREMIUM Plan ✨' : 'Nâng Cấp Gói WEARSY PREMIUM ✨',
+                    isEn
+                        ? 'Upgrade WEARSY PREMIUM Plan ✨'
+                        : 'Nâng Cấp Gói WEARSY PREMIUM ✨',
                     style: AppFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1609,25 +1627,21 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                 ),
               ),
               const SizedBox(height: 10),
-              _buildVipPerkItem(
-                  isEn
-                      ? 'Unlimited items in digital wardrobe'
-                      : 'Không giới hạn số lượng món đồ trong tủ đồ số'),
+              _buildVipPerkItem(isEn
+                  ? 'Unlimited items in digital wardrobe'
+                  : 'Không giới hạn số lượng món đồ trong tủ đồ số'),
               const SizedBox(height: 8),
-              _buildVipPerkItem(
-                  isEn
-                      ? 'Unlimited AI Stylist smart outfit suggestions'
-                      : 'AI Stylist gợi ý phối đồ thông minh không giới hạn'),
+              _buildVipPerkItem(isEn
+                  ? 'Unlimited AI Stylist smart outfit suggestions'
+                  : 'AI Stylist gợi ý phối đồ thông minh không giới hạn'),
               const SizedBox(height: 8),
-              _buildVipPerkItem(
-                  isEn
-                      ? 'Deep personal color palette & body shape analysis'
-                      : 'Phân tích bảng màu cá nhân & vóc dáng chuyên sâu'),
+              _buildVipPerkItem(isEn
+                  ? 'Deep personal color palette & body shape analysis'
+                  : 'Phân tích bảng màu cá nhân & vóc dáng chuyên sâu'),
               const SizedBox(height: 8),
-              _buildVipPerkItem(
-                  isEn
-                      ? 'High-speed AI priority processing & exclusive templates'
-                      : 'Ưu tiên xử lý AI tốc độ cao & mẫu phối độc quyền'),
+              _buildVipPerkItem(isEn
+                  ? 'High-speed AI priority processing & exclusive templates'
+                  : 'Ưu tiên xử lý AI tốc độ cao & mẫu phối độc quyền'),
 
               const SizedBox(height: 20),
               Divider(color: AppTheme.darkTextPrimary.withValues(alpha: 0.12)),
@@ -1652,7 +1666,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen>
                   letterSpacing: 1.2,
                 ),
                 decoration: InputDecoration(
-                  hintText: isEn ? 'Enter code (e.g. WEARSY)' : 'Nhập mã (VD: WEARSY)',
+                  hintText: isEn
+                      ? 'Enter code (e.g. WEARSY)'
+                      : 'Nhập mã (VD: WEARSY)',
                   hintStyle: AppFonts.inter(
                     color: AppTheme.darkTextPrimary.withValues(alpha: 0.38),
                     fontSize: 13,

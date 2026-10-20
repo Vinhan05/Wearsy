@@ -113,7 +113,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   iconColor: const Color(0xFF3B82F6),
                   title: isEn ? 'Language' : 'Ngôn ngữ',
                   subtitle: langProvider.currentLanguageName,
-                  trailingText: '${langProvider.currentFlag} ${langProvider.currentShortCode}',
+                  trailingText:
+                      '${langProvider.currentFlag} ${langProvider.currentShortCode}',
                   onTap: () => _showLanguageModal(context),
                 ),
                 _buildDivider(),
@@ -149,7 +150,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 _buildNavigationTile(
                   icon: Icons.lock_outline_rounded,
                   iconColor: const Color(0xFF10B981),
-                  title: isEn ? 'Security & Permissions' : 'Quyền truy cập & Bảo mật',
+                  title: isEn
+                      ? 'Security & Permissions'
+                      : 'Quyền truy cập & Bảo mật',
                   subtitle: isEn
                       ? 'Camera, photo library, storage'
                       : 'Camera, thư viện ảnh, lưu trữ',
@@ -159,7 +162,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 _buildSwitchTile(
                   icon: Icons.analytics_outlined,
                   iconColor: const Color(0xFF6366F1),
-                  title: isEn ? 'Usage Data Sharing' : 'Chia sẻ dữ liệu trải nghiệm',
+                  title: isEn
+                      ? 'Usage Data Sharing'
+                      : 'Chia sẻ dữ liệu trải nghiệm',
                   subtitle: isEn
                       ? 'Helps improve AI styling suggestions'
                       : 'Hỗ trợ tối ưu hóa gợi ý AI Stylist',
@@ -184,7 +189,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 _buildNavigationTile(
                   icon: Icons.quiz_outlined,
                   iconColor: const Color(0xFF06B6D4),
-                  title: isEn ? 'Frequently Asked Questions (FAQ)' : 'Câu hỏi thường gặp (FAQ)',
+                  title: isEn
+                      ? 'Frequently Asked Questions (FAQ)'
+                      : 'Câu hỏi thường gặp (FAQ)',
                   subtitle: isEn
                       ? 'Tips, styling guides, wardrobe setup'
                       : 'Mẹo sử dụng, hướng dẫn số hóa tủ đồ',
@@ -202,7 +209,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 _buildNavigationTile(
                   icon: Icons.bug_report_outlined,
                   iconColor: const Color(0xFFEF4444),
-                  title: isEn ? 'Report Bug & Feedback' : 'Báo lỗi & Góp ý cải tiến',
+                  title: isEn
+                      ? 'Report Bug & Feedback'
+                      : 'Báo lỗi & Góp ý cải tiến',
                   subtitle: isEn
                       ? 'Help make WEARSY better'
                       : 'Cùng chung tay hoàn thiện WEARSY',
@@ -224,7 +233,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   icon: Icons.article_outlined,
                   iconColor: const Color(0xFF64748B),
                   title: isEn ? 'Terms of Service' : 'Điều khoản sử dụng',
-                  subtitle: isEn ? 'User agreements & terms' : 'Quy định và thỏa thuận sử dụng',
+                  subtitle: isEn
+                      ? 'User agreements & terms'
+                      : 'Quy định và thỏa thuận sử dụng',
                   onTap: () => _showTermsModal(context),
                 ),
                 _buildDivider(),
@@ -252,7 +263,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 _buildNavigationTile(
                   icon: Icons.star_rate_rounded,
                   iconColor: const Color(0xFFF59E0B),
-                  title: isEn ? 'Rate WEARSY on App Store' : 'Đánh giá ứng dụng WEARSY',
+                  title: isEn
+                      ? 'Rate WEARSY on App Store'
+                      : 'Đánh giá ứng dụng WEARSY',
                   subtitle: isEn
                       ? 'Share your experience with others'
                       : 'Đánh giá 5 sao tiếp sức đội ngũ phát triển',
@@ -670,9 +683,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               : const Color(0xFFF9FAFB),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected
-                ? AppTheme.primaryColor
-                : const Color(0xFFE5E7EB),
+            color: isSelected ? AppTheme.primaryColor : const Color(0xFFE5E7EB),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -702,7 +713,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showNotificationsModal(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showModalBottomSheet(
       context: context,
@@ -776,7 +788,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                   contentPadding: EdgeInsets.zero,
                   activeColor: AppTheme.primaryColor,
                   title: Text(
-                    isEn ? 'Smart Weather Styling' : 'Cập nhật thời tiết thông minh',
+                    isEn
+                        ? 'Smart Weather Styling'
+                        : 'Cập nhật thời tiết thông minh',
                     style: AppFonts.inter(
                         fontWeight: FontWeight.w600, fontSize: 14.5),
                   ),
@@ -845,7 +859,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showPermissionsDialog(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showDialog(
       context: context,
@@ -867,8 +882,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             Expanded(
               child: Text(
                 isEn ? 'Device Permissions' : 'Quyền Truy Cập Thiết Bị',
-                style: AppFonts.outfit(
-                    fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    AppFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -946,9 +961,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               Text(
                 description,
                 style: AppFonts.inter(
-                    fontSize: 12,
-                    color: const Color(0xFF6B7280),
-                    height: 1.3),
+                    fontSize: 12, color: const Color(0xFF6B7280), height: 1.3),
               ),
             ],
           ),
@@ -958,7 +971,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showFaqModal(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     final List<Map<String, String>> faqs = isEn
         ? [
@@ -1035,7 +1049,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                isEn ? 'Frequently Asked Questions (FAQ)' : 'Câu Hỏi Thường Gặp (FAQ)',
+                isEn
+                    ? 'Frequently Asked Questions (FAQ)'
+                    : 'Câu Hỏi Thường Gặp (FAQ)',
                 style: AppFonts.outfit(
                   fontSize: 19,
                   fontWeight: FontWeight.bold,
@@ -1090,7 +1106,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showContactModal(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showModalBottomSheet(
       context: context,
@@ -1221,7 +1238,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showFeedbackModal(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
     final feedbackController = TextEditingController();
 
     showModalBottomSheet(
@@ -1340,7 +1358,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showTermsModal(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showModalBottomSheet(
       context: context,
@@ -1408,7 +1427,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showPrivacyPolicyModal(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showModalBottomSheet(
       context: context,
@@ -1476,7 +1496,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showRateDialog(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
     int selectedRating = 5;
 
     showDialog(
@@ -1489,8 +1510,7 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
           title: Text(
             isEn ? 'Rate WEARSY ⭐' : 'Đánh Giá WEARSY ⭐',
             textAlign: TextAlign.center,
-            style: AppFonts.outfit(
-                fontSize: 19, fontWeight: FontWeight.bold),
+            style: AppFonts.outfit(fontSize: 19, fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1569,7 +1589,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _showAboutModal(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showModalBottomSheet(
       context: context,
@@ -1662,7 +1683,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
   }
 
   void _confirmLogout(BuildContext context) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showDialog(
       context: context,

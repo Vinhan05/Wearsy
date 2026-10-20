@@ -81,7 +81,9 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
 
   Future<void> _ensureBgRemoved(WardrobeItemModel item) async {
     final url = item.imageUrl;
-    if (url.isEmpty || url.contains('e_background_removal') || (url.contains('cloudinary') && url.endsWith('.png'))) {
+    if (url.isEmpty ||
+        url.contains('e_background_removal') ||
+        (url.contains('cloudinary') && url.endsWith('.png'))) {
       return;
     }
     try {
@@ -92,9 +94,11 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
           final updatedItem = item.copyWith(imageUrl: bgRemovedUrl);
           if (_selectedTop?.id == item.id) _selectedTop = updatedItem;
           if (_selectedBottom?.id == item.id) _selectedBottom = updatedItem;
-          if (_selectedOuterwear?.id == item.id) _selectedOuterwear = updatedItem;
+          if (_selectedOuterwear?.id == item.id)
+            _selectedOuterwear = updatedItem;
           if (_selectedShoes?.id == item.id) _selectedShoes = updatedItem;
-          if (_selectedAccessories?.id == item.id) _selectedAccessories = updatedItem;
+          if (_selectedAccessories?.id == item.id)
+            _selectedAccessories = updatedItem;
         });
       }
     } catch (e) {
@@ -114,7 +118,8 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
 
   void _randomMix(List<WardrobeItemModel> items) {
     if (items.isEmpty) return;
-    final tops = items.where((i) => i.category == WardrobeCategory.tops).toList();
+    final tops =
+        items.where((i) => i.category == WardrobeCategory.tops).toList();
     final bottoms =
         items.where((i) => i.category == WardrobeCategory.bottoms).toList();
     final outers =
@@ -497,14 +502,14 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                     physics: const BouncingScrollPhysics(),
                     child: Row(
                       children: [
-                        _buildCategoryTab(
-                            WardrobeCategory.tops, 'Áo (Tops)', Icons.checkroom),
-                        _buildCategoryTab(WardrobeCategory.bottoms,
-                            'Quần/Váy', Icons.straighten),
-                        _buildCategoryTab(WardrobeCategory.outerwear,
-                            'Khoác', Icons.dry_cleaning),
-                        _buildCategoryTab(
-                            WardrobeCategory.shoes, 'Giày', Icons.skateboarding),
+                        _buildCategoryTab(WardrobeCategory.tops, 'Áo (Tops)',
+                            Icons.checkroom),
+                        _buildCategoryTab(WardrobeCategory.bottoms, 'Quần/Váy',
+                            Icons.straighten),
+                        _buildCategoryTab(WardrobeCategory.outerwear, 'Khoác',
+                            Icons.dry_cleaning),
+                        _buildCategoryTab(WardrobeCategory.shoes, 'Giày',
+                            Icons.skateboarding),
                         _buildCategoryTab(WardrobeCategory.accessories,
                             'Phụ Kiện', Icons.shopping_bag_outlined),
                       ],
@@ -651,15 +656,13 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
     );
   }
 
-  Widget _buildCategoryTab(
-      WardrobeCategory cat, String title, IconData icon) {
+  Widget _buildCategoryTab(WardrobeCategory cat, String title, IconData icon) {
     final isSelected = _activeCategory == cat;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
         avatar: Icon(icon,
-            size: 15,
-            color: isSelected ? Colors.white : AppTheme.primaryColor),
+            size: 15, color: isSelected ? Colors.white : AppTheme.primaryColor),
         label: Text(
           title,
           style: AppFonts.outfit(
@@ -724,8 +727,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.inter(
                     fontSize: 10,
-                    fontWeight:
-                        isEquipped ? FontWeight.bold : FontWeight.w500,
+                    fontWeight: isEquipped ? FontWeight.bold : FontWeight.w500,
                     color: AppTheme.darkTextPrimary,
                   ),
                 ),
@@ -748,8 +750,7 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
                     color: AppTheme.primaryColor,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check,
-                      color: Colors.white, size: 10),
+                  child: const Icon(Icons.check, color: Colors.white, size: 10),
                 ),
               ),
           ],

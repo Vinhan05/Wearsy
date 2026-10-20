@@ -14,14 +14,17 @@ void main() {
 
   group('AppTranslations Tests', () {
     test('Translates standard keys for VI and EN', () {
-      expect(AppTranslations.translate('nav_home', AppTranslations.vi), 'Trang chủ');
+      expect(AppTranslations.translate('nav_home', AppTranslations.vi),
+          'Trang chủ');
       expect(AppTranslations.translate('nav_home', AppTranslations.en), 'Home');
 
       expect(AppTranslations.translate('btn_save', AppTranslations.vi), 'Lưu');
       expect(AppTranslations.translate('btn_save', AppTranslations.en), 'Save');
 
-      expect(AppTranslations.translate('settings_logout', AppTranslations.vi), 'Đăng xuất');
-      expect(AppTranslations.translate('settings_logout', AppTranslations.en), 'Log Out');
+      expect(AppTranslations.translate('settings_logout', AppTranslations.vi),
+          'Đăng xuất');
+      expect(AppTranslations.translate('settings_logout', AppTranslations.en),
+          'Log Out');
     });
 
     test('Interpolates placeholders in translations correctly', () {
@@ -48,8 +51,10 @@ void main() {
     });
 
     test('Falls back gracefully for unknown keys', () {
-      expect(AppTranslations.translate('unknown_key_123', AppTranslations.vi), 'unknown_key_123');
-      expect(AppTranslations.translate('unknown_key_123', AppTranslations.en), 'unknown_key_123');
+      expect(AppTranslations.translate('unknown_key_123', AppTranslations.vi),
+          'unknown_key_123');
+      expect(AppTranslations.translate('unknown_key_123', AppTranslations.en),
+          'unknown_key_123');
     });
   });
 
@@ -89,7 +94,8 @@ void main() {
   });
 
   group('LanguageToggleButton Widget Tests', () {
-    testWidgets('Renders compact button and toggles language on tap', (WidgetTester tester) async {
+    testWidgets('Renders compact button and toggles language on tap',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
@@ -130,7 +136,8 @@ void main() {
       expect(find.text('🇻🇳'), findsOneWidget);
     });
 
-    testWidgets('Renders card style in Profile/Settings', (WidgetTester tester) async {
+    testWidgets('Renders card style in Profile/Settings',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MultiProvider(
           providers: [

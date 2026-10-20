@@ -75,7 +75,8 @@ class WardrobeItemModel {
   final int layerOrder;
   final String wardrobeId;
 
-  static String sanitizeImageUrl(String url, {String name = '', WardrobeCategory? category}) {
+  static String sanitizeImageUrl(String url,
+      {String name = '', WardrobeCategory? category}) {
     final clean = url.trim();
     if (clean.isEmpty) {
       return _getCategoryPngFallback(name, category);
@@ -105,14 +106,16 @@ class WardrobeItemModel {
 
     // 3. For Cloudinary upload URLs without transformation, inject e_background_removal/f_png to isolate the user's actual clothing photo
     if (clean.contains('cloudinary.com') && clean.contains('/upload/')) {
-      return clean.replaceFirst('/upload/', '/upload/e_background_removal/f_png/');
+      return clean.replaceFirst(
+          '/upload/', '/upload/e_background_removal/f_png/');
     }
 
     // 4. Preserve the user's actual image (local file path or custom photo URL)
     return clean;
   }
 
-  static String _getCategoryPngFallback(String name, WardrobeCategory? category) {
+  static String _getCategoryPngFallback(
+      String name, WardrobeCategory? category) {
     final lower = name.toLowerCase();
 
     // Quần (Jeans / Shorts / Trousers / Bottoms)

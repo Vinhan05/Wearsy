@@ -5,8 +5,10 @@ import 'app_translations.dart';
 class LanguageProvider extends ChangeNotifier {
   static const String _prefLanguageKey = 'selected_app_language_code';
   static String _staticCurrentLanguage = AppTranslations.vi;
-  static bool get isVietnameseStatic => _staticCurrentLanguage == AppTranslations.vi;
-  static bool get isEnglishStatic => _staticCurrentLanguage == AppTranslations.en;
+  static bool get isVietnameseStatic =>
+      _staticCurrentLanguage == AppTranslations.vi;
+  static bool get isEnglishStatic =>
+      _staticCurrentLanguage == AppTranslations.en;
 
   String _currentLanguage = AppTranslations.vi;
 
@@ -38,7 +40,8 @@ class LanguageProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final savedCode = prefs.getString(_prefLanguageKey);
-      if (savedCode != null && AppTranslations.supportedLanguages.contains(savedCode)) {
+      if (savedCode != null &&
+          AppTranslations.supportedLanguages.contains(savedCode)) {
         _currentLanguage = savedCode;
         _staticCurrentLanguage = savedCode;
         notifyListeners();

@@ -35,7 +35,8 @@ class _OutfitScreenState extends State<OutfitScreen> {
     final newOutfit = OutfitModel(
       id: 'ai_${DateTime.now().millisecondsSinceEpoch}',
       name: '$_selectedStyle • $_selectedContext',
-      aiReason: 'Gọn gàng, hiện đại và phù hợp cho thời tiết $_selectedWeather.',
+      aiReason:
+          'Gọn gàng, hiện đại và phù hợp cho thời tiết $_selectedWeather.',
       occasion: OutfitOccasion.casual,
       weatherSuitable: [_selectedWeather],
       aiScore: 9.8,
@@ -186,10 +187,26 @@ class _OutfitScreenState extends State<OutfitScreen> {
                 builder: (context) {
                   final isEn = Provider.of<LanguageProvider>(context).isEnglish;
                   final displayContexts = [
-                    {'label': isEn ? 'Work' : 'Đi làm', 'raw': 'Đi làm', 'icon': Icons.work_outline_rounded},
-                    {'label': isEn ? 'Casual' : 'Đi chơi', 'raw': 'Đi chơi', 'icon': Icons.local_cafe_outlined},
-                    {'label': isEn ? 'Date' : 'Hẹn hò', 'raw': 'Hẹn hò', 'icon': Icons.favorite_border_rounded},
-                    {'label': isEn ? 'Travel' : 'Du lịch', 'raw': 'Du lịch', 'icon': Icons.luggage_outlined},
+                    {
+                      'label': isEn ? 'Work' : 'Đi làm',
+                      'raw': 'Đi làm',
+                      'icon': Icons.work_outline_rounded
+                    },
+                    {
+                      'label': isEn ? 'Casual' : 'Đi chơi',
+                      'raw': 'Đi chơi',
+                      'icon': Icons.local_cafe_outlined
+                    },
+                    {
+                      'label': isEn ? 'Date' : 'Hẹn hò',
+                      'raw': 'Hẹn hò',
+                      'icon': Icons.favorite_border_rounded
+                    },
+                    {
+                      'label': isEn ? 'Travel' : 'Du lịch',
+                      'raw': 'Du lịch',
+                      'icon': Icons.luggage_outlined
+                    },
                   ];
 
                   return Column(
@@ -206,17 +223,21 @@ class _OutfitScreenState extends State<OutfitScreen> {
                       const SizedBox(height: 10),
                       Row(
                         children: displayContexts.map((c) {
-                          final isSelected = _selectedContext == c['raw'] || _selectedContext == c['label'];
+                          final isSelected = _selectedContext == c['raw'] ||
+                              _selectedContext == c['label'];
                           return Expanded(
                             child: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _selectedContext = c['raw'] as String),
+                              onTap: () => setState(
+                                  () => _selectedContext = c['raw'] as String),
                               child: Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 4),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? const Color(0xFF2563EB).withOpacity(0.08)
+                                      ? const Color(0xFF2563EB)
+                                          .withOpacity(0.08)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
@@ -267,11 +288,31 @@ class _OutfitScreenState extends State<OutfitScreen> {
                 builder: (context) {
                   final isEn = Provider.of<LanguageProvider>(context).isEnglish;
                   final displayWeathers = [
-                    {'label': isEn ? 'Sunny' : 'Nắng', 'raw': 'Nắng', 'icon': Icons.wb_sunny_outlined},
-                    {'label': isEn ? 'Cloudy' : 'Nhiều mây', 'raw': 'Nhiều mây', 'icon': Icons.cloud_outlined},
-                    {'label': isEn ? 'Rainy' : 'Mưa nhẹ', 'raw': 'Mưa nhẹ', 'icon': Icons.grain_rounded},
-                    {'label': isEn ? 'Cool' : 'Mát mẻ', 'raw': 'Mát mẻ', 'icon': Icons.air_rounded},
-                    {'label': isEn ? 'Cold' : 'Lạnh', 'raw': 'Lạnh', 'icon': Icons.ac_unit_rounded},
+                    {
+                      'label': isEn ? 'Sunny' : 'Nắng',
+                      'raw': 'Nắng',
+                      'icon': Icons.wb_sunny_outlined
+                    },
+                    {
+                      'label': isEn ? 'Cloudy' : 'Nhiều mây',
+                      'raw': 'Nhiều mây',
+                      'icon': Icons.cloud_outlined
+                    },
+                    {
+                      'label': isEn ? 'Rainy' : 'Mưa nhẹ',
+                      'raw': 'Mưa nhẹ',
+                      'icon': Icons.grain_rounded
+                    },
+                    {
+                      'label': isEn ? 'Cool' : 'Mát mẻ',
+                      'raw': 'Mát mẻ',
+                      'icon': Icons.air_rounded
+                    },
+                    {
+                      'label': isEn ? 'Cold' : 'Lạnh',
+                      'raw': 'Lạnh',
+                      'icon': Icons.ac_unit_rounded
+                    },
                   ];
 
                   return Column(
@@ -288,17 +329,21 @@ class _OutfitScreenState extends State<OutfitScreen> {
                       const SizedBox(height: 10),
                       Row(
                         children: displayWeathers.map((w) {
-                          final isSelected = _selectedWeather == w['raw'] || _selectedWeather == w['label'];
+                          final isSelected = _selectedWeather == w['raw'] ||
+                              _selectedWeather == w['label'];
                           return Expanded(
                             child: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _selectedWeather = w['raw'] as String),
+                              onTap: () => setState(
+                                  () => _selectedWeather = w['raw'] as String),
                               child: Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 3),
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 3),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? const Color(0xFF2563EB).withOpacity(0.08)
+                                      ? const Color(0xFF2563EB)
+                                          .withOpacity(0.08)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
@@ -351,10 +396,22 @@ class _OutfitScreenState extends State<OutfitScreen> {
                 builder: (context) {
                   final isEn = Provider.of<LanguageProvider>(context).isEnglish;
                   final displayStyles = [
-                    {'label': isEn ? 'Minimalist' : 'Tối giản', 'raw': 'Tối giản'},
-                    {'label': isEn ? 'Smart casual' : 'Smart casual', 'raw': 'Smart casual'},
-                    {'label': isEn ? 'Elegant' : 'Thanh lịch', 'raw': 'Thanh lịch'},
-                    {'label': isEn ? 'Active' : 'Năng động', 'raw': 'Năng động'},
+                    {
+                      'label': isEn ? 'Minimalist' : 'Tối giản',
+                      'raw': 'Tối giản'
+                    },
+                    {
+                      'label': isEn ? 'Smart casual' : 'Smart casual',
+                      'raw': 'Smart casual'
+                    },
+                    {
+                      'label': isEn ? 'Elegant' : 'Thanh lịch',
+                      'raw': 'Thanh lịch'
+                    },
+                    {
+                      'label': isEn ? 'Active' : 'Năng động',
+                      'raw': 'Năng động'
+                    },
                   ];
 
                   return Column(
@@ -374,16 +431,19 @@ class _OutfitScreenState extends State<OutfitScreen> {
                         physics: const BouncingScrollPhysics(),
                         child: Row(
                           children: displayStyles.map((s) {
-                            final isSelected = _selectedStyle == s['raw'] || _selectedStyle == s['label'];
+                            final isSelected = _selectedStyle == s['raw'] ||
+                                _selectedStyle == s['label'];
                             return GestureDetector(
-                              onTap: () => setState(() => _selectedStyle = s['raw']!),
+                              onTap: () =>
+                                  setState(() => _selectedStyle = s['raw']!),
                               child: Container(
                                 margin: const EdgeInsets.only(right: 8),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 14, vertical: 8),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? const Color(0xFF2563EB).withOpacity(0.08)
+                                      ? const Color(0xFF2563EB)
+                                          .withOpacity(0.08)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
@@ -452,8 +512,8 @@ class _OutfitScreenState extends State<OutfitScreen> {
                                 height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : Row(
@@ -517,7 +577,9 @@ class _OutfitScreenState extends State<OutfitScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            isEn ? 'Chat with Wearsy AI' : 'Trò chuyện với wearsy AI',
+                            isEn
+                                ? 'Chat with Wearsy AI'
+                                : 'Trò chuyện với wearsy AI',
                             style: AppFonts.inter(
                               fontSize: 14.5,
                               fontWeight: FontWeight.w600,

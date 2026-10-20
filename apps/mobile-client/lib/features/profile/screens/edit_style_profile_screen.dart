@@ -8,6 +8,7 @@ import '../../../core/theme/theme_provider.dart';
 import '../../../core/localization/language_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/style_profile_model.dart';
+import '../../../core/storage/style_persona_storage.dart';
 
 class EditStyleProfileScreen extends StatefulWidget {
   const EditStyleProfileScreen({super.key});
@@ -143,7 +144,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
   }
 
   void _saveStyleProfile() async {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     final updatedModel = StyleProfileModel(
@@ -154,6 +156,15 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
       height: int.tryParse(_heightController.text),
       weight: int.tryParse(_weightController.text),
       bodyShape: _selectedBodyShape,
+    );
+
+    // Đồng bộ vào file cục bộ trên máy để cá nhân hóa AI
+    await StylePersonaStorage.syncFromUserProfile(
+      styles: _selectedStyles,
+      favoriteColors: _selectedColors,
+      heightCm: double.tryParse(_heightController.text),
+      weightKg: double.tryParse(_weightController.text),
+      bodyFrame: _selectedBodyShape,
     );
 
     final success =
@@ -212,7 +223,9 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
               children: [
                 // Section 1: Preferred Styles
                 Text(
-                  isEn ? '1. Your Preferred Styles' : '1. Phong cách ưa thích của bạn',
+                  isEn
+                      ? '1. Your Preferred Styles'
+                      : '1. Phong cách ưa thích của bạn',
                   style: AppFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -292,9 +305,8 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
                       selectedColor: const Color(0xFF374151),
                       backgroundColor: Colors.white,
                       labelStyle: AppFonts.inter(
-                        color: isSelected
-                            ? Colors.white
-                            : const Color(0xFF4B5563),
+                        color:
+                            isSelected ? Colors.white : const Color(0xFF4B5563),
                         fontWeight:
                             isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
@@ -323,7 +335,9 @@ class _EditStyleProfileScreenState extends State<EditStyleProfileScreen> {
 
                 // Section 3: Budget Range Slider
                 Text(
-                  isEn ? '3. Estimated Shopping Budget' : '3. Ngân sách mua sắm ước tính',
+                  isEn
+                      ? '3. Estimated Shopping Budget'
+                      : '3. Ngân sách mua sắm ước tính',
                   style: AppFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

@@ -113,7 +113,9 @@ void main() {
   });
 
   group('Wardrobe Image Background Removal Sanitization Tests', () {
-    test('Automatically transforms Shopee Torano polo into transparent cutout PNG', () {
+    test(
+        'Automatically transforms Shopee Torano polo into transparent cutout PNG',
+        () {
       final item = WardrobeItemModel(
         id: 'polo_1',
         name: 'Áo polo nam Torano',
@@ -132,7 +134,9 @@ void main() {
       );
     });
 
-    test('Preserves clean Cloudinary images without forcing broken add-on transformations', () {
+    test(
+        'Preserves clean Cloudinary images without forcing broken add-on transformations',
+        () {
       final item = WardrobeItemModel(
         id: 'item_cloud',
         name: 'Áo khoác dạ',

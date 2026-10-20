@@ -177,27 +177,34 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 color: const Color(0xFFF3F4F6),
-                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Center(
                   child: item.imageUrl.startsWith('http')
                       ? Image.network(
                           item.imageUrl,
                           fit: BoxFit.contain,
                           errorBuilder: (_, __, ___) => Image.network(
-                            WardrobeItemModel.sanitizeImageUrl('', name: item.name, category: item.category),
+                            WardrobeItemModel.sanitizeImageUrl('',
+                                name: item.name, category: item.category),
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(Icons.checkroom_rounded,
-                                color: AppTheme.primaryLight, size: 80),
+                            errorBuilder: (_, __, ___) => Icon(
+                                Icons.checkroom_rounded,
+                                color: AppTheme.primaryLight,
+                                size: 80),
                           ),
                         )
                       : Image.file(
                           File(item.imageUrl),
                           fit: BoxFit.contain,
                           errorBuilder: (_, __, ___) => Image.network(
-                            WardrobeItemModel.sanitizeImageUrl('', name: item.name, category: item.category),
+                            WardrobeItemModel.sanitizeImageUrl('',
+                                name: item.name, category: item.category),
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(Icons.checkroom_rounded,
-                                color: AppTheme.primaryLight, size: 80),
+                            errorBuilder: (_, __, ___) => Icon(
+                                Icons.checkroom_rounded,
+                                color: AppTheme.primaryLight,
+                                size: 80),
                           ),
                         ),
                 ),
@@ -297,20 +304,23 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           orElse: () => provider.activeWardrobe,
                         );
 
-                        final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                        final isEn =
+                            Provider.of<LanguageProvider>(ctx).isEnglish;
                         return Row(
                           children: [
                             _InfoChip(
                               icon: Icons.palette_rounded,
                               label: isEn ? 'Color' : 'Màu sắc',
-                              value: TagLocalization.getColorName(item.color, isEn),
+                              value: TagLocalization.getColorName(
+                                  item.color, isEn),
                               color: AppTheme.secondaryColor,
                             ),
                             const SizedBox(width: 8),
                             _InfoChip(
                               icon: Icons.category_rounded,
                               label: isEn ? 'Category' : 'Loại',
-                              value: TagLocalization.getCategoryName(item.category, isEn),
+                              value: TagLocalization.getCategoryName(
+                                  item.category, isEn),
                               color: AppTheme.primaryLight,
                             ),
                             const SizedBox(width: 8),
@@ -342,12 +352,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       children: [
                         Builder(
                           builder: (ctx) {
-                            final isEn = Provider.of<LanguageProvider>(ctx).isEnglish;
+                            final isEn =
+                                Provider.of<LanguageProvider>(ctx).isEnglish;
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  isEn ? 'Style / Tags' : 'Phong cách / Thẻ gợi ý',
+                                  isEn
+                                      ? 'Style / Tags'
+                                      : 'Phong cách / Thẻ gợi ý',
                                   style: AppFonts.inter(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -359,15 +372,17 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color:
-                                          AppTheme.primaryColor.withOpacity(0.25),
+                                      color: AppTheme.primaryColor
+                                          .withOpacity(0.25),
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
                                           color: AppTheme.primaryLight
                                               .withOpacity(0.4)),
                                     ),
                                     child: Text(
-                                      isEn ? '${_tags.length} selected' : '${_tags.length} đã chọn',
+                                      isEn
+                                          ? '${_tags.length} selected'
+                                          : '${_tags.length} đã chọn',
                                       style: AppFonts.inter(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
@@ -390,7 +405,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             return FilterChip(
                               label: Text(TagLocalization.getLocalizedTag(
                                   tag,
-                                  Provider.of<LanguageProvider>(context).isEnglish)),
+                                  Provider.of<LanguageProvider>(context)
+                                      .isEnglish)),
                               selected: isSelected,
                               showCheckmark: isSelected,
                               checkmarkColor: Colors.white,
@@ -449,7 +465,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        Provider.of<LanguageProvider>(context).isEnglish
+                                        Provider.of<LanguageProvider>(context)
+                                                .isEnglish
                                             ? 'Extended Styles (AI Recognized / Custom):'
                                             : 'Phong cách mở rộng (AI nhận diện mới / Tự thêm):',
                                         style: AppFonts.inter(
@@ -491,7 +508,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                             Text(
                                               TagLocalization.getLocalizedTag(
                                                   tag,
-                                                  Provider.of<LanguageProvider>(context)
+                                                  Provider.of<LanguageProvider>(
+                                                          context)
                                                       .isEnglish),
                                               style: AppFonts.inter(
                                                 fontSize: 12,
@@ -565,7 +583,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                   onSubmitted: (val) => _addCustomTag(val),
                                   decoration: InputDecoration(
                                     isDense: true,
-                                    hintText: Provider.of<LanguageProvider>(context)
+                                    hintText: Provider.of<LanguageProvider>(
+                                                context)
                                             .isEnglish
                                         ? 'Add custom style (e.g. School, Y2K, Gym...)'
                                         : 'Thêm phong cách khác (ví dụ: Đi học, Y2K, Gym...)',
@@ -621,7 +640,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppTheme.primaryColor.withOpacity(0.4),
+                                    color:
+                                        AppTheme.primaryColor.withOpacity(0.4),
                                     blurRadius: 15,
                                     offset: const Offset(0, 5),
                                   ),
@@ -638,7 +658,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                 icon: const Icon(Icons.auto_fix_high_rounded,
                                     color: Colors.white),
                                 label: Text(
-                                  isEn ? 'Style Outfit with AI' : 'Phối Outfit Với AI',
+                                  isEn
+                                      ? 'Style Outfit with AI'
+                                      : 'Phối Outfit Với AI',
                                   style: AppFonts.outfit(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -657,7 +679,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                       backgroundColor: AppTheme.primaryColor,
                                       behavior: SnackBarBehavior.floating,
                                       shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12)),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
                                     ),
                                   );
                                 },
@@ -692,7 +715,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => AddItemScreen(existingItem: item),
+                                    builder: (_) =>
+                                        AddItemScreen(existingItem: item),
                                   ),
                                 );
                               },
@@ -709,15 +733,20 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppTheme.primaryLight,
                                 side: BorderSide(
-                                    color: AppTheme.primaryLight.withOpacity(0.4)),
+                                    color:
+                                        AppTheme.primaryLight.withOpacity(0.4)),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              icon: const Icon(Icons.drive_file_move_outlined, size: 20),
+                              icon: const Icon(Icons.drive_file_move_outlined,
+                                  size: 20),
                               label: Text(
-                                isEn ? 'Move to Another Wardrobe' : 'Chuyển sang tủ đồ khác',
-                                style: AppFonts.outfit(fontWeight: FontWeight.w600),
+                                isEn
+                                    ? 'Move to Another Wardrobe'
+                                    : 'Chuyển sang tủ đồ khác',
+                                style: AppFonts.outfit(
+                                    fontWeight: FontWeight.w600),
                               ),
                               onPressed: () => _showMoveWardrobeSheet(context),
                             ),
@@ -733,7 +762,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppTheme.accentColor,
                                 side: BorderSide(
-                                    color: AppTheme.accentColor.withOpacity(0.5)),
+                                    color:
+                                        AppTheme.accentColor.withOpacity(0.5)),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -741,10 +771,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               icon: const Icon(Icons.delete_outline_rounded),
                               label: Text(
                                 isEn ? 'Delete Item' : 'Xóa khỏi tủ đồ',
-                                style: AppFonts.outfit(fontWeight: FontWeight.w600),
+                                style: AppFonts.outfit(
+                                    fontWeight: FontWeight.w600),
                               ),
                               onPressed: () {
-                                Provider.of<WardrobeProvider>(context, listen: false)
+                                Provider.of<WardrobeProvider>(context,
+                                        listen: false)
                                     .removeItem(item.id);
                                 Navigator.pop(context);
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -779,7 +811,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   void _showMoveWardrobeSheet(BuildContext context) {
     final provider = Provider.of<WardrobeProvider>(context, listen: false);
     final collections = provider.collections;
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
 
     showModalBottomSheet(
       context: context,
@@ -807,7 +840,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  isEn ? 'Choose Target Wardrobe 🚪' : 'Chọn Tủ Đồ Chuyển Đến 🚪',
+                  isEn
+                      ? 'Choose Target Wardrobe 🚪'
+                      : 'Chọn Tủ Đồ Chuyển Đến 🚪',
                   style: AppFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontSize: 18,

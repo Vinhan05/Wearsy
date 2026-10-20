@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wearsy_mobile/core/mock/mock_data_service.dart';
 import '../../../core/services/smart_fit_ai_service.dart';
 import '../../../core/storage/token_storage.dart';
+import '../../../core/storage/style_persona_storage.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../models/outfit_model.dart';
 
@@ -138,6 +139,14 @@ class OutfitProvider with ChangeNotifier {
       notifyListeners();
 
       _persistFavorites();
+
+      // Nếu người dùng thả tim outfit, tự động học và lưu vào file persona trên máy
+      if (_outfits[index].isFavorite) {
+        StylePersonaStorage.recordLikedOutfit(
+          outfitId,
+          occasionTags: [_outfits[index].occasion.displayName],
+        );
+      }
     }
   }
 
@@ -169,8 +178,7 @@ class OutfitProvider with ChangeNotifier {
         final email =
             (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
         final storageKey = _getStorageKey(email);
-        final customJson =
-            _outfits.map((o) => jsonEncode(o.toJson())).toList();
+        final customJson = _outfits.map((o) => jsonEncode(o.toJson())).toList();
         await prefs.setStringList(storageKey, customJson);
       } catch (e) {
         debugPrint('[OutfitProvider] updateOutfitName error: $e');
@@ -187,13 +195,20 @@ class OutfitProvider with ChangeNotifier {
           : (currentScore - 0.5).clamp(0.0, 10.0);
       _outfits[index] = _outfits[index].copyWith(aiScore: newScore);
       notifyListeners();
+
+      if (reaction == 1) {
+        StylePersonaStorage.recordLikedOutfit(
+          outfitId,
+          occasionTags: [_outfits[index].occasion.displayName],
+        );
+      }
+
       try {
         final prefs = await SharedPreferences.getInstance();
         final email =
             (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
         final storageKey = _getStorageKey(email);
-        final customJson =
-            _outfits.map((o) => jsonEncode(o.toJson())).toList();
+        final customJson = _outfits.map((o) => jsonEncode(o.toJson())).toList();
         await prefs.setStringList(storageKey, customJson);
       } catch (e) {
         debugPrint('[OutfitProvider] recordOutfitReaction error: $e');

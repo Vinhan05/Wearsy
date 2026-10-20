@@ -63,7 +63,8 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
     super.dispose();
   }
 
-  void _handleToggle(BuildContext context, LanguageProvider langProvider) async {
+  void _handleToggle(
+      BuildContext context, LanguageProvider langProvider) async {
     // Play quick tap animation
     await _animController.forward();
     await _animController.reverse();
@@ -86,9 +87,7 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
               ),
               Expanded(
                 child: Text(
-                  prevIsVi
-                      ? 'Switched to English'
-                      : 'Đã đổi sang Tiếng Việt',
+                  prevIsVi ? 'Switched to English' : 'Đã đổi sang Tiếng Việt',
                   style: AppFonts.inter(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -100,7 +99,8 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
           ),
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           backgroundColor: const Color(0xFF2C2849),
           margin: const EdgeInsets.only(bottom: 24, left: 20, right: 20),
         ),
@@ -264,9 +264,8 @@ class _LanguageToggleButtonState extends State<LanguageToggleButton>
           style: AppFonts.outfit(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-            color: isSelected
-                ? activePalette.primary
-                : AppTheme.darkTextSecondary,
+            color:
+                isSelected ? activePalette.primary : AppTheme.darkTextSecondary,
           ),
         ),
       ),

@@ -213,8 +213,7 @@ class AuthService {
 
     final cleanEmail = realEmail;
     final prefs = await SharedPreferences.getInstance();
-    final explicitlySavedName =
-        prefs.getString('user_custom_name_$cleanEmail');
+    final explicitlySavedName = prefs.getString('user_custom_name_$cleanEmail');
     final savedJson = prefs.getString('saved_user_profile_$cleanEmail');
     String? localSavedName;
     if (explicitlySavedName != null &&
@@ -465,10 +464,12 @@ class AuthService {
         final user = UserModel.fromJson(decoded);
         return user.copyWith(
           email: cleanEmail,
-          fullName:
-              (fullName.isNotEmpty && !_isDefaultOrEmailName(fullName, cleanEmail))
-                  ? fullName
-                  : (user.fullName.isNotEmpty ? user.fullName : _deriveNameFromEmail(cleanEmail)),
+          fullName: (fullName.isNotEmpty &&
+                  !_isDefaultOrEmailName(fullName, cleanEmail))
+              ? fullName
+              : (user.fullName.isNotEmpty
+                  ? user.fullName
+                  : _deriveNameFromEmail(cleanEmail)),
         );
       }
     } catch (_) {}
@@ -572,9 +573,8 @@ class AuthService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final storedEmail = await TokenStorage.getUserEmail();
-      final emailToUse = user.email.isNotEmpty
-          ? user.email
-          : (storedEmail ?? '');
+      final emailToUse =
+          user.email.isNotEmpty ? user.email : (storedEmail ?? '');
       final cleanEmail = emailToUse.trim().toLowerCase();
       final jsonStr = jsonEncode(user.toJson());
       await prefs.setString('saved_user_profile_$cleanEmail', jsonStr);
@@ -727,8 +727,7 @@ class AuthService {
       if (prefix.contains('vinhan') || prefix.contains('vi.nhan')) {
         return 'Vi Nhân';
       }
-      final parts =
-          prefix.replaceAll('.', ' ').replaceAll('_', ' ');
+      final parts = prefix.replaceAll('.', ' ').replaceAll('_', ' ');
       return parts
           .split(' ')
           .map((w) =>

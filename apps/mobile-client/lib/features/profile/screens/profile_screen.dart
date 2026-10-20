@@ -89,8 +89,7 @@ class ProfileScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    const EditStyleProfileScreen(),
+                                builder: (_) => const EditStyleProfileScreen(),
                               ),
                             );
                           },
@@ -130,8 +129,8 @@ class ProfileScreen extends StatelessWidget {
                     height: 42,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border:
-                          Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
+                      border: Border.all(
+                          color: const Color(0xFFE5E7EB), width: 1.2),
                     ),
                     child: const Icon(Icons.notifications_none_rounded,
                         size: 20, color: Color(0xFF111827)),
@@ -233,7 +232,8 @@ class ProfileScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFE5E7EB)),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -267,7 +267,10 @@ class ProfileScreen extends StatelessWidget {
                             }
                           },
                         ),
-                        Container(width: 1, height: 32, color: const Color(0xFFE5E7EB)),
+                        Container(
+                            width: 1,
+                            height: 32,
+                            color: const Color(0xFFE5E7EB)),
                         _buildStatItem(
                           icon: Icons.dry_cleaning_outlined,
                           count: '$totalOutfits',
@@ -285,7 +288,10 @@ class ProfileScreen extends StatelessWidget {
                             }
                           },
                         ),
-                        Container(width: 1, height: 32, color: const Color(0xFFE5E7EB)),
+                        Container(
+                            width: 1,
+                            height: 32,
+                            color: const Color(0xFFE5E7EB)),
                         _buildStatItem(
                           icon: Icons.favorite_border_rounded,
                           count: '$totalFavorites',
@@ -327,8 +333,8 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 16),
                     child: Row(
                       children: [
                         const Icon(Icons.diamond_outlined,
@@ -392,7 +398,8 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       _buildMenuItem(
                         icon: Icons.person_outline_rounded,
-                        title: isEn ? 'Account & Security' : 'Tài khoản & bảo mật',
+                        title:
+                            isEn ? 'Account & Security' : 'Tài khoản & bảo mật',
                         onTap: () {
                           Navigator.push(
                             context,
@@ -409,7 +416,7 @@ class ProfileScreen extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                              MaterialPageRoute(
+                            MaterialPageRoute(
                               builder: (_) => const AppSettingsScreen(),
                             ),
                           );
@@ -419,7 +426,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
-          ],
+            ],
           ),
         ),
       ),
@@ -607,7 +614,8 @@ class ProfileScreen extends StatelessWidget {
   }) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 2),
-      leading: Icon(icon, color: iconColor ?? const Color(0xFF374151), size: 22),
+      leading:
+          Icon(icon, color: iconColor ?? const Color(0xFF374151), size: 22),
       title: Text(
         title,
         style: AppFonts.inter(

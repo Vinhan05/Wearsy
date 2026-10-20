@@ -95,7 +95,9 @@ class WardrobeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                isEn ? 'Take Photo from Camera' : 'Chụp ảnh từ Camera',
+                                isEn
+                                    ? 'Take Photo from Camera'
+                                    : 'Chụp ảnh từ Camera',
                                 style: AppFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
@@ -162,7 +164,9 @@ class WardrobeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                isEn ? 'Choose Photo from Gallery' : 'Chọn ảnh từ Thư viện',
+                                isEn
+                                    ? 'Choose Photo from Gallery'
+                                    : 'Chọn ảnh từ Thư viện',
                                 style: AppFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
@@ -228,7 +232,9 @@ class WardrobeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                isEn ? 'Paste Shopping Link (Smart Shopping)' : 'Dán link mua sắm (Smart Shopping)',
+                                isEn
+                                    ? 'Paste Shopping Link (Smart Shopping)'
+                                    : 'Dán link mua sắm (Smart Shopping)',
                                 style: AppFonts.outfit(
                                   color: const Color(0xFF2C2849),
                                   fontWeight: FontWeight.bold,
@@ -305,7 +311,9 @@ class WardrobeScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              isEn ? 'Wardrobe Collections' : 'Bộ Sưu Tập Tủ Đồ',
+                              isEn
+                                  ? 'Wardrobe Collections'
+                                  : 'Bộ Sưu Tập Tủ Đồ',
                               style: AppFonts.outfit(
                                 color: const Color(0xFF2C2849),
                                 fontSize: 20,
@@ -388,7 +396,9 @@ class WardrobeScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              isEn ? '+ Create New Wardrobe' : '+ Tạo Tủ Đồ Mới',
+                              isEn
+                                  ? '+ Create New Wardrobe'
+                                  : '+ Tạo Tủ Đồ Mới',
                               style: AppFonts.outfit(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -450,7 +460,9 @@ class WardrobeScreen extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        TagLocalization.getLocalizedWardrobeName(col.name, isEn),
+                                        TagLocalization
+                                            .getLocalizedWardrobeName(
+                                                col.name, isEn),
                                         style: AppFonts.outfit(
                                           color: const Color(0xFF2C2849),
                                           fontWeight: isSelected
@@ -959,8 +971,7 @@ class WardrobeScreen extends StatelessWidget {
                       // Nhập Tên Tủ Đồ
                       TextField(
                         controller: nameCtrl,
-                        style:
-                            AppFonts.inter(color: const Color(0xFF2C2849)),
+                        style: AppFonts.inter(color: const Color(0xFF2C2849)),
                         decoration: InputDecoration(
                           labelText: 'Tên Tủ Đồ',
                           hintText: 'Ví dụ: Tủ Đồ Đi Làm, Tủ Đồ Mùa Hè...',
@@ -998,14 +1009,13 @@ class WardrobeScreen extends StatelessWidget {
                       // Nhập Mô tả Tủ Đồ
                       TextField(
                         controller: descCtrl,
-                        style:
-                            AppFonts.inter(color: AppTheme.darkTextPrimary),
+                        style: AppFonts.inter(color: AppTheme.darkTextPrimary),
                         decoration: InputDecoration(
                           labelText: 'Mô tả ngắn (tùy chọn)',
                           hintText:
                               'Ví dụ: Quần áo thanh lịch cho ngày làm việc...',
-                          labelStyle: AppFonts.inter(
-                              color: AppTheme.darkTextSecondary),
+                          labelStyle:
+                              AppFonts.inter(color: AppTheme.darkTextSecondary),
                           hintStyle: AppFonts.inter(
                               color:
                                   AppTheme.darkTextSecondary.withOpacity(0.7)),
@@ -1243,11 +1253,17 @@ class _WardrobeBody extends StatelessWidget {
     final categories = [
       {'key': null, 'label': isEn ? 'All' : 'Tất cả'},
       {'key': WardrobeCategory.tops, 'label': isEn ? 'Shirts' : 'Áo sơ mi'},
-      {'key': WardrobeCategory.outerwear, 'label': isEn ? 'Jackets' : 'Áo khoác'},
+      {
+        'key': WardrobeCategory.outerwear,
+        'label': isEn ? 'Jackets' : 'Áo khoác'
+      },
       {'key': WardrobeCategory.dresses, 'label': isEn ? 'T-Shirts' : 'Áo thun'},
       {'key': WardrobeCategory.bottoms, 'label': isEn ? 'Pants' : 'Quần'},
       {'key': WardrobeCategory.shoes, 'label': isEn ? 'Shoes' : 'Giày'},
-      {'key': WardrobeCategory.accessories, 'label': isEn ? 'Accessories' : 'Phụ kiện'},
+      {
+        'key': WardrobeCategory.accessories,
+        'label': isEn ? 'Accessories' : 'Phụ kiện'
+      },
     ];
 
     final colors = [
@@ -1533,7 +1549,10 @@ class _WardrobeBody extends StatelessWidget {
     final filterOptions = [
       {'key': null, 'label': isEn ? 'All' : 'Tất cả'},
       {'key': WardrobeCategory.tops, 'label': isEn ? 'Shirts' : 'Áo sơ mi'},
-      {'key': WardrobeCategory.outerwear, 'label': isEn ? 'Jackets' : 'Áo khoác'},
+      {
+        'key': WardrobeCategory.outerwear,
+        'label': isEn ? 'Jackets' : 'Áo khoác'
+      },
       {'key': WardrobeCategory.dresses, 'label': isEn ? 'T-Shirts' : 'Áo thun'},
       {'key': WardrobeCategory.bottoms, 'label': isEn ? 'Pants' : 'Quần'},
       {'key': WardrobeCategory.shoes, 'label': isEn ? 'Shoes' : 'Giày'},
@@ -1557,9 +1576,8 @@ class _WardrobeBody extends StatelessWidget {
                 height: 38,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: hasCustomFilter
-                      ? const Color(0xFF27272A)
-                      : Colors.white,
+                  color:
+                      hasCustomFilter ? const Color(0xFF27272A) : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: hasCustomFilter
@@ -1628,12 +1646,11 @@ class _WardrobeBody extends StatelessWidget {
                   onTap: () => provider.setCategory(cat),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 18, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF27272A)
-                          : Colors.white,
+                      color:
+                          isSelected ? const Color(0xFF27272A) : Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected
@@ -1647,9 +1664,8 @@ class _WardrobeBody extends StatelessWidget {
                         fontSize: 12.5,
                         fontWeight:
                             isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: isSelected
-                            ? Colors.white
-                            : const Color(0xFF374151),
+                        color:
+                            isSelected ? Colors.white : const Color(0xFF374151),
                       ),
                     ),
                   ),
@@ -1867,7 +1883,8 @@ class _WardrobeCardState extends State<_WardrobeCard> {
                         ? Icons.favorite_rounded
                         : Icons.favorite_border_rounded,
                     size: 15,
-                    color: _isLiked ? Colors.redAccent : const Color(0xFF4B5563),
+                    color:
+                        _isLiked ? Colors.redAccent : const Color(0xFF4B5563),
                   ),
                 ),
               ),
