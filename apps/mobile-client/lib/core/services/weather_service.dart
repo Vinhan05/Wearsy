@@ -152,7 +152,8 @@ class WeatherService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true) {
-          final String rawCity = data['city'] ?? data['region'] ?? 'Vị trí của bạn';
+          final String rawCity =
+              data['city'] ?? data['region'] ?? 'Vị trí của bạn';
           final double lat = (data['latitude'] as num).toDouble();
           final double lon = (data['longitude'] as num).toDouble();
           return CityLocation(

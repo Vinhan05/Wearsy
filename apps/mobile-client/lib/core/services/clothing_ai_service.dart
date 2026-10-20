@@ -38,6 +38,7 @@ class ClothingAiService {
       return '';
     }
   }
+
   static const String _geminiModel = 'gemini-flash-lite-latest';
   static const String _geminiModelFallback = 'gemini-3-flash-preview';
   static const String _geminiModelThird = 'gemini-3.8-flash';

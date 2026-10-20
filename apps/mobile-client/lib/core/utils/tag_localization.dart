@@ -136,23 +136,40 @@ class TagLocalization {
   static String getColorName(String color, bool isEn) {
     if (!isEn) return color;
     switch (color.trim().toLowerCase()) {
-      case 'trắng': return 'White';
-      case 'trắng trơn': return 'Solid White';
-      case 'trắng da': return 'White Leather';
-      case 'trắng ngà': return 'Off-White';
-      case 'đen': return 'Black';
-      case 'đen da': return 'Black Leather';
-      case 'đen xám': return 'Charcoal Grey';
-      case 'xanh navy': return 'Navy Blue';
-      case 'xám': return 'Grey';
-      case 'nâu': return 'Brown';
-      case 'đỏ': return 'Red';
-      case 'xanh lá': return 'Green';
-      case 'vàng': return 'Yellow';
-      case 'be': return 'Beige';
-      case 'be sữa': return 'Milk Beige';
-      case 'pastel': return 'Pastel';
-      default: return color;
+      case 'trắng':
+        return 'White';
+      case 'trắng trơn':
+        return 'Solid White';
+      case 'trắng da':
+        return 'White Leather';
+      case 'trắng ngà':
+        return 'Off-White';
+      case 'đen':
+        return 'Black';
+      case 'đen da':
+        return 'Black Leather';
+      case 'đen xám':
+        return 'Charcoal Grey';
+      case 'xanh navy':
+        return 'Navy Blue';
+      case 'xám':
+        return 'Grey';
+      case 'nâu':
+        return 'Brown';
+      case 'đỏ':
+        return 'Red';
+      case 'xanh lá':
+        return 'Green';
+      case 'vàng':
+        return 'Yellow';
+      case 'be':
+        return 'Beige';
+      case 'be sữa':
+        return 'Milk Beige';
+      case 'pastel':
+        return 'Pastel';
+      default:
+        return color;
     }
   }
 
@@ -160,12 +177,18 @@ class TagLocalization {
   static String getCategoryName(WardrobeCategory cat, bool isEn) {
     if (!isEn) return cat.displayName;
     switch (cat) {
-      case WardrobeCategory.tops: return 'Tops';
-      case WardrobeCategory.bottoms: return 'Bottoms';
-      case WardrobeCategory.dresses: return 'Dresses';
-      case WardrobeCategory.outerwear: return 'Outerwear';
-      case WardrobeCategory.shoes: return 'Shoes';
-      case WardrobeCategory.accessories: return 'Accessories';
+      case WardrobeCategory.tops:
+        return 'Tops';
+      case WardrobeCategory.bottoms:
+        return 'Bottoms';
+      case WardrobeCategory.dresses:
+        return 'Dresses';
+      case WardrobeCategory.outerwear:
+        return 'Outerwear';
+      case WardrobeCategory.shoes:
+        return 'Shoes';
+      case WardrobeCategory.accessories:
+        return 'Accessories';
     }
   }
 
@@ -191,7 +214,9 @@ class TagLocalization {
   static String getLocalizedCityName(String city, bool isEn) {
     if (!isEn) return city;
     final lower = city.trim().toLowerCase();
-    if (lower.contains('hồ chí minh') || lower.contains('ho chi minh') || lower.contains('tp. hcm')) {
+    if (lower.contains('hồ chí minh') ||
+        lower.contains('ho chi minh') ||
+        lower.contains('tp. hcm')) {
       return 'Ho Chi Minh City';
     }
     if (lower.contains('hà nội') || lower.contains('ha noi')) {
@@ -219,7 +244,9 @@ class TagLocalization {
   static String getLocalizedName(String name, bool isEn) {
     if (!isEn) return name;
     final lower = name.trim().toLowerCase();
-    if (lower.contains('quần jean ống suông màu đen') || lower.contains('quần jean ống suông') || lower.contains('quần jean ống suông nam')) {
+    if (lower.contains('quần jean ống suông màu đen') ||
+        lower.contains('quần jean ống suông') ||
+        lower.contains('quần jean ống suông nam')) {
       return 'Black Straight-Leg Jeans';
     }
     if (lower.contains('áo overshirt')) {
@@ -243,7 +270,8 @@ class TagLocalization {
     if (lower.contains('quần tây xếp ly relaxed')) {
       return 'Relaxed Pleated Trousers';
     }
-    if (lower.contains('áo khoác dù nam có mũ') || lower.contains('áo khoác dù có mũ')) {
+    if (lower.contains('áo khoác dù nam có mũ') ||
+        lower.contains('áo khoác dù có mũ')) {
       return 'Men\'s Hooded Windbreaker Jacket';
     }
     if (lower.contains('áo polo dệt kim be')) {
@@ -261,7 +289,8 @@ class TagLocalization {
     if (lower.contains('áo thun unisex đen')) {
       return 'Black Unisex T-Shirt';
     }
-    if (lower.contains('quần jean ống rộng màu đen') || lower.contains('quần jean ống rộng')) {
+    if (lower.contains('quần jean ống rộng màu đen') ||
+        lower.contains('quần jean ống rộng')) {
       return 'Black Wide-Leg Jeans';
     }
     if (lower.contains('quần tây âu dáng suông')) {
@@ -279,10 +308,14 @@ class TagLocalization {
   /// Dịch đoạn mô tả AI phân tích sang Tiếng Anh / Tiếng Việt
   static String getLocalizedAiReason(String reason, bool isEn) {
     if (!isEn || reason.isEmpty) return reason;
-    if (reason.contains('ống suông') || reason.contains('Quần jean') || reason.contains('trẻ trung')) {
+    if (reason.contains('ống suông') ||
+        reason.contains('Quần jean') ||
+        reason.contains('trẻ trung')) {
       return 'Comfortable men\'s black straight-leg jeans, versatile for easy matching with a youthful, dynamic style.';
     }
-    if (reason.contains('chống gió') || reason.contains('Áo khoác dù') || reason.contains('mũ trùm')) {
+    if (reason.contains('chống gió') ||
+        reason.contains('Áo khoác dù') ||
+        reason.contains('mũ trùm')) {
       return 'Windproof hooded jacket featuring convenient hood design and modern utility pockets, perfect for active & streetwear styles.';
     }
     if (reason.contains('dệt kim') || reason.contains('tông be')) {
@@ -297,7 +330,8 @@ class TagLocalization {
     if (reason.contains('cạp cao') || reason.contains('tôn dáng')) {
       return 'High-waisted black wide-leg jeans, streetwear style that enhances fit and easy matching.';
     }
-    if (reason.contains('Gọn gàng, hiện đại') || reason.contains('phù hợp cho nhiều hoàn cảnh')) {
+    if (reason.contains('Gọn gàng, hiện đại') ||
+        reason.contains('phù hợp cho nhiều hoàn cảnh')) {
       return 'Neat, modern, and suitable for various occasions during the day.';
     }
     return reason;

@@ -30,7 +30,8 @@ void main() {
       expect(find.byType(Mannequin2DWidget), findsOneWidget);
     });
 
-    testWidgets('VirtualFittingRoomScreen loads with providers and equips initial product',
+    testWidgets(
+        'VirtualFittingRoomScreen loads with providers and equips initial product',
         (tester) async {
       final sampleTop = WardrobeItemModel(
         id: 'top_001',

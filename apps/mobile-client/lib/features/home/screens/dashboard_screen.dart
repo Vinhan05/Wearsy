@@ -79,7 +79,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                isEn ? 'Select Weather Location 📍' : 'Chọn Vị Trí Thời Tiết 📍',
+                isEn
+                    ? 'Select Weather Location 📍'
+                    : 'Chọn Vị Trí Thời Tiết 📍',
                 style: AppFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -337,7 +339,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(height: 14),
                     // Action button: "Phối đồ AI"
                     GestureDetector(
-                      onTap: () => widget.onSwitchTab?.call(2), // Switch to AI tab
+                      onTap: () =>
+                          widget.onSwitchTab?.call(2), // Switch to AI tab
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 8),
@@ -413,8 +416,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text('⛅',
-                                    style: TextStyle(fontSize: 13)),
+                                const Text('⛅', style: TextStyle(fontSize: 13)),
                                 const SizedBox(width: 4),
                                 Text(
                                   tempStr,

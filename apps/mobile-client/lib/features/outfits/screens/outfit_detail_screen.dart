@@ -207,8 +207,9 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
           _userReaction = 0;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                  isEn ? 'Removed dislike reaction' : 'Đã hủy phản hồi không thích'),
+              content: Text(isEn
+                  ? 'Removed dislike reaction'
+                  : 'Đã hủy phản hồi không thích'),
               behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 1),
             ),
@@ -246,7 +247,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
   }
 
   void _replaceItem(int index) {
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -272,9 +274,13 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
             const SizedBox(height: 14),
             ListTile(
               leading: const Text('👕', style: TextStyle(fontSize: 24)),
-              title: Text(isEn ? 'Minimalist Plain Polo Shirt' : 'Áo Polo trơn tối giản'),
-              subtitle: Text(isEn ? 'Torano • Off-White' : 'Torano • Trắng ngà'),
-              trailing: const Icon(Icons.swap_horiz_rounded, color: Color(0xFF2563EB)),
+              title: Text(isEn
+                  ? 'Minimalist Plain Polo Shirt'
+                  : 'Áo Polo trơn tối giản'),
+              subtitle:
+                  Text(isEn ? 'Torano • Off-White' : 'Torano • Trắng ngà'),
+              trailing: const Icon(Icons.swap_horiz_rounded,
+                  color: Color(0xFF2563EB)),
               onTap: () {
                 setState(() {
                   _items[index] = {
@@ -287,9 +293,12 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
             ),
             ListTile(
               leading: const Text('👖', style: TextStyle(fontSize: 24)),
-              title: Text(isEn ? 'Relaxed Pleated Trousers' : 'Quần tây xếp ly relaxed'),
+              title: Text(isEn
+                  ? 'Relaxed Pleated Trousers'
+                  : 'Quần tây xếp ly relaxed'),
               subtitle: Text(isEn ? 'Zara • Charcoal Grey' : 'Zara • Đen xám'),
-              trailing: const Icon(Icons.swap_horiz_rounded, color: Color(0xFF2563EB)),
+              trailing: const Icon(Icons.swap_horiz_rounded,
+                  color: Color(0xFF2563EB)),
               onTap: () {
                 setState(() {
                   _items[index] = {
@@ -309,7 +318,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
   void _saveOutfit() {
     setState(() => _isSaved = true);
     final provider = Provider.of<OutfitProvider>(context, listen: false);
-    final isEn = Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
     final outfitToSave = widget.outfit.copyWith(name: _outfitName);
     provider.addOutfit(outfitToSave);
 
@@ -371,8 +381,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
@@ -422,7 +432,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           children: [
                             Flexible(
                               child: Text(
-                                TagLocalization.getLocalizedTag(_outfitName, isEn),
+                                TagLocalization.getLocalizedTag(
+                                    _outfitName, isEn),
                                 style: AppFonts.inter(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -469,7 +480,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         const SizedBox(height: 3),
                         Text(
                           widget.outfit.aiReason.isNotEmpty
-                              ? TagLocalization.getLocalizedAiReason(widget.outfit.aiReason, isEn)
+                              ? TagLocalization.getLocalizedAiReason(
+                                  widget.outfit.aiReason, isEn)
                               : (isEn
                                   ? 'Neat, modern, and suitable for various occasions during the day.'
                                   : 'Gọn gàng, hiện đại và phù hợp cho nhiều hoàn cảnh trong ngày.'),
@@ -558,8 +570,7 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  const VirtualFittingRoomScreen(),
+                              builder: (_) => const VirtualFittingRoomScreen(),
                             ),
                           );
                         },
@@ -638,7 +649,8 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                         // Item Name
                         Expanded(
                           child: Text(
-                            TagLocalization.getLocalizedName(itm['name']!, isEn),
+                            TagLocalization.getLocalizedName(
+                                itm['name']!, isEn),
                             style: AppFonts.inter(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w600,

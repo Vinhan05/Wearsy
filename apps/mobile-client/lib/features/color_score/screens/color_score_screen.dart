@@ -187,8 +187,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                 indicatorWeight: 3,
                 labelColor: AppTheme.primaryLight,
                 unselectedLabelColor: AppTheme.darkTextSecondary,
-                labelStyle: AppFonts.outfit(
-                    fontWeight: FontWeight.bold, fontSize: 13),
+                labelStyle:
+                    AppFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
                 tabs: const [
                   Tab(text: '📊 Tủ Đồ 60-30-10'),
                   Tab(text: '🌸 Tone Da & 4 Mùa'),
@@ -1034,8 +1034,8 @@ class _ColorScoreScreenState extends State<ColorScoreScreen>
                       const SizedBox(height: 4),
                       Text(
                         'Đã mở khóa 3 / 8 danh hiệu • 750 Fashion Points',
-                        style: AppFonts.inter(
-                            fontSize: 12, color: Colors.white70),
+                        style:
+                            AppFonts.inter(fontSize: 12, color: Colors.white70),
                       ),
                     ],
                   ),

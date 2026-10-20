@@ -35,12 +35,10 @@ class Mannequin2DWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final height = constraints.maxHeight.isFinite
-            ? constraints.maxHeight
-            : 420.0;
-        final width = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : 240.0;
+        final height =
+            constraints.maxHeight.isFinite ? constraints.maxHeight : 420.0;
+        final width =
+            constraints.maxWidth.isFinite ? constraints.maxWidth : 240.0;
 
         return SizedBox(
           width: width,
@@ -247,10 +245,14 @@ class _MannequinPainter extends CustomPainter {
     if (gender == MannequinGender.female) {
       // Dáng Nữ (vai mềm, eo thon, hông nở)
       bodyPath.moveTo(centerX - w * 0.22, h * 0.21); // Vai trái
-      bodyPath.quadraticBezierTo(centerX, h * 0.19, centerX + w * 0.22, h * 0.21); // Vai phải
-      bodyPath.quadraticBezierTo(centerX + w * 0.23, h * 0.28, centerX + w * 0.19, h * 0.32); // Ngực phải
-      bodyPath.quadraticBezierTo(centerX + w * 0.14, h * 0.38, centerX + w * 0.13, h * 0.42); // Eo phải
-      bodyPath.quadraticBezierTo(centerX + w * 0.21, h * 0.48, centerX + w * 0.20, h * 0.55); // Hông phải
+      bodyPath.quadraticBezierTo(
+          centerX, h * 0.19, centerX + w * 0.22, h * 0.21); // Vai phải
+      bodyPath.quadraticBezierTo(centerX + w * 0.23, h * 0.28,
+          centerX + w * 0.19, h * 0.32); // Ngực phải
+      bodyPath.quadraticBezierTo(centerX + w * 0.14, h * 0.38,
+          centerX + w * 0.13, h * 0.42); // Eo phải
+      bodyPath.quadraticBezierTo(centerX + w * 0.21, h * 0.48,
+          centerX + w * 0.20, h * 0.55); // Hông phải
       // Đùi & Chân phải
       bodyPath.lineTo(centerX + w * 0.10, h * 0.88);
       bodyPath.lineTo(centerX + w * 0.03, h * 0.88);
@@ -260,12 +262,15 @@ class _MannequinPainter extends CustomPainter {
       bodyPath.lineTo(centerX - w * 0.03, h * 0.88);
       bodyPath.lineTo(centerX - w * 0.10, h * 0.88);
       bodyPath.lineTo(centerX - w * 0.20, h * 0.55); // Hông trái
-      bodyPath.quadraticBezierTo(centerX - w * 0.14, h * 0.38, centerX - w * 0.13, h * 0.42); // Eo trái
-      bodyPath.quadraticBezierTo(centerX - w * 0.23, h * 0.28, centerX - w * 0.22, h * 0.21); // Vai trái
+      bodyPath.quadraticBezierTo(centerX - w * 0.14, h * 0.38,
+          centerX - w * 0.13, h * 0.42); // Eo trái
+      bodyPath.quadraticBezierTo(centerX - w * 0.23, h * 0.28,
+          centerX - w * 0.22, h * 0.21); // Vai trái
     } else {
       // Dáng Nam (vai rộng, ngực vạm vỡ, thân chữ V)
       bodyPath.moveTo(centerX - w * 0.28, h * 0.21); // Vai trái rộng
-      bodyPath.quadraticBezierTo(centerX, h * 0.19, centerX + w * 0.28, h * 0.21); // Vai phải rộng
+      bodyPath.quadraticBezierTo(
+          centerX, h * 0.19, centerX + w * 0.28, h * 0.21); // Vai phải rộng
       bodyPath.lineTo(centerX + w * 0.23, h * 0.35); // Ngực phải
       bodyPath.lineTo(centerX + w * 0.18, h * 0.46); // Eo phải
       bodyPath.lineTo(centerX + w * 0.19, h * 0.55); // Hông phải

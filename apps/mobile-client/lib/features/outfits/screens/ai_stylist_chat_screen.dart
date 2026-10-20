@@ -116,7 +116,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Không thể khởi động micro hoặc thiết bị không hỗ trợ nhận diện giọng nói.'),
+          content: Text(
+              'Không thể khởi động micro hoặc thiết bị không hỗ trợ nhận diện giọng nói.'),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2),
         ),
@@ -144,7 +145,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     });
   }
 
-  Future<void> _sendPrompt({String? presetText, bool forceFinalize = false}) async {
+  Future<void> _sendPrompt(
+      {String? presetText, bool forceFinalize = false}) async {
     final userText = (presetText ?? _promptCtrl.text).trim();
     if (userText.isEmpty && !forceFinalize) return;
     if (_isLoading) return;
@@ -152,9 +154,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
     final auth = Provider.of<AuthProvider>(context, listen: false);
 
-    final displayText = forceFinalize && userText.isEmpty
-        ? '✨ Chốt & Phối đồ ngay'
-        : userText;
+    final displayText =
+        forceFinalize && userText.isEmpty ? '✨ Chốt & Phối đồ ngay' : userText;
 
     setState(() {
       _messages.add(_ChatMessage(sender: _ChatSender.user, text: displayText));
@@ -164,15 +165,19 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     _scrollToBottom();
 
     try {
-      final heightCm = (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 170.0;
-      final weightKg = (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 62.0;
+      final heightCm =
+          (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 170.0;
+      final weightKg =
+          (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 62.0;
       final userName = auth.user?.fullName ?? 'bạn';
       final gender = auth.user?.bodyMeasurements?['gender']?.toString() ?? 'Nữ';
 
-      final history = _messages.map((m) => {
-        'role': m.sender == _ChatSender.user ? 'user' : 'assistant',
-        'content': m.text,
-      }).toList();
+      final history = _messages
+          .map((m) => {
+                'role': m.sender == _ChatSender.user ? 'user' : 'assistant',
+                'content': m.text,
+              })
+          .toList();
 
       final chatResponse = await SmartFitAiService.chatWithStylist(
         messages: history,
@@ -198,7 +203,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
           ));
         });
 
-        final outfitProvider = Provider.of<OutfitProvider>(context, listen: false);
+        final outfitProvider =
+            Provider.of<OutfitProvider>(context, listen: false);
         await outfitProvider.addOutfitFromChat(outfitResult);
       } else {
         setState(() {
@@ -216,7 +222,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
         _isLoading = false;
         _messages.add(_ChatMessage(
           sender: _ChatSender.ai,
-          text: '😔 Có lỗi xảy ra khi kết nối AI Stylist. Vui lòng thử lại nhé!',
+          text:
+              '😔 Có lỗi xảy ra khi kết nối AI Stylist. Vui lòng thử lại nhé!',
         ));
       });
     }
@@ -446,7 +453,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2), width: 1.5),
+        border: Border.all(
+            color: AppTheme.primaryColor.withOpacity(0.2), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primaryColor.withOpacity(0.08),
@@ -461,7 +469,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
           // Rendered Image Header if available
           if (outfit.coverImageUrl.isNotEmpty)
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(18)),
               child: Container(
                 height: 220,
                 width: double.infinity,
@@ -489,14 +498,16 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFEF3C7),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.star_rounded, size: 16, color: Color(0xFFD97706)),
+                          const Icon(Icons.star_rounded,
+                              size: 16, color: Color(0xFFD97706)),
                           const SizedBox(width: 4),
                           Text(
                             outfit.eleganceScore.toStringAsFixed(1),
@@ -634,7 +645,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
           child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
         ),
       );
-    } else if (imageSrc.startsWith('http://') || imageSrc.startsWith('https://')) {
+    } else if (imageSrc.startsWith('http://') ||
+        imageSrc.startsWith('https://')) {
       return Image.network(
         imageSrc,
         fit: BoxFit.cover,
@@ -667,7 +679,11 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
   }
 
   Widget _buildBottomSection() {
-    final suggestions = ['Đi hẹn hò lãng mạn', 'Đi làm công sở', 'Dự tiệc cưới'];
+    final suggestions = [
+      'Đi hẹn hò lãng mạn',
+      'Đi làm công sở',
+      'Dự tiệc cưới'
+    ];
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -689,7 +705,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                     borderRadius: BorderRadius.circular(22),
                   ),
                 ),
-                icon: const Icon(Icons.auto_awesome, color: Color(0xFFFDCB6E), size: 18),
+                icon: const Icon(Icons.auto_awesome,
+                    color: Color(0xFFFDCB6E), size: 18),
                 label: Text(
                   '✨ Chốt & Phối đồ ngay',
                   style: AppFonts.outfit(
@@ -711,11 +728,13 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                   child: GestureDetector(
                     onTap: () => _sendPrompt(presetText: s),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         color: AppTheme.lavenderCard,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
+                        border: Border.all(
+                            color: AppTheme.primaryColor.withOpacity(0.2)),
                       ),
                       child: Text(
                         s,
@@ -739,7 +758,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
               color: AppTheme.lavenderCard,
               borderRadius: BorderRadius.circular(24),
               border: _isListening
-                  ? Border.all(color: Colors.redAccent.withOpacity(0.6), width: 1.5)
+                  ? Border.all(
+                      color: Colors.redAccent.withOpacity(0.6), width: 1.5)
                   : null,
             ),
             child: Row(
@@ -757,8 +777,11 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                           : 'Nhập dịp đi chơi, đi làm, dự tiệc...',
                       hintStyle: AppFonts.inter(
                         fontSize: 13.5,
-                        color: _isListening ? Colors.redAccent : AppTheme.darkTextSecondary,
-                        fontWeight: _isListening ? FontWeight.w500 : FontWeight.normal,
+                        color: _isListening
+                            ? Colors.redAccent
+                            : AppTheme.darkTextSecondary,
+                        fontWeight:
+                            _isListening ? FontWeight.w500 : FontWeight.normal,
                       ),
                       border: InputBorder.none,
                     ),
@@ -768,14 +791,20 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   decoration: BoxDecoration(
-                    color: _isListening ? Colors.redAccent.withOpacity(0.15) : Colors.transparent,
+                    color: _isListening
+                        ? Colors.redAccent.withOpacity(0.15)
+                        : Colors.transparent,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    tooltip: _isListening ? 'Đang ghi âm (chạm để dừng)' : 'Nhập bằng giọng nói',
+                    tooltip: _isListening
+                        ? 'Đang ghi âm (chạm để dừng)'
+                        : 'Nhập bằng giọng nói',
                     icon: Icon(
                       _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
-                      color: _isListening ? Colors.redAccent : AppTheme.primaryColor,
+                      color: _isListening
+                          ? Colors.redAccent
+                          : AppTheme.primaryColor,
                     ),
                     onPressed: _listenVoicePrompt,
                   ),

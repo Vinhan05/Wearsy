@@ -79,5 +79,34 @@ void main() {
       expect(enrichedProduct.title, contains('Quạt'));
       expect(enrichedProduct.imageUrl, contains('susercontent.com'));
     });
+
+    test('enrichProductFromUrl with Shopee shortlink 1kUwYVz4', () async {
+      const shortUrl = '//vn.shp.ee/1kUwYVz4';
+      final initialProduct =
+          SmartShoppingAiService.parseProductFromUrl(shortUrl);
+      expect(initialProduct.platform, 'Shopee');
+
+      final enrichedProduct =
+          await SmartShoppingAiService.enrichProductFromUrl(initialProduct);
+
+      expect(enrichedProduct.title.toLowerCase(), contains('áo khoác'));
+      expect(enrichedProduct.category, WardrobeCategory.outerwear);
+      expect(enrichedProduct.imageUrl, contains('susercontent.com'));
+    });
+
+    test('enrichProductFromUrl with Shopee shortlink LtJwxoww (case tolerance)',
+        () async {
+      const shortUrl = '//vn.shp.ee/LtJwxoww';
+      final initialProduct =
+          SmartShoppingAiService.parseProductFromUrl(shortUrl);
+      expect(initialProduct.platform, 'Shopee');
+
+      final enrichedProduct =
+          await SmartShoppingAiService.enrichProductFromUrl(initialProduct);
+
+      expect(enrichedProduct.title.toLowerCase(), contains('quần'));
+      expect(enrichedProduct.category, WardrobeCategory.bottoms);
+      expect(enrichedProduct.imageUrl, contains('susercontent.com'));
+    });
   });
 }

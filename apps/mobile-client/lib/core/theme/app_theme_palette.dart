@@ -44,8 +44,10 @@ class AppThemePalette {
     name: 'Theme 1 - Wearsy Minimalist Studio (Mặc định)',
     description:
         'Tone trắng đen tối giản cao cấp, tinh tế chuẩn studio thời trang quốc tế',
-    primary: Color(0xFF18181B), // Đen obsidian hiện đại (nút, thanh điều hướng, tiêu đề)
-    primaryLight: Color(0xFF8A6728), // Nâu hoàng gia sang trọng (highlight, tab active, viền lựa chọn)
+    primary: Color(
+        0xFF18181B), // Đen obsidian hiện đại (nút, thanh điều hướng, tiêu đề)
+    primaryLight: Color(
+        0xFF8A6728), // Nâu hoàng gia sang trọng (highlight, tab active, viền lựa chọn)
     secondary: Color(0xFF1E293B), // Xám than sâu
     accent: Color(0xFF8A6728), // Vàng đồng sang trọng (VIP card & Lưu outfit)
     lightBackground: Color(0xFFFFFFFF), // Nền trắng tinh khôi chuẩn studio

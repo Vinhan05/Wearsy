@@ -5,6 +5,7 @@ class ApiConstants {
     if (envUrl.isNotEmpty) return envUrl;
     return _customBaseUrl ?? 'https://wearsy-wd0c.onrender.com/v1';
   }
+
   static String? _customBaseUrl;
   static void setBaseUrl(String url) => _customBaseUrl = url;
 

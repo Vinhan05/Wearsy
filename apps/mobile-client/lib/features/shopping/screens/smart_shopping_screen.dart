@@ -46,9 +46,11 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
 
   Future<void> _pasteFromClipboard() async {
     final data = await Clipboard.getData(Clipboard.kTextPlain);
-    if (data?.text != null && data!.text!.trim().isNotEmpty) {
+    final text = data?.text?.trim();
+    if (text != null && text.isNotEmpty) {
+      final normalized = SmartShoppingAiService.normalizeProductUrl(text);
       setState(() {
-        _urlController.text = data.text!.trim();
+        _urlController.text = normalized.isNotEmpty ? normalized : text;
       });
       _runAnalysis(_urlController.text);
     }
@@ -56,7 +58,11 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
 
   void _runAnalysis(String url) {
     if (url.trim().isEmpty) return;
-    final parsed = SmartShoppingAiService.parseProductFromUrl(url.trim());
+    final normalized = SmartShoppingAiService.normalizeProductUrl(url.trim());
+    if (normalized.isNotEmpty && normalized != url.trim()) {
+      _urlController.text = normalized;
+    }
+    final parsed = SmartShoppingAiService.parseProductFromUrl(normalized);
     _analyzeProduct(parsed);
   }
 
@@ -69,7 +75,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
 
     ProspectiveProduct finalProduct = product;
     // Cào ảnh thật và tiêu đề chuẩn từ sàn thương mại điện tử nếu là liên kết web
-    if (product.productUrl.startsWith('http')) {
+    if (product.productUrl.isNotEmpty) {
       try {
         final enriched =
             await SmartShoppingAiService.enrichProductFromUrl(product);
@@ -277,7 +283,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isEn ? 'Wardrobe Compatibility Check' : 'Check Tương Thích Tủ Đồ',
+                  isEn
+                      ? 'Wardrobe Compatibility Check'
+                      : 'Check Tương Thích Tủ Đồ',
                   style: AppFonts.outfit(
                     color: AppTheme.darkTextPrimary,
                     fontSize: 17,
@@ -316,7 +324,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            isEn ? 'Product Link You Want to Buy 🔗' : 'Link sản phẩm muốn mua 🔗',
+            isEn
+                ? 'Product Link You Want to Buy 🔗'
+                : 'Link sản phẩm muốn mua 🔗',
             style: AppFonts.outfit(
               color: AppTheme.darkTextPrimary,
               fontWeight: FontWeight.bold,
@@ -329,7 +339,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               Expanded(
                 child: TextField(
                   controller: _urlController,
-                  style: TextStyle(color: AppTheme.darkTextPrimary, fontSize: 13),
+                  style:
+                      TextStyle(color: AppTheme.darkTextPrimary, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: isEn
                         ? 'Paste link from Shopee, TikTok, Lazada, Zara...'
@@ -413,7 +424,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
               icon:
                   const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
               label: Text(
-                isEn ? 'Check Compatibility with AI ✨' : 'Kiểm Tra Tương Thích Với AI',
+                isEn
+                    ? 'Check Compatibility with AI ✨'
+                    : 'Kiểm Tra Tương Thích Với AI',
                 style: AppFonts.outfit(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -714,8 +727,10 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             onPressed: () async {
               String fitImageUrl = prod.imageUrl;
 
-              final isAlreadyBgRemoved = fitImageUrl.contains('e_background_removal') ||
-                  (fitImageUrl.contains('cloudinary') && fitImageUrl.endsWith('.png'));
+              final isAlreadyBgRemoved =
+                  fitImageUrl.contains('e_background_removal') ||
+                      (fitImageUrl.contains('cloudinary') &&
+                          fitImageUrl.endsWith('.png'));
 
               if (!isAlreadyBgRemoved) {
                 showDialog(
@@ -734,7 +749,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                             height: 26,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(0xFF6C5CE7)),
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -758,13 +774,14 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
 
                 try {
                   final wardrobeService = WardrobeService();
-                  final bgRemovedUrl =
-                      await wardrobeService.removeBackgroundFromUrl(fitImageUrl);
+                  final bgRemovedUrl = await wardrobeService
+                      .removeBackgroundFromUrl(fitImageUrl);
                   if (bgRemovedUrl != null && bgRemovedUrl.isNotEmpty) {
                     fitImageUrl = bgRemovedUrl;
                   }
                 } catch (e) {
-                  debugPrint('[SmartShopping] Fitting room bg removal error: $e');
+                  debugPrint(
+                      '[SmartShopping] Fitting room bg removal error: $e');
                 }
 
                 if (mounted) {
@@ -923,7 +940,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    TagLocalization.getLocalizedAiReason(result.recommendationReason, isEn),
+                    TagLocalization.getLocalizedAiReason(
+                        result.recommendationReason, isEn),
                     style: AppFonts.inter(
                       color: AppTheme.darkTextPrimary,
                       fontSize: 12,
@@ -992,7 +1010,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isEn ? 'Color Wheel Analysis' : 'Bánh Xe Màu Sắc (Color Wheel)',
+                      isEn
+                          ? 'Color Wheel Analysis'
+                          : 'Bánh Xe Màu Sắc (Color Wheel)',
                       style: AppFonts.outfit(
                         color: AppTheme.darkTextPrimary,
                         fontSize: 14,
@@ -1001,7 +1021,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      TagLocalization.getLocalizedAiReason(result.colorHarmonyAnalysis, isEn),
+                      TagLocalization.getLocalizedAiReason(
+                          result.colorHarmonyAnalysis, isEn),
                       style: AppFonts.inter(
                         color: AppTheme.darkTextSecondary,
                         fontSize: 12,
@@ -1034,7 +1055,9 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isEn ? 'Silhouette & Layering' : 'Phom Dáng & Phối Lớp (Layering)',
+                      isEn
+                          ? 'Silhouette & Layering'
+                          : 'Phom Dáng & Phối Lớp (Layering)',
                       style: AppFonts.outfit(
                         color: AppTheme.darkTextPrimary,
                         fontSize: 14,
@@ -1043,7 +1066,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      TagLocalization.getLocalizedAiReason(result.silhouetteAnalysis, isEn),
+                      TagLocalization.getLocalizedAiReason(
+                          result.silhouetteAnalysis, isEn),
                       style: AppFonts.inter(
                         color: AppTheme.darkTextSecondary,
                         fontSize: 12,
@@ -1386,9 +1410,8 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                                 label: Text(c,
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: isSel
-                                          ? Colors.white
-                                          : Colors.white70,
+                                      color:
+                                          isSel ? Colors.white : Colors.white70,
                                       fontWeight: isSel
                                           ? FontWeight.bold
                                           : FontWeight.normal,

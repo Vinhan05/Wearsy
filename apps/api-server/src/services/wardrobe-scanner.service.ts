@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GoogleGenAI } from '@google/genai';
 import { CloudinaryService } from './cloudinary.service';
+import { ImageSanitizerService } from './image-sanitizer.service';
 import { WardrobeItemEntity } from '../models/wardrobe-item.entity';
 import { CategoryEntity } from '../models/category.entity';
 import {
@@ -41,6 +42,7 @@ export class WardrobeScannerService {
   constructor(
     private readonly configService: ConfigService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly imageSanitizerService: ImageSanitizerService,
     @InjectRepository(WardrobeItemEntity)
     private readonly wardrobeItemRepository: Repository<WardrobeItemEntity>,
     @InjectRepository(CategoryEntity)
@@ -120,7 +122,11 @@ Trả về duy nhất định dạng JSON thuần túy theo schema:
 Tuyệt đối không giải thích thêm hay bọc mã markdown ngoài JSON.
 `;
 
-    // 2. Chạy song song Cloudinary upload, lấy Category Map và Gemini Vision analysis để tối ưu tốc độ (< 2s)
+    // 2. EXIF Metadata Stripping: Tự động loại bỏ toàn bộ tọa độ GPS, model thiết bị, thời gian chụp
+    // trước khi gửi cho Gemini Vision và lưu trữ đám mây (Tuân thủ NĐ 13/2023/NĐ-CP & GDPR)
+    file.buffer = await this.imageSanitizerService.stripMetadata(file.buffer);
+
+    // 3. Chạy song song Cloudinary upload, lấy Category Map và Gemini Vision analysis để tối ưu tốc độ (< 2s)
     const uploadPromise = this.cloudinaryService
       .uploadImage(file, 'wearsy/wardrobe_scans')
       .then((res) => res.secure_url)

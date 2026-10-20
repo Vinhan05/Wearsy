@@ -27,8 +27,7 @@ class InteractiveBgEraserDialog extends StatefulWidget {
       _InteractiveBgEraserDialogState();
 }
 
-class _InteractiveBgEraserDialogState
-    extends State<InteractiveBgEraserDialog> {
+class _InteractiveBgEraserDialogState extends State<InteractiveBgEraserDialog> {
   late String _currentPath;
   ui.Image? _decodedImage;
   bool _isLoading = true;
@@ -153,7 +152,8 @@ class _InteractiveBgEraserDialogState
       }
 
       final picture = recorder.endRecording();
-      final img = await picture.toImage(size.width.toInt(), size.height.toInt());
+      final img =
+          await picture.toImage(size.width.toInt(), size.height.toInt());
       final pngBytes = await img.toByteData(format: ui.ImageByteFormat.png);
 
       if (pngBytes != null) {
@@ -337,7 +337,8 @@ class _InteractiveBgEraserDialogState
                         selected: _activeMode == EraserMode.erase,
                         selectedColor: AppTheme.primaryLight,
                         onSelected: (val) {
-                          if (val) setState(() => _activeMode = EraserMode.erase);
+                          if (val)
+                            setState(() => _activeMode = EraserMode.erase);
                         },
                       ),
                       const SizedBox(width: 12),
@@ -352,7 +353,8 @@ class _InteractiveBgEraserDialogState
                         selected: _activeMode == EraserMode.restore,
                         selectedColor: AppTheme.primaryLight,
                         onSelected: (val) {
-                          if (val) setState(() => _activeMode = EraserMode.restore);
+                          if (val)
+                            setState(() => _activeMode = EraserMode.restore);
                         },
                       ),
                     ],

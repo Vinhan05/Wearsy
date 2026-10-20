@@ -11,3 +11,4 @@ export * from './cloudinary.service';
 export * from './cloudinary.provider';
 export * from './bg-removal.service';
 export * from './ai-gateway.service';
+export * from './image-sanitizer.service';
