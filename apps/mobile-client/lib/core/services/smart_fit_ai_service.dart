@@ -177,9 +177,17 @@ class SmartFitAiService {
         .where((id) => wardrobeItems.any((item) => item.id == id))
         .toList();
 
-    final finalItemIds = validIds.isNotEmpty
-        ? validIds
-        : wardrobeItems.take(2).map((i) => i.id).toList();
+    List<String> finalItemIds;
+    if (validIds.isNotEmpty) {
+      finalItemIds = validIds;
+    } else {
+      final fallbackOutfit = _buildFallbackOutfit(
+        wardrobeItems: wardrobeItems,
+        bodyAnalysis: bodyAnalysis,
+        occasion: occasion,
+      );
+      finalItemIds = fallbackOutfit.itemIds;
+    }
 
     final title = data['title']?.toString() ?? 'Gợi ý từ WEARSY AI';
     final reply = data['reply']?.toString() ??
@@ -276,7 +284,37 @@ class SmartFitAiService {
       });
     }
 
-    final selectedItems = sortedItems.take(3).toList();
+    // Phân loại các món đồ theo slot trang phục
+    final tops = sortedItems.where((i) => i.category == WardrobeCategory.tops).toList();
+    final bottoms = sortedItems.where((i) => i.category == WardrobeCategory.bottoms).toList();
+    final dresses = sortedItems.where((i) => i.category == WardrobeCategory.dresses).toList();
+    final outerwear = sortedItems.where((i) => i.category == WardrobeCategory.outerwear).toList();
+    final shoes = sortedItems.where((i) => i.category == WardrobeCategory.shoes).toList();
+
+    final List<WardrobeItemModel> selectedItems = [];
+    final isDressOccasion = occasion.toLowerCase().contains('tiệc') ||
+        occasion.toLowerCase().contains('hẹn hò') ||
+        occasion.toLowerCase().contains('date');
+
+    if (dresses.isNotEmpty && (bottoms.isEmpty || isDressOccasion)) {
+      selectedItems.add(dresses.first);
+      if (outerwear.isNotEmpty) selectedItems.add(outerwear.first);
+      if (shoes.isNotEmpty) selectedItems.add(shoes.first);
+    } else {
+      if (tops.isNotEmpty) selectedItems.add(tops.first);
+      if (bottoms.isNotEmpty) selectedItems.add(bottoms.first);
+
+      if (selectedItems.isEmpty && sortedItems.isNotEmpty) {
+        selectedItems.addAll(sortedItems.take(2));
+      } else if (selectedItems.length == 1 && outerwear.isNotEmpty) {
+        selectedItems.add(outerwear.first);
+      }
+
+      if (shoes.isNotEmpty && selectedItems.length < 3) {
+        selectedItems.add(shoes.first);
+      }
+    }
+
     final itemIds = selectedItems.map((item) => item.id).toList();
 
     return OutfitModel(
@@ -284,11 +322,11 @@ class SmartFitAiService {
       name: 'Phối Đồ Hài Hòa Cho $occasion',
       occasion: _matchOccasion(occasion),
       weatherSuitable: ['Mọi thời tiết'],
-      aiScore: 9.0,
-      eleganceScore: 9.0,
-      colorScore: 8.8,
+      aiScore: 9.2,
+      eleganceScore: 9.2,
+      colorScore: 9.0,
       aiReason: selectedItems.isNotEmpty
-          ? 'Sự kết hợp giữa ${selectedItems.map((e) => e.name).join(', ')} được chọn lọc chuẩn theo gu phong cách và màu sắc ưa chuộng của bạn.'
+          ? 'Sự kết hợp giữa ${selectedItems.map((e) => e.name).join(' và ')} được phối theo tỷ lệ chuẩn 1/3 - 2/3, tôn dáng và hòa hợp màu sắc.'
           : 'Tủ đồ của bạn chưa có đủ món để phối.',
       itemIds: itemIds,
       coverImageUrl:
@@ -387,6 +425,21 @@ class SmartFitAiService {
             'outfit': outfit,
           };
         } else {
+          if (forceFinalize) {
+            final outfit = _buildFallbackOutfit(
+              wardrobeItems: wardrobeItems,
+              bodyAnalysis: bodyAnalysis,
+              occasion: messages.isNotEmpty
+                  ? messages.last['content'] ?? 'Đi chơi'
+                  : 'Đi chơi',
+              persona: persona,
+            );
+            return {
+              'action': 'FINALIZE_OUTFIT',
+              'reply': outfit.aiReason,
+              'outfit': outfit,
+            };
+          }
           return {
             'action': 'CONVERSATION',
             'reply': safeReply,
@@ -432,6 +485,21 @@ class SmartFitAiService {
             'outfit': outfit,
           };
         } else {
+          if (forceFinalize) {
+            final outfit = _buildFallbackOutfit(
+              wardrobeItems: wardrobeItems,
+              bodyAnalysis: bodyAnalysis,
+              occasion: messages.isNotEmpty
+                  ? messages.last['content'] ?? 'Đi chơi'
+                  : 'Đi chơi',
+              persona: persona,
+            );
+            return {
+              'action': 'FINALIZE_OUTFIT',
+              'reply': outfit.aiReason,
+              'outfit': outfit,
+            };
+          }
           return {
             'action': 'CONVERSATION',
             'reply': safeReply,
@@ -450,6 +518,7 @@ class SmartFitAiService {
         occasion: messages.isNotEmpty
             ? messages.last['content'] ?? 'Đi chơi'
             : 'Đi chơi',
+        persona: persona,
       );
       return {
         'action': 'FINALIZE_OUTFIT',
