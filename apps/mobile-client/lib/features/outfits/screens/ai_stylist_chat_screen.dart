@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -466,19 +465,6 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Rendered Image Header if available
-          if (outfit.coverImageUrl.isNotEmpty)
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(18)),
-              child: Container(
-                height: 220,
-                width: double.infinity,
-                color: const Color(0xFFF1F5F9),
-                child: _buildCoverImage(outfit.coverImageUrl),
-              ),
-            ),
-
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -611,7 +597,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                     ),
                     icon: const Icon(Icons.visibility_outlined, size: 18),
                     label: Text(
-                      'Xem Chi Tiết & Thử Đồ 2D',
+                      'Xem Chi Tiết Outfit',
                       style: AppFonts.inter(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
@@ -635,38 +621,6 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     );
   }
 
-  Widget _buildCoverImage(String imageSrc) {
-    if (imageSrc.startsWith('data:image/')) {
-      final base64Content = imageSrc.split(',').last;
-      return Image.memory(
-        base64Decode(base64Content),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
-        ),
-      );
-    } else if (imageSrc.startsWith('http://') ||
-        imageSrc.startsWith('https://')) {
-      return Image.network(
-        imageSrc,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
-        ),
-      );
-    } else if (File(imageSrc).existsSync()) {
-      return Image.file(
-        File(imageSrc),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
-        ),
-      );
-    }
-    return const Center(
-      child: Icon(Icons.checkroom_rounded, size: 40, color: Colors.grey),
-    );
-  }
 
   Widget _buildItemThumbnail(WardrobeItemModel item) {
     final path = item.imageUrl;

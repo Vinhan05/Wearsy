@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/outfit_model.dart';
 import 'ai_stylist_chat_screen.dart';
 import 'outfit_detail_screen.dart';
+import '../../wardrobe/providers/wardrobe_provider.dart';
+import '../../../core/services/smart_fit_ai_service.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/localization/language_provider.dart';
 
@@ -28,21 +30,31 @@ class _OutfitScreenState extends State<OutfitScreen> {
 
   void _generateOutfit() async {
     setState(() => _isGenerating = true);
-    await Future.delayed(const Duration(milliseconds: 600));
+    final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
+    OutfitModel newOutfit;
+    try {
+      newOutfit = await SmartFitAiService.generateSmartFitOutfit(
+        wardrobeItems: wardrobe.allItems,
+        heightCm: 172.0,
+        weightKg: 65.0,
+        occasion: '$_selectedContext • $_selectedStyle (Thời tiết $_selectedWeather)',
+        stylePreference: _selectedStyle,
+      );
+    } catch (_) {
+      newOutfit = OutfitModel(
+        id: 'ai_${DateTime.now().millisecondsSinceEpoch}',
+        name: '$_selectedStyle • $_selectedContext',
+        aiReason:
+            'Set đồ được tối ưu theo tỷ lệ 1/3 - 2/3, tôn dáng và phù hợp thời tiết $_selectedWeather.',
+        occasion: OutfitOccasion.casual,
+        weatherSuitable: [_selectedWeather],
+        aiScore: 9.3,
+        coverImageUrl: '',
+        itemIds: wardrobe.allItems.take(2).map((i) => i.id).toList(),
+      );
+    }
     if (!mounted) return;
     setState(() => _isGenerating = false);
-
-    final newOutfit = OutfitModel(
-      id: 'ai_${DateTime.now().millisecondsSinceEpoch}',
-      name: '$_selectedStyle • $_selectedContext',
-      aiReason:
-          'Gọn gàng, hiện đại và phù hợp cho thời tiết $_selectedWeather.',
-      occasion: OutfitOccasion.casual,
-      weatherSuitable: [_selectedWeather],
-      aiScore: 9.8,
-      coverImageUrl: 'assets/images/outfit_detail_mannequin.jpg',
-      itemIds: [],
-    );
 
     Navigator.push(
       context,

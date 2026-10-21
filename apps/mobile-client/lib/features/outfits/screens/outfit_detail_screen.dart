@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/outfit_model.dart';
 import '../providers/outfit_provider.dart';
-import '../../fitting_room/screens/virtual_fitting_room_screen.dart';
+import '../../wardrobe/providers/wardrobe_provider.dart';
+import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/localization/language_provider.dart';
 import '../../../core/utils/tag_localization.dart';
@@ -22,19 +26,61 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
   bool _isSaved = false;
   late String _outfitName;
   int _userReaction = 0; // 0: none, 1: liked, -1: disliked
+  bool _itemsLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _outfitName =
         widget.outfit.name.isNotEmpty ? widget.outfit.name : 'Smart casual';
-    _items = [
-      {'name': 'Áo overshirt', 'thumb': 'assets/images/thumb_overshirt.png'},
-      {'name': 'Áo thun trắng', 'thumb': 'assets/images/thumb_tshirt.png'},
-      {'name': 'Qquân chino navy', 'thumb': 'assets/images/thumb_chino.png'},
-      {'name': 'Sneaker trắng', 'thumb': 'assets/images/thumb_sneaker.png'},
-      {'name': 'Túi đeo chéo', 'thumb': 'assets/images/thumb_bag.png'},
-    ];
+    _items = [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_itemsLoaded) {
+      _itemsLoaded = true;
+      final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
+      final matchedItems = wardrobe.allItems
+          .where((item) => widget.outfit.itemIds.contains(item.id))
+          .toList();
+
+      if (matchedItems.isNotEmpty) {
+        _items = matchedItems.map((item) {
+          return {
+            'id': item.id,
+            'name': item.name,
+            'thumb': item.imageUrl,
+            'category': item.category.displayName,
+          };
+        }).toList();
+      } else if (wardrobe.allItems.isNotEmpty) {
+        _items = wardrobe.allItems.take(2).map((item) {
+          return {
+            'id': item.id,
+            'name': item.name,
+            'thumb': item.imageUrl,
+            'category': item.category.displayName,
+          };
+        }).toList();
+      } else {
+        _items = [
+          {
+            'id': 'fallback_1',
+            'name': 'Áo sơ mi lụa trắng',
+            'thumb': 'assets/images/thumb_overshirt.png',
+            'category': 'Áo',
+          },
+          {
+            'id': 'fallback_2',
+            'name': 'Quần tây slim fit',
+            'thumb': 'assets/images/thumb_chino.png',
+            'category': 'Quần',
+          },
+        ];
+      }
+    }
   }
 
   void _showRenameOutfitDialog() {
@@ -246,9 +292,100 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
     });
   }
 
+  Widget _buildItemThumbnail(String? thumbSrc) {
+    if (thumbSrc == null || thumbSrc.isEmpty) {
+      return const Icon(
+        Icons.checkroom_outlined,
+        size: 20,
+        color: Color(0xFF6B7280),
+      );
+    }
+    if (thumbSrc.startsWith('http://') || thumbSrc.startsWith('https://')) {
+      return CachedNetworkImage(
+        imageUrl: thumbSrc,
+        width: 38,
+        height: 38,
+        fit: BoxFit.contain,
+        placeholder: (_, __) => const Center(
+          child: SizedBox(
+            width: 14,
+            height: 14,
+            child: CircularProgressIndicator(strokeWidth: 1.5),
+          ),
+        ),
+        errorWidget: (_, __, ___) => const Icon(
+          Icons.checkroom_outlined,
+          size: 20,
+          color: Color(0xFF6B7280),
+        ),
+      );
+    }
+    if (thumbSrc.startsWith('/data/') || thumbSrc.startsWith('/')) {
+      try {
+        final file = File(thumbSrc);
+        if (file.existsSync()) {
+          return Image.file(
+            file,
+            width: 38,
+            height: 38,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => const Icon(
+              Icons.checkroom_outlined,
+              size: 20,
+              color: Color(0xFF6B7280),
+            ),
+          );
+        }
+      } catch (_) {}
+    }
+    if (thumbSrc.startsWith('data:image/')) {
+      try {
+        final base64Content = thumbSrc.split(',').last;
+        return Image.memory(
+          base64Decode(base64Content),
+          width: 38,
+          height: 38,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const Icon(
+            Icons.checkroom_outlined,
+            size: 20,
+            color: Color(0xFF6B7280),
+          ),
+        );
+      } catch (_) {}
+    }
+    return Image.asset(
+      thumbSrc,
+      width: 38,
+      height: 38,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => const Icon(
+        Icons.checkroom_outlined,
+        size: 20,
+        color: Color(0xFF6B7280),
+      ),
+    );
+  }
+
   void _replaceItem(int index) {
     final isEn =
         Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final wardrobe = Provider.of<WardrobeProvider>(context, listen: false);
+    final currentItemId = _items[index]['id'];
+    final candidates = wardrobe.allItems.where((i) => i.id != currentItemId).toList();
+
+    if (candidates.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isEn
+              ? 'No other items available in your wardrobe to replace.'
+              : 'Tủ đồ chưa có món khác để thay thế.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -272,42 +409,58 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            ListTile(
-              leading: const Text('👕', style: TextStyle(fontSize: 24)),
-              title: Text(isEn
-                  ? 'Minimalist Plain Polo Shirt'
-                  : 'Áo Polo trơn tối giản'),
-              subtitle:
-                  Text(isEn ? 'Torano • Off-White' : 'Torano • Trắng ngà'),
-              trailing: const Icon(Icons.swap_horiz_rounded,
-                  color: Color(0xFF2563EB)),
-              onTap: () {
-                setState(() {
-                  _items[index] = {
-                    'name': 'Áo Polo trơn',
-                    'thumb': 'assets/images/thumb_tshirt.png',
-                  };
-                });
-                Navigator.pop(ctx);
-              },
-            ),
-            ListTile(
-              leading: const Text('👖', style: TextStyle(fontSize: 24)),
-              title: Text(isEn
-                  ? 'Relaxed Pleated Trousers'
-                  : 'Quần tây xếp ly relaxed'),
-              subtitle: Text(isEn ? 'Zara • Charcoal Grey' : 'Zara • Đen xám'),
-              trailing: const Icon(Icons.swap_horiz_rounded,
-                  color: Color(0xFF2563EB)),
-              onTap: () {
-                setState(() {
-                  _items[index] = {
-                    'name': 'Quần tây xếp ly',
-                    'thumb': 'assets/images/thumb_chino.png',
-                  };
-                });
-                Navigator.pop(ctx);
-              },
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.45,
+              ),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: candidates.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (ctx, cIdx) {
+                  final cand = candidates[cIdx];
+                  final thumb = cand.imageUrl;
+                  return ListTile(
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9FAFB),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: _buildItemThumbnail(thumb),
+                      ),
+                    ),
+                    title: Text(
+                      cand.name,
+                      style: AppFonts.inter(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${cand.category.displayName} • ${cand.color}',
+                      style: AppFonts.inter(
+                          fontSize: 11.5, color: const Color(0xFF6B7280)),
+                    ),
+                    trailing: const Icon(Icons.swap_horiz_rounded,
+                        color: Color(0xFF2563EB)),
+                    onTap: () {
+                      setState(() {
+                        _items[index] = {
+                          'id': cand.id,
+                          'name': cand.name,
+                          'thumb': thumb,
+                          'category': cand.category.displayName,
+                        };
+                      });
+                      Navigator.pop(ctx);
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -541,76 +694,20 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
 
               const SizedBox(height: 18),
 
-              // Full-Body 3D Mannequin Preview Container
-              Container(
-                width: double.infinity,
-                height: 380,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          'assets/images/outfit_detail_mannequin.jpg',
-                          height: 360,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    // Expand/Fitting Room Button (Bottom Right)
-                    Positioned(
-                      bottom: 14,
-                      right: 14,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const VirtualFittingRoomScreen(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 6,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(Icons.open_in_full_rounded,
-                              size: 18, color: Color(0xFF111827)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               // Section: "Chi tiết outfit"
               Text(
                 isEn ? 'Outfit details' : 'Chi tiết outfit',
                 style: AppFonts.inter(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF111827),
                 ),
               ),
               const SizedBox(height: 12),
 
-              // List of 5 outfit items (Clean rows on pure white canvas matching Image 5)
+              // List of outfit items
               Column(
                 children: List.generate(_items.length, (idx) {
                   final itm = _items[idx];
@@ -620,28 +717,18 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                       children: [
                         // Thumbnail
                         Container(
-                          width: 44,
-                          height: 44,
+                          width: 48,
+                          height: 48,
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF9FAFB),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: const Color(0xFFE5E7EB)),
                           ),
                           alignment: Alignment.center,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Image.asset(
-                              itm['thumb']!,
-                              width: 38,
-                              height: 38,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.checkroom_outlined,
-                                size: 20,
-                                color: Color(0xFF6B7280),
-                              ),
-                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            child: _buildItemThumbnail(itm['thumb']),
                           ),
                         ),
                         const SizedBox(width: 14),
