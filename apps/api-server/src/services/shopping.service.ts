@@ -124,7 +124,8 @@ Khi người dùng chuẩn bị mua một món đồ mới (Prospective Product)
    - "CÂN NHẮC ⚠️" (5.0 <= Score < 7.5)
    - "KHÔNG NÊN MUA ❌" (Score < 5.0)
    - "ĐÃ CÓ ĐỒ TƯƠNG TỰ 🔁" (Nếu bị trùng lặp)
-4. Gợi ý 2-3 bộ Outfit hoàn chỉnh kết hợp giữa món đồ mới và các món đồ có sẵn (CHỈ DÙNG ID CÓ THẬT trong danh sách tủ đồ).
+    // 4. Gợi ý 2-3 bộ Outfit hoàn chỉnh kết hợp giữa món đồ mới và các món đồ có sẵn (CHỈ DÙNG ID CÓ THẬT trong danh sách tủ đồ).
+    // QUY TẮC BẮT BUỘC: 1 bộ outfit PHẢI LUÔN CÓ ĐỦ ÁO (Top) VÀ QUẦN/VÁY (Bottom) hoặc ĐẦM. Tuyệt đối không bao giờ gợi ý chỉ có Quần + Đồng hồ + Giày mà thiếu Áo!
 
 [ĐỊNH DẠNG JSON SCHEMA BẮT BUỘC]
 Trả về JSON chuẩn không có văn bản thừa bên ngoài:
@@ -168,17 +169,33 @@ Trả về JSON chuẩn không có văn bản thừa bên ngoài:
       })),
     };
 
-    const response = await this.aiClient.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: JSON.stringify(userPrompt),
-      config: {
-        systemInstruction,
-        responseMimeType: 'application/json',
-        temperature: 0.2,
-      },
-    });
+    let responseText = '';
+    const modelsToTry = ['gemini-3.8-flash', 'gemini-3-flash-preview'];
+    for (const model of modelsToTry) {
+      try {
+        const response = await this.aiClient.models.generateContent({
+          model,
+          contents: JSON.stringify(userPrompt),
+          config: {
+            systemInstruction,
+            responseMimeType: 'application/json',
+            temperature: 0.2,
+          },
+        });
+        if (response && response.text) {
+          responseText = response.text.trim();
+          break;
+        }
+      } catch (err: any) {
+        this.logger.warn(`Shopping Gemini error with model ${model}: ${err.message}`);
+      }
+    }
 
-    const parsed = JSON.parse(response.text.trim());
+    if (!responseText) {
+      throw new Error('All Gemini models failed for shopping check');
+    }
+
+    const parsed = JSON.parse(responseText);
 
     // Map matched items
     const matchedIds = new Set<string>(parsed.matching_item_ids || []);
