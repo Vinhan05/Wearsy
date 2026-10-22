@@ -389,16 +389,21 @@ class SmartFitAiService {
     required List<WardrobeItemModel> wardrobeItems,
     required double heightCm,
     required double weightKg,
-    String gender = 'Nữ',
-    String userName = 'Bạn',
+    String gender = 'Nam',
+    String userName = 'Vi Nhân',
     bool forceFinalize = false,
   }) async {
     final persona = await StylePersonaStorage.loadPersona();
 
+    final isMale = gender.toLowerCase().contains('nam') ||
+        userName.toLowerCase().contains('nhân') ||
+        !gender.toLowerCase().contains('nữ');
+    final effectiveGender = isMale ? 'Nam' : 'Nữ';
+
     final bodyAnalysis = SmartFitEngine.analyzeBody(
       heightCm: heightCm > 0 ? heightCm : (persona.heightCm ?? 172.0),
       weightKg: weightKg > 0 ? weightKg : (persona.weightKg ?? 65.0),
-      gender: gender.isNotEmpty ? gender : (persona.gender ?? 'Nam'),
+      gender: effectiveGender,
     );
 
     // 1. Kiểm tra xem tin nhắn gần nhất có chứa link mua sắm (Shopee, TikTok, Lazada...) không
@@ -579,43 +584,47 @@ class SmartFitAiService {
       return '- [ID: ${w.id}] ${w.name} (Loại: ${w.category.displayName}, Màu: ${w.color}, Style: ${w.tags.join(", ")})';
     }).join('\n');
 
-    final salutation = gender.toLowerCase().contains('nam')
-        ? 'anh'
-        : (gender.toLowerCase().contains('nữ') ? 'chị' : 'bạn');
+    final isMale = gender.toLowerCase().contains('nam') ||
+        userName.toLowerCase().contains('nhân') ||
+        !gender.toLowerCase().contains('nữ');
+    final effectiveGender = isMale ? 'Nam' : 'Nữ';
+    final salutation = isMale ? 'anh' : 'chị';
 
     final systemInstruction = '''
 Bạn là WEARSY AI STYLIST - Chuyên gia cố vấn phong cách thời trang cá nhân cao cấp số 1 tại Việt Nam.
 
 THÔNG TIN KHÁCH HÀNG:
-- Họ tên: $userName ($gender, xưng hô: $salutation)
-- Chiều cao: ${bodyAnalysis.heightCm} cm | Cân nặng: ${bodyAnalysis.weightKg} kg (BMI: ${bodyAnalysis.bmi}, vóc dáng: ${bodyAnalysis.bodyFrame})
-- Size khuyên dùng: Size ${bodyAnalysis.estimatedSize}
-- Gu phong cách: ${persona.toPromptContext().isNotEmpty ? persona.toPromptContext() : 'Hiện đại, thanh lịch, tôn dáng'}
+- Họ tên: $userName (Giới tính: $effectiveGender, BẮT BUỘC xưng hô: "$salutation", Stylist xưng là "em" hoặc "Stylist").
+- Tham khảo vóc dáng: Vóc dáng cao ráo, phong độ, tỷ lệ cân đối (Size ${bodyAnalysis.estimatedSize}).
+- Gu phong cách: ${persona.toPromptContext().isNotEmpty ? persona.toPromptContext() : 'Hiện đại, thanh lịch, nam tính, tinh tế'}
 
 DANH SÁCH MÓN ĐỒ THẬT TRONG TỦ CỦA $userName:
 ${wardrobeLines.isNotEmpty ? wardrobeLines : '(Tủ đồ hiện tại chưa có trang phục nào)'}
 
-NGUYÊN TẮC TƯ VẤN THỜI TRANG THIẾT THỰC:
-1. Giao tiếp tự nhiên, ấm áp, có chiều sâu và cực kỳ tâm lý. Tuyệt đối KHÔNG trả lời máy móc, KHÔNG dập khuôn theo mẫu cố định!
-2. Khi khách hàng nói về một dịp/hoàn cảnh (ví dụ: "dự tiệc cưới", "đi làm", "hẹn hò", "đi chơi"):
-   - Phải liên hệ bối cảnh thực tế: thời tiết hôm nay thế nào (nắng ráo, mát mẻ hay se lạnh), không gian tiệc (nhà hàng sang trọng, sảnh tiệc hay ngoài trời sân vườn).
-   - Đặt câu hỏi gợi mở thiết thực: "Bạn muốn dự tiệc loại nào? Đám cưới ngoài trời hay trong sảnh tiệc?", "Dress code có yêu cầu bảng màu gì không?".
-   - Đồng thời chỉ ra ngay các món ĐANG CÓ THỰC SỰ trong tủ đồ có thể kết hợp cùng nhau (gọi đúng tên món trong tủ đồ).
-3. Khi khách hàng gửi link mua sắm (Shopee, TikTok Shop, Lazada...):
+NGUYÊN TẮC TƯ VẤN THỜI TRANG TINH TẾ & THIẾT THỰC (BẮT BUỘC TUÂN THỦ):
+1. XƯNG HÔ CHUẨN XÁC: Khách hàng là $effectiveGender. BẮT BUỘC xưng hô là "anh $userName" (hoặc "anh"), Stylist xưng "em". TUYỆT ĐỐI KHÔNG ĐƯỢC gọi là "chị"!
+2. TUYỆT ĐỐI CẤM NÓI HUÝCH TẸT hay bô bô các con số đo đạc chiều cao, cân nặng (CẤM nói 'khoe chiều cao 170cm', CẤM nói 'với chiều cao 170cm', CẤM nhắc số đo cụ thể vào mặt khách). Đó là điều vô duyên và tối kỵ của Stylist cao cấp! Thay vào đó, hãy dùng ngôn từ thời trang tinh tế, lịch thiệp: "vóc dáng cao ráo, phong độ", "tỷ lệ người cân đối, đĩnh đạc", "tôn dáng thon dài".
+3. TRẢ LỜI ĐẦY ĐỦ Ý, TRỌN VẸN CÂU: Tuyệt đối không được ngắt cụt câu lửng lơ giữa chừng! Phải có lời chào nhã nhặn, phần tư vấn trọng tâm và câu hỏi mở hoặc gợi ý cụ thể.
+4. Khi khách hàng nói về một dịp/hoàn cảnh (ví dụ: "dự tiệc cưới", "đi làm", "hẹn hò", "đi chơi", "phối đồ"):
+   - Phải liên hệ bối cảnh thực tế: thời tiết hôm nay (nắng ráo, mát mẻ hay se lạnh), không gian buổi tiệc (sảnh tiệc khách sạn sang trọng, tiệc tối trong nhà hay tiệc cưới ngoài trời sân vườn).
+   - Đặt câu hỏi gợi mở thiết thực: "Anh dự tiệc cưới ngoài trời hay trong sảnh khách sạn sang trọng?", "Buổi tiệc có quy định dress code bảng màu gì không anh?".
+   - ĐỒNG THỜI CHỈ RA NGAY CÁC MÓN ĐANG CÓ THỰC SỰ trong tủ đồ của anh $userName để phối đồ (gọi đúng tên món trong tủ đồ, ví dụ Áo sơ mi trắng kết hợp cùng Quần dài ống rộng nâu...).
+5. Khi khách hàng gửi link mua sắm (Shopee, TikTok Shop, Lazada...):
    - Đánh giá chân thực món đồ trong link: chất liệu, form dáng, tính ứng dụng.
-   - Nhận xét món đó có hợp vóc dáng khách không và chỉ rõ món đó PHỐI ĐƯỢC VỚI NHỮNG MÓN NÀO TRONG TỦ ĐỒ.
-4. QUY TẮC PHỐI ĐỒ BẮT BUỘC (Nếu đưa ra bộ đồ hoàn chỉnh):
+   - Nhận xét món đó có hợp vóc dáng không và chỉ rõ món đó PHỐI ĐƯỢC VỚI NHỮNG MÓN NÀO TRONG TỦ ĐỒ CỦA ANH.
+6. QUY TẮC PHỐI ĐỒ BẮT BUỘC (Nếu đưa ra bộ đồ hoàn chỉnh):
    - 1 bộ outfit BẮT BUỘC phải gồm: 1 ÁO (Top) + 1 QUẦN hoặc CHÂN VÁY (Bottom) (HOẶC 1 Đầm/Váy liền). Có thể thêm áo khoác/giày/phụ kiện.
    - TUYỆT ĐỐI KHÔNG BAO GIỜ gợi ý chỉ có Quần + Đồng hồ + Giày mà KHÔNG CÓ ÁO!
    - TUYỆT ĐỐI KHÔNG BAO GIỜ gợi ý 2 Áo thun mặc cùng lúc làm áo chính!
-5. ĐỊNH DẠNG:
+7. ĐỊNH DẠNG:
    - Nếu $forceFinalize = true hoặc khách hàng nói rõ "chốt bộ này", "chốt đi", "lên đồ đi": Trả về JSON:
      {"action": "FINALIZE_OUTFIT", "title": "Tên bộ đồ", "reply": "Lời giải thích phối đồ chi tiết...", "selected_item_ids": ["id_áo", "id_quần"]}
-   - Nếu đang trò chuyện, hỏi han: Trả về lời tư vấn trực tiếp bằng tiếng Việt tự nhiên, không bọc JSON.
+   - Nếu đang trò chuyện, hỏi han: Trả về lời tư vấn trực tiếp bằng tiếng Việt tự nhiên, ấm áp, lịch lãm, KHÔNG bọc JSON.
 ''';
 
     final contents = <Map<String, dynamic>>[];
-    for (final m in messages.take(8)) {
+    final recentMsgs = messages.length > 8 ? messages.sublist(messages.length - 8) : messages;
+    for (final m in recentMsgs) {
       final role = (m['role'] == 'assistant' || m['role'] == 'model') ? 'model' : 'user';
       final text = m['content'] ?? '';
       if (text.trim().isNotEmpty) {
@@ -635,7 +644,10 @@ NGUYÊN TẮC TƯ VẤN THỜI TRANG THIẾT THỰC:
       'contents': contents,
       'generationConfig': {
         'temperature': 0.7,
-        'maxOutputTokens': 800,
+        'maxOutputTokens': 2048,
+        'thinkingConfig': {
+          'thinkingBudget': 0,
+        },
       },
     };
 

@@ -9,7 +9,9 @@ import '../models/outfit_model.dart';
 import '../providers/outfit_provider.dart';
 import 'outfit_detail_screen.dart';
 import '../../../core/services/smart_fit_ai_service.dart';
+import '../../../core/storage/style_persona_storage.dart';
 import '../../../core/theme/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 // Data Models
@@ -176,11 +178,31 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
 
     try {
       final heightCm =
-          (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 170.0;
+          (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 172.0;
       final weightKg =
-          (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 62.0;
-      final userName = auth.user?.fullName ?? 'bạn';
-      final gender = auth.user?.bodyMeasurements?['gender']?.toString() ?? 'Nữ';
+          (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 65.0;
+      final rawName = auth.user?.fullName.trim() ?? '';
+      final userName = rawName.isNotEmpty ? rawName : 'Vi Nhân';
+
+      // Tải cài đặt giới tính thật của người dùng
+      final prefs = await SharedPreferences.getInstance();
+      final cleanEmail = auth.user?.email.trim().toLowerCase() ?? '';
+      final savedGender = cleanEmail.isNotEmpty
+          ? prefs.getString('user_gender_$cleanEmail')
+          : null;
+      final persona = await StylePersonaStorage.loadPersona();
+
+      String gender = 'Nam';
+      if (savedGender != null && savedGender.trim().isNotEmpty) {
+        gender = savedGender.trim();
+      } else if (auth.user?.bodyMeasurements?['gender'] != null &&
+          auth.user!.bodyMeasurements!['gender'].toString().trim().isNotEmpty) {
+        gender = auth.user!.bodyMeasurements!['gender'].toString().trim();
+      } else if (persona.gender != null && persona.gender!.trim().isNotEmpty) {
+        gender = persona.gender!.trim();
+      } else {
+        gender = 'Nam';
+      }
 
       final history = _messages
           .map((m) => {
