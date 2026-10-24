@@ -1,9 +1,9 @@
 class AppVersion {
   /// Tên phiên bản hiện tại theo chuẩn quy ước dự án WEARSY (bắt đầu từ beta 1.0.0)
-  static const String versionName = 'beta 1.0.8';
+  static const String versionName = 'beta 1.1.0';
 
   /// Mã build tăng dần theo mỗi lần cập nhật (+1)
-  static const int buildNumber = 9;
+  static const int buildNumber = 12;
 
   /// Tháng phát hành
   static const String releaseDate = '10/2026';

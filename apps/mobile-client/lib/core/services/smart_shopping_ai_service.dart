@@ -1238,35 +1238,126 @@ Hãy phân tích tính tương thích trước khi mua:
       return outfits;
     }
 
-    // Set 1: Đi làm / Lịch thiệp
-    final formalMatches = compItems
-        .where((i) => i.tags.any((t) =>
-            t.contains('Casual') ||
-            t.contains('công sở') ||
-            t.contains('thanh lịch')))
-        .toList();
-    if (formalMatches.isNotEmpty) {
+    // Phân loại các món đồ trong tủ theo danh mục chính xác
+    final tops = compItems.where((i) => i.category == WardrobeCategory.tops).toList();
+    final bottoms = compItems.where((i) => i.category == WardrobeCategory.bottoms).toList();
+    final dresses = compItems.where((i) => i.category == WardrobeCategory.dresses).toList();
+    final outerwears = compItems.where((i) => i.category == WardrobeCategory.outerwear).toList();
+    final shoes = compItems.where((i) => i.category == WardrobeCategory.shoes).toList();
+    final accessories = compItems.where((i) => i.category == WardrobeCategory.accessories).toList();
+
+    // Hàm chọn set đồ hoàn chỉnh (BẮT BUỘC có cả Thân trên + Thân dưới)
+    List<WardrobeItemModel> selectWearableSet(int variant) {
+      final selected = <WardrobeItemModel>[];
+      switch (product.category) {
+        case WardrobeCategory.shoes:
+        case WardrobeCategory.accessories:
+          // Món mới là Giày hoặc Phụ kiện -> BẮT BUỘC trong tủ phải lấy 1 Áo + 1 Quần (hoặc 1 Đầm)
+          if (tops.isNotEmpty && bottoms.isNotEmpty) {
+            final top = tops.length > variant ? tops[variant] : tops.first;
+            final bottom = bottoms.length > variant ? bottoms[variant] : bottoms.first;
+            selected.addAll([top, bottom]);
+          } else if (dresses.isNotEmpty) {
+            final dress = dresses.length > variant ? dresses[variant] : dresses.first;
+            selected.add(dress);
+            if (outerwears.isNotEmpty) selected.add(outerwears.first);
+          } else if (tops.isNotEmpty) {
+            selected.add(tops.first);
+            if (outerwears.isNotEmpty) selected.add(outerwears.first);
+          } else if (bottoms.isNotEmpty) {
+            selected.add(bottoms.first);
+            if (outerwears.isNotEmpty) selected.add(outerwears.first);
+          }
+          break;
+
+        case WardrobeCategory.tops:
+          // Món mới là Áo -> BẮT BUỘC ghép với 1 Quần/Váy (+ 1 Giày hoặc Phụ kiện)
+          if (bottoms.isNotEmpty) {
+            final bottom = bottoms.length > variant ? bottoms[variant] : bottoms.first;
+            selected.add(bottom);
+            if (shoes.isNotEmpty) {
+              selected.add(shoes.length > variant ? shoes[variant] : shoes.first);
+            } else if (accessories.isNotEmpty) {
+              selected.add(accessories.first);
+            } else if (outerwears.isNotEmpty) {
+              selected.add(outerwears.first);
+            }
+          } else if (dresses.isNotEmpty) {
+            selected.add(dresses.first);
+          }
+          break;
+
+        case WardrobeCategory.bottoms:
+          // Món mới là Quần/Váy -> BẮT BUỘC ghép với 1 Áo (+ 1 Giày hoặc Phụ kiện)
+          if (tops.isNotEmpty) {
+            final top = tops.length > variant ? tops[variant] : tops.first;
+            selected.add(top);
+            if (shoes.isNotEmpty) {
+              selected.add(shoes.length > variant ? shoes[variant] : shoes.first);
+            } else if (accessories.isNotEmpty) {
+              selected.add(accessories.first);
+            } else if (outerwears.isNotEmpty) {
+              selected.add(outerwears.first);
+            }
+          }
+          break;
+
+        case WardrobeCategory.outerwear:
+          // Món mới là Áo khoác -> BẮT BUỘC ghép với 1 Áo mặc trong + 1 Quần (hoặc 1 Đầm)
+          if (tops.isNotEmpty && bottoms.isNotEmpty) {
+            final top = tops.length > variant ? tops[variant] : tops.first;
+            final bottom = bottoms.length > variant ? bottoms[variant] : bottoms.first;
+            selected.addAll([top, bottom]);
+          } else if (dresses.isNotEmpty) {
+            selected.add(dresses.first);
+            if (shoes.isNotEmpty) selected.add(shoes.first);
+          } else if (tops.isNotEmpty) {
+            selected.add(tops.first);
+          } else if (bottoms.isNotEmpty) {
+            selected.add(bottoms.first);
+          }
+          break;
+
+        case WardrobeCategory.dresses:
+          // Món mới là Đầm liền -> Ghép với Áo khoác hoặc Giày hoặc Phụ kiện
+          if (outerwears.isNotEmpty) {
+            selected.add(outerwears.first);
+          }
+          if (shoes.isNotEmpty && selected.length < 2) {
+            selected.add(shoes.first);
+          } else if (accessories.isNotEmpty && selected.length < 2) {
+            selected.add(accessories.first);
+          }
+          break;
+      }
+
+      if (selected.isEmpty && compItems.isNotEmpty) {
+        selected.addAll(compItems.take(2));
+      }
+      return selected;
+    }
+
+    // Set 1: Năng động / Dạo phố
+    final set1Items = selectWearableSet(0);
+    if (set1Items.isNotEmpty) {
+      final names = set1Items.map((e) => e.name).join(' và ');
       outfits.add(SuggestedOutfitPair(
-        title: 'Set Công Sở & Hội Họp Lịch Thiệp',
-        style: 'Smart Casual',
-        wardrobeItems: formalMatches.take(2).toList(),
-        stylingTip:
-            'Sơ vin chỉn chu và kết hợp giày/túi cùng tông màu để tăng vẻ chuyên nghiệp.',
+        title: 'Streetwear & Dạo Phố Năng Động',
+        style: 'Trendy Casual',
+        wardrobeItems: set1Items,
+        stylingTip: 'Kết hợp ${product.title} cùng $names để tạo tổng thể trẻ trung, phóng khoáng và chuẩn tỷ lệ 1/3 - 2/3.',
       ));
     }
 
-    // Set 2: Dạo phố / Cuối tuần
-    final casualMatches =
-        compItems.where((i) => !formalMatches.contains(i)).toList();
-    final listForSet2 = casualMatches.isNotEmpty ? casualMatches : compItems;
-
-    if (listForSet2.isNotEmpty) {
+    // Set 2: Thanh lịch / Công sở & Gặp gỡ
+    final set2Items = selectWearableSet(1);
+    if (set2Items.isNotEmpty) {
+      final names = set2Items.map((e) => e.name).join(' và ');
       outfits.add(SuggestedOutfitPair(
-        title: 'Set Dạo Phố Cuối Tuần Năng Động',
-        style: 'Streetwear / Casual',
-        wardrobeItems: listForSet2.take(2).toList(),
-        stylingTip:
-            'Thêm sneakers trắng và phụ kiện tối giản để tạo cảm giác trẻ trung, tự tin.',
+        title: 'Smart Casual & Gặp Gỡ Lịch Sự',
+        style: 'Smart Casual',
+        wardrobeItems: set2Items,
+        stylingTip: 'Phối ${product.title} cùng $names tạo diện mạo chỉn chu, thanh lịch và cực kỳ tôn dáng.',
       ));
     }
 

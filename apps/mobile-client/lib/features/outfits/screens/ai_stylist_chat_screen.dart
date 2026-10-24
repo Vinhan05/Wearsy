@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -10,7 +9,9 @@ import '../models/outfit_model.dart';
 import '../providers/outfit_provider.dart';
 import 'outfit_detail_screen.dart';
 import '../../../core/services/smart_fit_ai_service.dart';
+import '../../../core/storage/style_persona_storage.dart';
 import '../../../core/theme/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 // Data Models
@@ -20,7 +21,13 @@ class _ChatMessage {
   final _ChatSender sender;
   final String text;
   final OutfitModel? outfit;
-  _ChatMessage({required this.sender, required this.text, this.outfit});
+  final Map<String, String>? productPreview;
+  _ChatMessage({
+    required this.sender,
+    required this.text,
+    this.outfit,
+    this.productPreview,
+  });
 }
 
 class AiStylistChatScreen extends StatefulWidget {
@@ -35,6 +42,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
   final ScrollController _scrollCtrl = ScrollController();
   final List<_ChatMessage> _messages = [];
   bool _isLoading = false;
+  String _loadingStatusText = 'WEARSY AI đang quan sát tủ đồ & tư vấn...';
 
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
@@ -157,20 +165,44 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     final displayText =
         forceFinalize && userText.isEmpty ? '✨ Chốt & Phối đồ ngay' : userText;
 
+    final containsUrl = RegExp(r'https?://[^\s]+').hasMatch(userText);
     setState(() {
       _messages.add(_ChatMessage(sender: _ChatSender.user, text: displayText));
       _isLoading = true;
+      _loadingStatusText = containsUrl
+          ? 'WEARSY AI đang đọc link món đồ & đối chiếu tủ đồ...'
+          : 'WEARSY AI đang lắng nghe & tư vấn phong cách...';
     });
     _promptCtrl.clear();
     _scrollToBottom();
 
     try {
       final heightCm =
-          (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 170.0;
+          (auth.user?.bodyMeasurements?['height'] as num?)?.toDouble() ?? 172.0;
       final weightKg =
-          (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 62.0;
-      final userName = auth.user?.fullName ?? 'bạn';
-      final gender = auth.user?.bodyMeasurements?['gender']?.toString() ?? 'Nữ';
+          (auth.user?.bodyMeasurements?['weight'] as num?)?.toDouble() ?? 65.0;
+      final rawName = auth.user?.fullName.trim() ?? '';
+      final userName = rawName.isNotEmpty ? rawName : 'Vi Nhân';
+
+      // Tải cài đặt giới tính thật của người dùng
+      final prefs = await SharedPreferences.getInstance();
+      final cleanEmail = auth.user?.email.trim().toLowerCase() ?? '';
+      final savedGender = cleanEmail.isNotEmpty
+          ? prefs.getString('user_gender_$cleanEmail')
+          : null;
+      final persona = await StylePersonaStorage.loadPersona();
+
+      String gender = 'Nam';
+      if (savedGender != null && savedGender.trim().isNotEmpty) {
+        gender = savedGender.trim();
+      } else if (auth.user?.bodyMeasurements?['gender'] != null &&
+          auth.user!.bodyMeasurements!['gender'].toString().trim().isNotEmpty) {
+        gender = auth.user!.bodyMeasurements!['gender'].toString().trim();
+      } else if (persona.gender != null && persona.gender!.trim().isNotEmpty) {
+        gender = persona.gender!.trim();
+      } else {
+        gender = 'Nam';
+      }
 
       final history = _messages
           .map((m) => {
@@ -191,7 +223,10 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
 
       if (!mounted) return;
 
+      final productPreview =
+          (chatResponse['product_preview'] as Map?)?.cast<String, String>();
       final action = chatResponse['action']?.toString() ?? 'CONVERSATION';
+
       if (action == 'FINALIZE_OUTFIT' && chatResponse['outfit'] != null) {
         final outfitResult = chatResponse['outfit'] as OutfitModel;
         setState(() {
@@ -200,6 +235,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
             sender: _ChatSender.ai,
             text: chatResponse['reply']?.toString() ?? outfitResult.aiReason,
             outfit: outfitResult,
+            productPreview: productPreview,
           ));
         });
 
@@ -213,6 +249,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
             sender: _ChatSender.ai,
             text: chatResponse['reply']?.toString() ??
                 'Tôi có thể giúp bạn phối thêm chi tiết gì không?',
+            productPreview: productPreview,
           ));
         });
       }
@@ -320,11 +357,134 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
           ),
           const SizedBox(width: 12),
           Text(
-            'WEARSY AI đang quan sát tủ đồ & phối trang phục...',
+            _loadingStatusText,
             style: AppFonts.inter(
               fontSize: 13,
               fontStyle: FontStyle.italic,
               color: AppTheme.darkTextSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductPreviewCard(Map<String, String> product) {
+    final title = product['title'] ?? 'Sản phẩm thời trang';
+    final imageUrl = product['image_url'] ?? '';
+    final platform = product['platform'] ?? 'Mua sắm';
+    final category = product['category'] ?? 'Trang phục';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFEE4D2D).withOpacity(0.3),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          if (imageUrl.isNotEmpty)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                imageUrl,
+                width: 54,
+                height: 54,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 54,
+                  height: 54,
+                  color: const Color(0xFFF1F5F9),
+                  child: const Icon(Icons.shopping_bag_outlined,
+                      color: Colors.black45),
+                ),
+              ),
+            )
+          else
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.shopping_bag_outlined,
+                  color: Colors.black45),
+            ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEE4D2D).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        platform,
+                        style: AppFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFFEE4D2D),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      category,
+                      style: AppFonts.inter(
+                        fontSize: 10.5,
+                        color: AppTheme.darkTextSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.darkTextPrimary,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    const Icon(Icons.check_circle_rounded,
+                        size: 12, color: Color(0xFF10AC84)),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Đã đọc link & đối chiếu tủ đồ',
+                      style: AppFonts.inter(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF10AC84),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
@@ -408,6 +568,8 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (msg.productPreview != null)
+                  _buildProductPreviewCard(msg.productPreview!),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -466,19 +628,6 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Rendered Image Header if available
-          if (outfit.coverImageUrl.isNotEmpty)
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(18)),
-              child: Container(
-                height: 220,
-                width: double.infinity,
-                color: const Color(0xFFF1F5F9),
-                child: _buildCoverImage(outfit.coverImageUrl),
-              ),
-            ),
-
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -611,7 +760,7 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
                     ),
                     icon: const Icon(Icons.visibility_outlined, size: 18),
                     label: Text(
-                      'Xem Chi Tiết & Thử Đồ 2D',
+                      'Xem Chi Tiết Outfit',
                       style: AppFonts.inter(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
@@ -635,38 +784,6 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
     );
   }
 
-  Widget _buildCoverImage(String imageSrc) {
-    if (imageSrc.startsWith('data:image/')) {
-      final base64Content = imageSrc.split(',').last;
-      return Image.memory(
-        base64Decode(base64Content),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
-        ),
-      );
-    } else if (imageSrc.startsWith('http://') ||
-        imageSrc.startsWith('https://')) {
-      return Image.network(
-        imageSrc,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
-        ),
-      );
-    } else if (File(imageSrc).existsSync()) {
-      return Image.file(
-        File(imageSrc),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.image_not_supported_outlined, color: Colors.grey),
-        ),
-      );
-    }
-    return const Center(
-      child: Icon(Icons.checkroom_rounded, size: 40, color: Colors.grey),
-    );
-  }
 
   Widget _buildItemThumbnail(WardrobeItemModel item) {
     final path = item.imageUrl;
