@@ -471,7 +471,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(10),
                     child: Image.asset(
                       'assets/images/logo_icon.png',
                       fit: BoxFit.contain,

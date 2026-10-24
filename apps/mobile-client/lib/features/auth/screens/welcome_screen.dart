@@ -30,11 +30,12 @@ class WelcomeScreen extends StatelessWidget {
           height: double.infinity,
           child: Stack(
             children: [
-              // Full screen background image
+              // Full screen background image anchored to topCenter for crisp header & logo
               Positioned.fill(
                 child: Image.asset(
                   'assets/images/welcome_screen_bg.png',
                   fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
                 ),
               ),
 
@@ -50,10 +51,11 @@ class WelcomeScreen extends StatelessWidget {
 
               // Dynamic GET STARTED button matching active theme
               Positioned(
-                bottom: MediaQuery.of(context).padding.bottom + 24,
-                left: 36,
-                right: 36,
+                bottom: MediaQuery.of(context).padding.bottom + 28,
+                left: 32,
+                right: 32,
                 child: GestureDetector(
+                  key: const Key('welcome_get_started_btn'),
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
@@ -64,11 +66,9 @@ class WelcomeScreen extends StatelessWidget {
                     height: 56,
                     decoration: BoxDecoration(
                       color: isTheme1
-                          ? const Color(
-                              0xFFC4B8FA) // Exact Lavender button from 1.png
+                          ? const Color(0xFFC4B8FA) // Exact Lavender button matching palette
                           : isTheme2
-                              ? const Color(
-                                  0xFF543D37) // Exact Mocha Cacao from 2.png
+                              ? const Color(0xFF543D37) // Exact Mocha Cacao from 2.png
                               : AppTheme.primaryColor,
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
@@ -79,21 +79,35 @@ class WelcomeScreen extends StatelessWidget {
                                       ? const Color(0xFF543D37)
                                       : AppTheme.primaryColor)
                               .withOpacity(0.35),
-                          blurRadius: 14,
-                          offset: const Offset(0, 4),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
                     child: Center(
-                      child: Text(
-                        'GET STARTED',
-                        style: AppFonts.outfit(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.5,
-                          color:
-                              isTheme1 ? const Color(0xFF2C2849) : Colors.white,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'GET STARTED',
+                            style: AppFonts.outfit(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.5,
+                              color: isTheme1
+                                  ? const Color(0xFF2C2849)
+                                  : Colors.white,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 18,
+                            color: isTheme1
+                                ? const Color(0xFF2C2849)
+                                : Colors.white,
+                          ),
+                        ],
                       ),
                     ),
                   ),

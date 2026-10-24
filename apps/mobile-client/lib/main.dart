@@ -75,7 +75,7 @@ class AuthWrapperScreen extends StatelessWidget {
                     Container(
                       width: 100,
                       height: 100,
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
