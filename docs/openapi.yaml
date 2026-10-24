@@ -12,12 +12,12 @@ info:
     email: dev@wearsy.app
 
 servers:
-  - url: https://api.wearsy.app/v1
-    description: Production Server
-  - url: https://staging-api.wearsy.app/v1
-    description: Staging Test Server
-  - url: http://localhost:8000/v1
+  - url: https://wearsy-wd0c.onrender.com/v1
+    description: Production Server (Render Cloud)
+  - url: http://localhost:3000/v1
     description: Local Development Server
+  - url: http://10.0.2.2:3000/v1
+    description: Android Emulator Local Target
 
 security:
   - BearerAuth: []

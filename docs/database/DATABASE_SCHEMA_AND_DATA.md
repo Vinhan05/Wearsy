@@ -1,7 +1,7 @@
 # WEARSY - Báo Cáo Cấu Trúc & Dữ Liệu Cơ Sở Dữ Liệu (Database Report)
 
 > **Dự án:** WEARSY - Trợ lý Thời trang Thông minh & Tủ đồ Ảo (EXE101)
-> **Hệ quản trị CSDL:** PostgreSQL 15+ (Triển khai trên Supabase Cloud Singapore - AWS ap-southeast-1)
+> **Hệ quản trị CSDL:** PostgreSQL 15+ (Triển khai trên Render Cloud / Supabase PostgreSQL)
 > **Thời điểm trích xuất:** 20:04:20 4/10/2026
 > **Định dạng tải về:** 
 > - File SQL Dump hoàn chỉnh: [`wearsy_database_dump.sql`](./wearsy_database_dump.sql)

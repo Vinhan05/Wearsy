@@ -4,7 +4,7 @@
 > **Tên dự án:** WEARSY - Smart Wardrobe & AI Fashion Assistant  
 > **Mã môn:** EXE101 - FA26  
 > **Phiên bản:** v3.0.0 (100% Live Backend Database - PostgreSQL Cloud, Zero Mock Accounts, Live OTP & SSO)  
-> **Thời gian cập nhật:** 29/09/2026  
+> **Thời gian cập nhật:** 22/10/2026  
 
 ---
 

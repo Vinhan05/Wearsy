@@ -4,8 +4,8 @@
 > **Tên dự án:** WEARSY - Smart Wardrobe & AI Fashion Assistant  
 > **Mã môn / Dự án:** EXE101 - FA26  
 > **Chủ trì Kỹ thuật & An toàn Thông tin:** Võ Thế Dân  
-> **Phiên bản tài liệu:** v2.6.0 (Cập nhật chuẩn hóa cấu trúc dự án & tài liệu dọn dẹp)  
-> **Ngày cập nhật:** 09/10/2026  
+> **Phiên bản tài liệu:** v3.0.0 (Chuẩn hóa cấu trúc Monorepo, Render Cloud & PostgreSQL Database)  
+> **Ngày cập nhật:** 22/10/2026  
 
 ---
 
@@ -54,30 +54,24 @@ flowchart TD
         ReverseProxy --> Helmet --> Throttler --> Cors
     end
 
-    subgraph ServerLayer ["3. Tầng Ứng dụng Máy chủ (NestJS REST API - Port 8000)"]
+    subgraph ServerLayer ["3. Tầng Ứng dụng Máy chủ (NestJS REST API - Port 3000 / Render Cloud)"]
         NestCore["NestJS Application Core"]
-        AuthMod["Auth Module (JWT, Bcrypt 12, OTP SMTP)"]
-        UsersMod["Users Module (Profile, VIP Management)"]
-        WardrobeMod["Wardrobe Module (CRUD, AI Scanner, Bulk Commit)"]
-        OutfitMod["Outfits Module (AI Recommender, SmartFit Engine)"]
-        ShoppingMod["Shopping Module (Compatibility Checker, Missing Items)"]
-        GamificationMod["Gamification Module (Color Score, Style Lab)"]
-        CloudinaryMod["Cloudinary Module (AI Background Removal)"]
+        Controllers["Controllers (REST Endpoints)"]
+        Routes["Routes (Centralized Endpoints)"]
+        Services["Services (Business Logic & AI Engines)"]
+        Models["Models (TypeORM Database Entities)"]
 
-        NestCore --> AuthMod
-        NestCore --> UsersMod
-        NestCore --> WardrobeMod
-        NestCore --> OutfitMod
-        NestCore --> ShoppingMod
-        NestCore --> GamificationMod
-        NestCore --> CloudinaryMod
+        NestCore --> Routes
+        Routes --> Controllers
+        Controllers --> Services
+        Services --> Models
     end
 
     subgraph DataLayer ["4. Tầng Dữ liệu & Dịch vụ Ngoài (Cloud Services)"]
-        PostgresDB[("Supabase PostgreSQL (Port 6543 Pooler, SSL, AES-256)")]
-        GeminiVision["Google Gemini 2.5 Flash (Vision & LLM)"]
+        PostgresDB[("PostgreSQL Database (Render Cloud / Supabase, SSL, AES-256)")]
+        GeminiVision["Google Gemini AI (@google/genai Flash Vision & LLM)"]
         CloudinaryCDN["Cloudinary Media Server (AI Segmenter)"]
-        SMTPRelay["Brevo / SMTP Email Relay (OTP Service)"]
+        SMTPRelay["Nodemailer SMTP / Resend Email (OTP Service)"]
     end
 
     ClientLayer -- "RESTful HTTPS / Bearer JWT" --> GatewayLayer
@@ -85,17 +79,18 @@ flowchart TD
     ServerLayer -- "TypeORM Connection Pool" --> PostgresDB
     ServerLayer -- "SDK @google/genai" --> GeminiVision
     ServerLayer -- "Cloudinary API" --> CloudinaryCDN
-    ServerLayer -- "Nodemailer TLS" --> SMTPRelay
+    ServerLayer -- "SMTP TLS" --> SMTPRelay
 ```
 
 ### 2.2. Thông số Môi trường Máy chủ
 
 | Thành phần | Cấu hình kỹ thuật | Ghi chú |
 | :--- | :--- | :--- |
-| **API Host** | `http://localhost:8000` (Local) / Production Domain | Prefix `/v1` |
-| **Swagger UI** | `http://localhost:8000/v1/docs` | OpenAPI 3.0 Interactive Docs |
-| **Database** | Supabase Cloud PostgreSQL 15+ (Transaction Pooler Port `6543`) | Hỗ trợ IPv4/IPv6, SSL bắt buộc |
-| **Mobile API Target** | `http://10.0.2.2:8000/v1` (Android Emulator) / LAN IP | Tự động phát hiện môi trường |
+| **API Host (Production)** | `https://wearsy-wd0c.onrender.com/v1` | Triển khai trên Render Cloud |
+| **API Host (Local Dev)** | `http://localhost:3000/v1` | Port mặc định 3000, prefix `/v1` |
+| **Swagger UI** | `https://wearsy-wd0c.onrender.com/v1/docs` (hoặc `/localhost:3000/v1/docs`) | OpenAPI 3.0 Interactive Docs |
+| **Database** | PostgreSQL 15+ (Render Postgres / Supabase Pooler) | Hỗ trợ IPv4/IPv6, SSL bắt buộc |
+| **Mobile API Target** | `https://wearsy-wd0c.onrender.com/v1` (mặc định) / `http://10.0.2.2:3000/v1` (Android Emulator Local) | Cấu hình tại `ApiConstants.baseUrl` |
 
 ---
 
@@ -348,7 +343,7 @@ erDiagram
 
 ## 6. Đặc tả RESTful API Endpoints (API Specifications)
 
-Hệ thống cung cấp hệ thống REST API hoàn chỉnh, tất cả endpoints đều có tiền tố `/v1` và hỗ trợ đầy đủ Swagger OpenAPI 3.0 tại `http://localhost:8000/v1/docs`.
+Hệ thống cung cấp hệ thống REST API hoàn chỉnh, tất cả endpoints đều có tiền tố `/v1` và hỗ trợ đầy đủ Swagger OpenAPI 3.0 tại `https://wearsy-wd0c.onrender.com/v1/docs` (hoặc `http://localhost:3000/v1/docs`).
 
 ### 6.1. Danh sách Endpoints Thực tế
 
@@ -409,8 +404,8 @@ sequenceDiagram
     participant App as Mobile App (Flutter)
     participant Local as SharedPreferences / Cache
     participant Service as WardrobeService / AuthService
-    participant API as NestJS Backend (Port 8000)
-    participant DB as Supabase PostgreSQL
+    participant API as NestJS Backend (Port 3000 / Render Cloud)
+    participant DB as PostgreSQL Database
 
     Note over App,Local: 1. Khởi động ứng dụng (Cold Start)
     App->>Local: Đọc dữ liệu tủ đồ & phiên đăng nhập đã cache
@@ -494,25 +489,27 @@ Mỗi món đồ trong tủ được gán một thuộc tính `layer_order` từ
 ### 10.2. Khởi chạy Backend Server (NestJS)
 ```bash
 # 1. Truy cập thư mục backend
-cd wearsy-backend
+cd apps/api-server
 
 # 2. Cài đặt các gói phụ thuộc
 npm install
 
-# 3. Cấu hình file .env kết nối Supabase và Gemini API
-# (Kiểm tra DATABASE_URL=postgresql://...:6543/postgres)
+# 3. Cấu hình file .env kết nối PostgreSQL và Gemini API
+# (Kiểm tra DATABASE_URL=postgresql://... hoặc DB_HOST=localhost)
 
 # 4. Khởi chạy máy chủ ở chế độ Development hoặc Production
-npm run build
-node dist/main.js
-# Máy chủ khởi động tại: http://localhost:8000/v1
-# Swagger Tài liệu API: http://localhost:8000/v1/docs
+npm run start:dev
+# Hoặc build và chạy:
+# npm run build && npm run start:prod
+# Máy chủ local khởi động tại: http://localhost:3000/v1
+# Swagger Tài liệu API: http://localhost:3000/v1/docs
+# Production Live API (Render): https://wearsy-wd0c.onrender.com/v1
 ```
 
 ### 10.3. Khởi chạy Ứng dụng Di động (Flutter Mobile)
 ```bash
 # 1. Truy cập thư mục mobile
-cd wearsy_mobile
+cd apps/mobile-client
 
 # 2. Lấy các packages
 flutter pub get
