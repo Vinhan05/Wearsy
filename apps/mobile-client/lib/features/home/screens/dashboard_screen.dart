@@ -35,8 +35,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     CityLocation targetCity;
     if (city != null) {
       targetCity = city;
+      await WeatherService.saveSelectedLocation(city);
     } else {
-      targetCity = await WeatherService.detectCurrentLocation();
+      targetCity = await WeatherService.detectCurrentLocation(forceGps: true);
     }
     final data = await WeatherService.fetchRealtimeWeather(
       lat: targetCity.lat,
@@ -92,7 +93,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ListTile(
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                leading: const Text('📍', style: TextStyle(fontSize: 24)),
+                leading: const Text('🛰️', style: TextStyle(fontSize: 24)),
                 title: Text(
                   isEn
                       ? 'Current Location (Auto Detect)'
@@ -104,8 +105,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 subtitle: Text(
                   isEn
-                      ? 'Auto-detect realtime location via IP/GPS'
-                      : 'Tự động lấy vị trí Realtime qua IP/GPS',
+                      ? 'Direct GPS satellite (Google Maps accuracy)'
+                      : 'Định vị GPS vệ tinh chuẩn xác như Google Maps',
                   style: AppFonts.inter(fontSize: 12, color: Colors.grey[600]),
                 ),
                 onTap: () {

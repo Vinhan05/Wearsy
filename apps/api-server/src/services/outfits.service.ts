@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -204,5 +209,93 @@ export class OutfitsService {
     const outfit = await this.getOutfitById(id, userId);
     await this.outfitRepo.remove(outfit);
     return { success: true, message: 'Đã xóa outfit thành công.' };
+  }
+
+  /**
+   * Đồng bộ danh sách outfit từ Client (Local Storage) lên Cloud Database
+   */
+  async syncOutfits(
+    userId: string,
+    outfits: Array<{
+      id?: string;
+      title: string;
+      occasion?: string;
+      ai_generated?: boolean;
+      elegance_score?: number;
+      ai_reasoning?: string;
+      image_url?: string;
+      is_favorite?: boolean;
+      selected_item_ids?: string[];
+      items?: any[];
+    }>,
+  ) {
+    if (!userId) {
+      throw new BadRequestException('userId là bắt buộc!');
+    }
+
+    const savedResults: OutfitEntity[] = [];
+
+    for (const item of outfits) {
+      let outfit: OutfitEntity | null = null;
+      if (item.id && item.id.length === 36) {
+        outfit = await this.outfitRepo.findOne({
+          where: { id: item.id, user_id: userId },
+        });
+      }
+
+      if (!outfit) {
+        outfit = this.outfitRepo.create({
+          user_id: userId,
+          title: item.title || 'Outfit phong cách WEARSY',
+          occasion: item.occasion || 'Hằng ngày',
+          ai_generated:
+            item.ai_generated !== undefined ? item.ai_generated : true,
+          elegance_score: item.elegance_score || 9.0,
+          ai_reasoning: item.ai_reasoning || null,
+          image_url: item.image_url || null,
+          is_favorite: item.is_favorite || false,
+        });
+      } else {
+        outfit.title = item.title || outfit.title;
+        outfit.occasion = item.occasion || outfit.occasion;
+        outfit.is_favorite =
+          item.is_favorite !== undefined
+            ? item.is_favorite
+            : outfit.is_favorite;
+      }
+
+      const saved = await this.outfitRepo.save(outfit);
+      savedResults.push(saved);
+
+      const itemIds =
+        item.selected_item_ids ||
+        (item.items ? item.items.map((i: any) => i.id) : []);
+      if (itemIds && itemIds.length > 0) {
+        for (let idx = 0; idx < itemIds.length; idx++) {
+          const itId = itemIds[idx];
+          if (itId && itId.length === 36) {
+            try {
+              const existingLink = await this.outfitItemRepo.findOne({
+                where: { outfit_id: saved.id, item_id: itId },
+              });
+              if (!existingLink) {
+                const link = this.outfitItemRepo.create({
+                  outfit_id: saved.id,
+                  item_id: itId,
+                  layer_order: idx + 1,
+                });
+                await this.outfitItemRepo.save(link);
+              }
+            } catch (_) {}
+          }
+        }
+      }
+    }
+
+    return {
+      success: true,
+      message: `Đã đồng bộ thành công ${savedResults.length} bộ outfit lên Cloud Database!`,
+      outfits: savedResults,
+    };
   }
 }

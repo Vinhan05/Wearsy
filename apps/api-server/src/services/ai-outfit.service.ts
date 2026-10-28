@@ -239,25 +239,64 @@ export class AiOutfitService {
       }
       return data;
     } catch (err: any) {
-      this.logger.warn(`AI Stylist Orchestrator error (${err.message}), using Gemini Stylist Engine.`);
+      this.logger.warn(
+        `AI Stylist Orchestrator error (${err.message}), using Gemini Stylist Engine.`,
+      );
 
-      const lastUserMsg = (messages.slice().reverse().find((m: any) => m.role === 'user')?.content || '').toLowerCase();
-      const isFinalizeIntent = forceFinalize || [
-        'chốt', 'chốt đi', 'chốt nhé', 'lên đồ đi', 'chốt đồ', 'phối luôn', 'chốt bộ này', 'mặc bộ này'
-      ].some(k => lastUserMsg.includes(k));
+      const lastUserMsg = (
+        messages
+          .slice()
+          .reverse()
+          .find((m: any) => m.role === 'user')?.content || ''
+      ).toLowerCase();
+      const isFinalizeIntent =
+        forceFinalize ||
+        [
+          'chốt',
+          'chốt đi',
+          'chốt nhé',
+          'lên đồ đi',
+          'chốt đồ',
+          'phối luôn',
+          'chốt bộ này',
+          'mặc bộ này',
+        ].some((k) => lastUserMsg.includes(k));
 
       // Deterministic Top + Bottom matching helper
       const isTop = (it: any) => {
-        const t = `${it.name} ${it.category_name || it.category || ''}`.toLowerCase();
-        return !t.includes('khoác') && !t.includes('quần') && !t.includes('váy') && (t.includes('áo') || t.includes('thun') || t.includes('sơ mi') || t.includes('polo') || t.includes('top'));
+        const t =
+          `${it.name} ${it.category_name || it.category || ''}`.toLowerCase();
+        return (
+          !t.includes('khoác') &&
+          !t.includes('quần') &&
+          !t.includes('váy') &&
+          (t.includes('áo') ||
+            t.includes('thun') ||
+            t.includes('sơ mi') ||
+            t.includes('polo') ||
+            t.includes('top'))
+        );
       };
       const isBottom = (it: any) => {
-        const t = `${it.name} ${it.category_name || it.category || ''}`.toLowerCase();
-        return t.includes('quần') || t.includes('jean') || t.includes('váy') || t.includes('skirt') || t.includes('short');
+        const t =
+          `${it.name} ${it.category_name || it.category || ''}`.toLowerCase();
+        return (
+          t.includes('quần') ||
+          t.includes('jean') ||
+          t.includes('váy') ||
+          t.includes('skirt') ||
+          t.includes('short')
+        );
       };
       const isDress = (it: any) => {
-        const t = `${it.name} ${it.category_name || it.category || ''}`.toLowerCase();
-        return t.includes('đầm') || t.includes('váy liền') || t.includes('dress') || t.includes('jumpsuit');
+        const t =
+          `${it.name} ${it.category_name || it.category || ''}`.toLowerCase();
+        return (
+          t.includes('đầm') ||
+          t.includes('váy liền') ||
+          t.includes('dress') ||
+          t.includes('jumpsuit')
+        );
       };
 
       const tops = wardrobeItems.filter(isTop);
@@ -289,7 +328,10 @@ export class AiOutfitService {
           selected_item_ids: selected.map((s: any) => String(s.id)),
           elegance_score: 9.3,
           color_score: 9.1,
-          image_url: selected.length > 0 ? (selected[0].bg_removed_url || selected[0].image_url || '') : '',
+          image_url:
+            selected.length > 0
+              ? selected[0].bg_removed_url || selected[0].image_url || ''
+              : '',
           is_ai_rendered: false,
         };
       }
@@ -298,11 +340,18 @@ export class AiOutfitService {
       try {
         const wardrobeOverview = wardrobeItems
           .slice(0, 25)
-          .map((w, idx) => `[${w.id || idx + 1}] ${w.name} (Loại: ${w.category_name || w.category || 'Trang phục'}, Màu: ${w.primary_color || 'Đa sắc'})`)
+          .map(
+            (w, idx) =>
+              `[${w.id || idx + 1}] ${w.name} (Loại: ${w.category_name || w.category || 'Trang phục'}, Màu: ${w.primary_color || 'Đa sắc'})`,
+          )
           .join('\n');
 
         const rawGender = String(userProfile?.gender || '').toLowerCase();
-        const isMale = rawGender.includes('nam') || rawGender.includes('male') || userName.toLowerCase().includes('nhân') || !rawGender.includes('nữ');
+        const isMale =
+          rawGender.includes('nam') ||
+          rawGender.includes('male') ||
+          userName.toLowerCase().includes('nhân') ||
+          !rawGender.includes('nữ');
         const effectiveGender = isMale ? 'Nam' : 'Nữ';
         const salutation = isMale ? 'anh' : 'chị';
 
@@ -353,7 +402,9 @@ NGUYÊN TẮC TƯ VẤN TINH TẾ & THIẾT THỰC (BẮT BUỘC TUÂN THỦ):
               };
             }
           } catch (mErr: any) {
-            this.logger.warn(`Model ${model} conversation error: ${mErr.message}`);
+            this.logger.warn(
+              `Model ${model} conversation error: ${mErr.message}`,
+            );
           }
         }
       } catch (convErr: any) {

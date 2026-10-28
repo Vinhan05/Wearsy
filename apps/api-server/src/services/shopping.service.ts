@@ -187,7 +187,9 @@ Trả về JSON chuẩn không có văn bản thừa bên ngoài:
           break;
         }
       } catch (err: any) {
-        this.logger.warn(`Shopping Gemini error with model ${model}: ${err.message}`);
+        this.logger.warn(
+          `Shopping Gemini error with model ${model}: ${err.message}`,
+        );
       }
     }
 

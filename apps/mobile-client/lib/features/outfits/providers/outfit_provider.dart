@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wearsy_mobile/core/mock/mock_data_service.dart';
+import '../../../core/constants/api_constants.dart';
 import '../../../core/services/smart_fit_ai_service.dart';
 import '../../../core/storage/token_storage.dart';
 import '../../../core/storage/style_persona_storage.dart';
@@ -39,12 +41,14 @@ class OutfitProvider with ChangeNotifier {
     loadOutfits();
   }
 
+  /// Tải outfits: Ưu tiên đọc từ Local Storage tức thì, sau đó đồng bộ ngầm với Cloud
   Future<void> loadOutfits() async {
     _isLoading = true;
     notifyListeners();
 
     List<OutfitModel> customOutfits = [];
 
+    // 1. Luôn tải ngay từ Local Storage (Offline-First)
     try {
       final prefs = await SharedPreferences.getInstance();
       final email =
@@ -61,6 +65,48 @@ class OutfitProvider with ChangeNotifier {
     _outfits = customOutfits;
     _isLoading = false;
     notifyListeners();
+
+    // 2. Chạy đồng bộ ngầm với Cloud Database (Không chặn UI)
+    if (_outfits.isNotEmpty) {
+      _syncToCloudSilently(_outfits);
+    }
+  }
+
+  /// Đồng bộ danh sách outfit lên Cloud Database chạy ngầm trong nền
+  Future<void> _syncToCloudSilently(List<OutfitModel> outfits) async {
+    try {
+      final token = await TokenStorage.getToken();
+      final userId = await TokenStorage.getUserId();
+      if (token == null || token.isEmpty) return;
+
+      final url = Uri.parse('${ApiConstants.baseUrl}/outfits/sync');
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        if (userId != null && userId.isNotEmpty) 'x-user-id': userId,
+      };
+
+      final payload = {
+        'user_id': userId,
+        'outfits': outfits.map((o) => {
+          'id': o.id,
+          'title': o.title,
+          'occasion': o.occasion.displayName,
+          'ai_generated': true,
+          'elegance_score': o.aiScore,
+          'image_url': o.imageUrl,
+          'is_favorite': o.isFavorite,
+          'selected_item_ids': o.itemIds,
+        }).toList(),
+      };
+
+      final response = await http
+          .post(url, headers: headers, body: jsonEncode(payload))
+          .timeout(const Duration(seconds: 6));
+      debugPrint('[OutfitProvider] Outfits cloud sync response: ${response.statusCode}');
+    } catch (e) {
+      debugPrint('[OutfitProvider] Background outfits cloud sync skipped: $e');
+    }
   }
 
   void reset() {
@@ -76,7 +122,7 @@ class OutfitProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Sinh gợi ý outfit mới tích hợp Smart Fit (Chiều cao & Cân nặng) + 2D Layering
+  /// Sinh gợi ý outfit mới tích hợp Smart Fit + 2D Layering (Lưu Local & Sync Cloud)
   Future<void> generateNewOutfit({
     List<WardrobeItemModel>? availableItems,
     double? heightCm,
@@ -103,6 +149,7 @@ class OutfitProvider with ChangeNotifier {
 
       _outfits = [newOutfit, ..._outfits];
 
+      // Lưu vào Local Storage (Bản chạy chính)
       final prefs = await SharedPreferences.getInstance();
       final email =
           (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
@@ -110,6 +157,9 @@ class OutfitProvider with ChangeNotifier {
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = [jsonEncode(newOutfit.toJson()), ...customJson];
       await prefs.setStringList(storageKey, updatedJson);
+
+      // Đồng bộ ngầm lên Cloud
+      _syncToCloudSilently(_outfits);
     } catch (e) {
       debugPrint('[OutfitProvider] generateNewOutfit error: $e');
     } finally {
@@ -122,6 +172,7 @@ class OutfitProvider with ChangeNotifier {
     _outfits = [outfit, ..._outfits];
     notifyListeners();
     try {
+      // 1. Lưu Local Storage
       final prefs = await SharedPreferences.getInstance();
       final email =
           (await TokenStorage.getUserEmail())?.trim().toLowerCase() ?? '';
@@ -129,6 +180,9 @@ class OutfitProvider with ChangeNotifier {
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = [jsonEncode(outfit.toJson()), ...customJson];
       await prefs.setStringList(storageKey, updatedJson);
+
+      // 2. Đồng bộ ngầm lên Cloud
+      _syncToCloudSilently(_outfits);
     } catch (_) {}
   }
 
@@ -140,13 +194,15 @@ class OutfitProvider with ChangeNotifier {
 
       _persistFavorites();
 
-      // Nếu người dùng thả tim outfit, tự động học và lưu vào file persona trên máy
       if (_outfits[index].isFavorite) {
         StylePersonaStorage.recordLikedOutfit(
           outfitId,
           occasionTags: [_outfits[index].occasion.displayName],
         );
       }
+
+      // Đồng bộ ngầm trạng thái favorite lên Cloud
+      _syncToCloudSilently(_outfits);
     }
   }
 
@@ -180,6 +236,7 @@ class OutfitProvider with ChangeNotifier {
         final storageKey = _getStorageKey(email);
         final customJson = _outfits.map((o) => jsonEncode(o.toJson())).toList();
         await prefs.setStringList(storageKey, customJson);
+        _syncToCloudSilently(_outfits);
       } catch (e) {
         debugPrint('[OutfitProvider] updateOutfitName error: $e');
       }
@@ -210,6 +267,7 @@ class OutfitProvider with ChangeNotifier {
         final storageKey = _getStorageKey(email);
         final customJson = _outfits.map((o) => jsonEncode(o.toJson())).toList();
         await prefs.setStringList(storageKey, customJson);
+        _syncToCloudSilently(_outfits);
       } catch (e) {
         debugPrint('[OutfitProvider] recordOutfitReaction error: $e');
       }
@@ -218,7 +276,6 @@ class OutfitProvider with ChangeNotifier {
 
   /// Thêm outfit được tạo từ màn hình chat AI Stylist
   Future<void> addOutfitFromChat(OutfitModel outfit) async {
-    // Tránh trùng lặp
     if (_outfits.any((o) => o.id == outfit.id)) return;
     _outfits = [outfit, ..._outfits];
     notifyListeners();
@@ -230,6 +287,7 @@ class OutfitProvider with ChangeNotifier {
       final customJson = prefs.getStringList(storageKey) ?? [];
       final updatedJson = [jsonEncode(outfit.toJson()), ...customJson];
       await prefs.setStringList(storageKey, updatedJson);
+      _syncToCloudSilently(_outfits);
     } catch (e) {
       debugPrint('[OutfitProvider] addOutfitFromChat error: $e');
     }

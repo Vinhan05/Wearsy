@@ -51,12 +51,23 @@ export class UsersController {
     const profile = await this.usersService.getProfile(email);
     return {
       success: true,
-      data: {
+      data: profile.profile || {
         userId: profile.id,
         preferred_styles: ['Casual', 'Minimalism', 'Smart Casual'],
         color_preferences: { primary: ['Black', 'White', 'Beige'] },
         budget_range: { tier: 'medium' },
       },
     };
+  }
+
+  @Post('sync-profile')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Đồng bộ hồ sơ phong cách cá nhân (Style Persona) lên PostgreSQL Cloud',
+  })
+  async syncProfile(@Body() body: any) {
+    const email = body?.email;
+    return this.usersService.syncProfile(email, body);
   }
 }

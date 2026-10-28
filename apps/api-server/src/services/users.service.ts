@@ -2,12 +2,15 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../models/user.entity';
+import { UserProfileEntity } from '../models/user-profile.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(UserProfileEntity)
+    private readonly userProfileRepository: Repository<UserProfileEntity>,
   ) {}
 
   async upgradeVip(coupon: string, email?: string) {
@@ -85,6 +88,7 @@ export class UsersService {
     const cleanEmail = email.trim().toLowerCase();
     const user = await this.userRepository.findOne({
       where: { email: cleanEmail },
+      relations: ['profile'],
     });
     if (!user) {
       throw new BadRequestException('Không tìm thấy tài khoản người dùng!');
@@ -97,6 +101,7 @@ export class UsersService {
       role: user.role,
       is_vip: user.is_vip,
       vip_expires_at: user.vip_expires_at,
+      profile: user.profile || null,
     };
   }
 
@@ -126,6 +131,56 @@ export class UsersService {
       role: user.role,
       is_vip: user.is_vip,
       vip_expires_at: user.vip_expires_at,
+    };
+  }
+
+  /**
+   * Đồng bộ hồ sơ phong cách cá nhân (Style Persona) từ Client lên Cloud Database
+   */
+  async syncProfile(
+    email: string,
+    data: {
+      preferred_styles?: string[];
+      color_preferences?: Record<string, any>;
+      budget_range?: Record<string, any>;
+      body_measurements?: Record<string, any>;
+      ai_learning_data?: Record<string, any>;
+    },
+  ) {
+    if (!email || !email.trim()) {
+      throw new BadRequestException('Email người dùng là bắt buộc!');
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await this.userRepository.findOne({
+      where: { email: cleanEmail },
+      relations: ['profile'],
+    });
+
+    if (!user) {
+      throw new BadRequestException('Không tìm thấy tài khoản người dùng!');
+    }
+
+    let profile = user.profile;
+    if (!profile) {
+      profile = this.userProfileRepository.create({
+        user_id: user.id,
+      });
+    }
+
+    if (data.preferred_styles) profile.preferred_styles = data.preferred_styles;
+    if (data.color_preferences)
+      profile.color_preferences = data.color_preferences;
+    if (data.budget_range) profile.budget_range = data.budget_range;
+    if (data.body_measurements)
+      profile.body_measurements = data.body_measurements;
+    if (data.ai_learning_data) profile.ai_learning_data = data.ai_learning_data;
+
+    const savedProfile = await this.userProfileRepository.save(profile);
+    return {
+      success: true,
+      message:
+        'Hồ sơ phong cách cá nhân đã được đồng bộ lên Cloud Database thành công!',
+      profile: savedProfile,
     };
   }
 }

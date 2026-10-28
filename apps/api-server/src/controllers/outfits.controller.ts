@@ -99,6 +99,25 @@ export class OutfitsController {
     );
   }
 
+  @Post('sync')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Đồng bộ danh sách outfits từ Mobile Client (Offline-first) lên PostgreSQL Cloud Database',
+  })
+  async syncOutfits(
+    @Body() body: any,
+    @Headers('x-user-id') headerUserId?: string,
+  ) {
+    const userId = headerUserId || body?.user_id || '';
+    const outfitList = Array.isArray(body?.outfits)
+      ? body.outfits
+      : Array.isArray(body)
+        ? body
+        : [body];
+    return this.outfitsService.syncOutfits(userId, outfitList);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Lấy toàn bộ danh sách outfit của người dùng' })
   async getOutfits(@Headers('x-user-id') headerUserId?: string) {

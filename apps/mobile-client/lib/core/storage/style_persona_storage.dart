@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../constants/api_constants.dart';
 import '../models/user_style_persona_model.dart';
 import 'token_storage.dart';
 
 /// Dịch vụ quản lý file cục bộ lưu trữ "Phong cách, sở thích, thói quen phối đồ" của người dùng.
 /// File được lưu trực tiếp vào thư mục data của ứng dụng trên thiết bị (ApplicationDocumentsDirectory).
 /// Phục vụ cho tính năng Cá nhân hóa AI (On-Device Personalization Memory & Context Injection).
+/// Kết hợp cơ chế Đồng bộ ngầm (Background Cloud Sync) lên PostgreSQL Database.
 class StylePersonaStorage {
   static const String _fileName = 'user_style_persona.json';
   static const String _prefBackupKey = 'wearsy_style_persona_cache';
@@ -59,14 +62,14 @@ class StylePersonaStorage {
     return initialPersona;
   }
 
-  /// Lưu đối tượng Style Persona vào file JSON cục bộ
+  /// Lưu đối tượng Style Persona vào file JSON cục bộ VÀ đồng bộ ngầm lên Cloud
   static Future<void> savePersona(UserStylePersonaModel persona) async {
     _cachedPersona = persona;
 
     final jsonStr =
         const JsonEncoder.withIndent('  ').convert(persona.toJson());
 
-    // 1. Ghi vào file trong bộ nhớ data của app
+    // 1. Ghi vào file trong bộ nhớ data của app (Bản chạy chính Local Storage)
     try {
       final file = await _getLocalFile();
       await file.writeAsString(jsonStr, flush: true);
@@ -80,6 +83,56 @@ class StylePersonaStorage {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefBackupKey, jsonStr);
     } catch (_) {}
+
+    // 3. Đồng bộ ngầm lên PostgreSQL Cloud Database (Không làm gián đoạn UI)
+    _syncToCloudSilently(persona);
+  }
+
+  /// Đồng bộ hồ sơ phong cách lên Cloud Database chạy ngầm trong nền
+  static void _syncToCloudSilently(UserStylePersonaModel persona) async {
+    try {
+      final email = await TokenStorage.getUserEmail();
+      if (email == null || email.trim().isEmpty) return;
+
+      final url = Uri.parse('${ApiConstants.baseUrl}/users/sync-profile');
+      final token = await TokenStorage.getToken();
+      final headers = {
+        'Content-Type': 'application/json',
+        if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+      };
+
+      final payload = {
+        'email': email.trim().toLowerCase(),
+        'preferred_styles': persona.primaryStyles,
+        'color_preferences': {
+          'favorite': persona.favoriteColors,
+          'avoided': persona.avoidedColors,
+        },
+        'budget_range': {'tier': 'medium'},
+        'body_measurements': {
+          'gender': persona.gender,
+          'height_cm': persona.heightCm,
+          'weight_kg': persona.weightKg,
+          'bmi': persona.bmi,
+          'body_frame': persona.bodyFrame,
+          'estimated_size': persona.estimatedSize,
+        },
+        'ai_learning_data': {
+          'liked_outfit_ids': persona.likedOutfitIds,
+          'frequent_occasions': persona.frequentOccasions,
+          'favorite_combinations': persona.favoriteCombinations,
+          'fit_preference': persona.fitPreference,
+        },
+      };
+
+      final response = await http
+          .post(url, headers: headers, body: jsonEncode(payload))
+          .timeout(const Duration(seconds: 6));
+      debugPrint(
+          '[StylePersonaStorage] Background cloud sync response: ${response.statusCode}');
+    } catch (e) {
+      debugPrint('[StylePersonaStorage] Background cloud sync skipped: $e');
+    }
   }
 
   /// Ghi nhận khi người dùng thích hoặc lưu một Outfit (tự học hỏi thói quen)

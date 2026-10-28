@@ -126,6 +126,8 @@ class _AddItemScreenState extends State<AddItemScreen>
   List<String> _selectedTags = ['Casual', 'Thanh lịch'];
   double _aiMatchScore = 9.4;
   String? _aiAnalysisReason;
+  List<WardrobeItemModel> _detectedSimilarItems = [];
+  bool _hasConfirmedDuplicateSave = false;
 
   bool _isAnalyzing = false;
   bool _isEnhancing = false;
@@ -205,6 +207,9 @@ class _AddItemScreenState extends State<AddItemScreen>
     )..repeat(reverse: true);
 
     _loadGalleryImages();
+    _nameController.addListener(_checkDuplicateItems);
+    _colorController.addListener(_checkDuplicateItems);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkDuplicateItems());
 
     if (widget.initialMode == 'camera') {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -219,6 +224,8 @@ class _AddItemScreenState extends State<AddItemScreen>
 
   @override
   void dispose() {
+    _nameController.removeListener(_checkDuplicateItems);
+    _colorController.removeListener(_checkDuplicateItems);
     _nameController.dispose();
     _brandController.dispose();
     _colorController.dispose();
@@ -521,6 +528,7 @@ class _AddItemScreenState extends State<AddItemScreen>
         });
 
         _recalculateAiScore();
+        _checkDuplicateItems();
 
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -651,8 +659,431 @@ class _AddItemScreenState extends State<AddItemScreen>
     );
   }
 
+  void _checkDuplicateItems() {
+    try {
+      final provider = Provider.of<WardrobeProvider>(context, listen: false);
+      final allItems = provider.allWardrobeItems;
+      final currentName = _nameController.text.trim().toLowerCase();
+      final currentColor = _colorController.text.trim().toLowerCase();
+
+      final matches = <WardrobeItemModel>[];
+
+      for (final item in allItems) {
+        if (widget.existingItem != null && item.id == widget.existingItem!.id) {
+          continue;
+        }
+
+        final itemName = item.name.toLowerCase();
+        final itemColor = item.color.toLowerCase();
+
+        // 1. Phải cùng danh mục (Category)
+        final isSameCategory = item.category == _selectedCategory;
+        if (!isSameCategory) continue;
+
+        // 2. Trùng hoặc tương tự màu sắc
+        bool isSimilarColor = false;
+        if (currentColor.isNotEmpty && itemColor.isNotEmpty) {
+          if (currentColor == itemColor) {
+            isSimilarColor = true;
+          } else {
+            const commonColors = [
+              'đen',
+              'trắng',
+              'xanh',
+              'navy',
+              'be',
+              'xám',
+              'nâu',
+              'đỏ',
+              'vàng',
+              'hồng',
+              'pastel'
+            ];
+            for (final c in commonColors) {
+              if (currentColor.contains(c) && itemColor.contains(c)) {
+                isSimilarColor = true;
+                break;
+              }
+            }
+          }
+        }
+
+        // 3. Trùng hoặc tương đồng loại trang phục / tên
+        bool isSimilarName = false;
+        if (currentName.isNotEmpty && itemName.isNotEmpty) {
+          const keywords = [
+            'áo thun',
+            'áo phông',
+            'sơ mi',
+            'polo',
+            'áo len',
+            'hoodie',
+            'áo khoác',
+            'jacket',
+            'blazer',
+            'quần jean',
+            'jeans',
+            'quần âu',
+            'quần tây',
+            'quần short',
+            'chân váy',
+            'đầm',
+            'sneaker',
+            'giày'
+          ];
+          for (final kw in keywords) {
+            if (currentName.contains(kw) && itemName.contains(kw)) {
+              isSimilarName = true;
+              break;
+            }
+          }
+          if (currentName == itemName ||
+              currentName.contains(itemName) ||
+              itemName.contains(currentName)) {
+            isSimilarName = true;
+          }
+        }
+
+        if (isSimilarColor || isSimilarName) {
+          matches.add(item);
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _detectedSimilarItems = matches;
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<bool?> _showDuplicateConfirmDialog() async {
+    final isEn =
+        Provider.of<LanguageProvider>(context, listen: false).isEnglish;
+    final firstDup = _detectedSimilarItems.first;
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF201B34),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded,
+                color: Color(0xFFFF7675), size: 28),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                isEn
+                    ? 'Duplicate Item Detected ⚠️'
+                    : 'Phát Hiện Đồ Trùng Trong Tủ! ⚠️',
+                style: AppFonts.outfit(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE17055).withOpacity(0.18),
+                borderRadius: BorderRadius.circular(14),
+                border:
+                    Border.all(color: const Color(0xFFE17055).withOpacity(0.4)),
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: firstDup.imageUrl.startsWith('http')
+                          ? CachedNetworkImage(
+                              imageUrl: firstDup.imageUrl,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.file(
+                              File(firstDup.imageUrl),
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          firstDup.name,
+                          style: AppFonts.outfit(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${firstDup.category.icon} ${firstDup.category.displayName} • Màu ${firstDup.color}',
+                          style: AppFonts.inter(
+                            fontSize: 12,
+                            color: const Color(0xFFFAB1A0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              isEn
+                  ? 'Your wardrobe already contains ${_detectedSimilarItems.length} similar item(s). Are you sure you want to add this one?'
+                  : 'Tủ đồ của bạn đã có ${_detectedSimilarItems.length} món đồ tương tự chiếc này. Bạn có chắc chắn muốn tiếp tục lưu vào tủ không?',
+              style: AppFonts.inter(
+                color: Colors.white70,
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              isEn ? 'Review item' : 'Kiểm tra lại',
+              style: const TextStyle(color: Colors.white60),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE17055),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              isEn ? 'Save Anyway' : 'Vẫn tiếp tục lưu',
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDuplicateDetailsDialog(bool isEn) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1C30),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.content_copy_rounded,
+                    color: Color(0xFFFF7675), size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    isEn
+                        ? 'Similar Items in Your Wardrobe'
+                        : 'Món Đồ Tương Tự Đã Có Trong Tủ',
+                    style: AppFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.45,
+              ),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: _detectedSimilarItems.length,
+                separatorBuilder: (_, __) =>
+                    const Divider(color: Colors.white12, height: 16),
+                itemBuilder: (context, index) {
+                  final dup = _detectedSimilarItems[index];
+                  return Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: SizedBox(
+                          width: 54,
+                          height: 54,
+                          child: dup.imageUrl.startsWith('http')
+                              ? CachedNetworkImage(
+                                  imageUrl: dup.imageUrl,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(
+                                  File(dup.imageUrl),
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dup.name,
+                              style: AppFonts.outfit(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${dup.category.icon} ${dup.category.displayName} • Màu ${dup.color} • ${dup.brand}',
+                              style: AppFonts.inter(
+                                color: Colors.white60,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDuplicateAlertBanner(bool isEn) {
+    if (_detectedSimilarItems.isEmpty) return const SizedBox.shrink();
+
+    final firstDuplicate = _detectedSimilarItems.first;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE17055).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE17055), width: 1.2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE17055).withOpacity(0.25),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.warning_amber_rounded,
+                    color: Color(0xFFFF7675), size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  isEn
+                      ? '⚠️ Warning: Similar Item Already Exists!'
+                      : '⚠️ Cảnh báo: Tủ đồ đã có món đồ tương tự!',
+                  style: AppFonts.outfit(
+                    color: const Color(0xFFFF7675),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE17055).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '${_detectedSimilarItems.length} ${isEn ? "items" : "món"}',
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            isEn
+                ? 'Your closet already has "${firstDuplicate.name}" (${firstDuplicate.color}, ${firstDuplicate.category.displayName}). Please check to avoid duplicate clothes.'
+                : 'Tủ đồ của bạn đã có "${firstDuplicate.name}" (${firstDuplicate.color}, ${firstDuplicate.category.displayName}). Hãy kiểm tra để tránh lưu trùng lặp.',
+            style: AppFonts.inter(
+              color: Colors.white70,
+              fontSize: 12,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: () => _showDuplicateDetailsDialog(isEn),
+            borderRadius: BorderRadius.circular(8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.visibility_rounded,
+                    color: Color(0xFFFAB1A0), size: 16),
+                const SizedBox(width: 6),
+                Text(
+                  isEn
+                      ? 'View existing duplicate item in wardrobe'
+                      : 'Xem chi tiết món đồ trùng trong tủ',
+                  style: AppFonts.inter(
+                    color: const Color(0xFFFAB1A0),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _saveItem() async {
     if (!_formKey.currentState!.validate()) return;
+
+    _checkDuplicateItems();
+    if (_detectedSimilarItems.isNotEmpty && !_hasConfirmedDuplicateSave) {
+      final shouldProceed = await _showDuplicateConfirmDialog();
+      if (shouldProceed != true) return;
+      _hasConfirmedDuplicateSave = true;
+    }
 
     var finalImageUrl = _localImagePath ?? _currentImageUrl;
     final provider = Provider.of<WardrobeProvider>(context, listen: false);
@@ -852,6 +1283,9 @@ class _AddItemScreenState extends State<AddItemScreen>
               // Gallery Carousel (All formats: JPG, PNG, WEBP, HEIC)
               _buildGalleryCarousel(),
               const SizedBox(height: 24),
+
+              // Duplicate Clothing Alert Banner
+              _buildDuplicateAlertBanner(isEn),
 
               // Form fields
               _buildSectionTitle(isEn
@@ -1852,6 +2286,7 @@ class _AddItemScreenState extends State<AddItemScreen>
                   if (val) {
                     setState(() => _selectedCategory = cat);
                     _recalculateAiScore();
+        _checkDuplicateItems();
                   }
                 },
               );
@@ -1891,6 +2326,7 @@ class _AddItemScreenState extends State<AddItemScreen>
               onPressed: () {
                 setState(() => _colorController.text = colorName);
                 _recalculateAiScore();
+        _checkDuplicateItems();
               },
             ),
           );

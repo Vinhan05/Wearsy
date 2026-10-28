@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
+import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../mock/mock_data_service.dart';
 
 class CityLocation {
@@ -54,6 +58,11 @@ class WeatherData {
 }
 
 class WeatherService {
+  static const String _prefCityKey = 'cached_weather_city_name';
+  static const String _prefLatKey = 'cached_weather_lat';
+  static const String _prefLonKey = 'cached_weather_lon';
+  static const String _prefRegionKey = 'cached_weather_region';
+
   // Danh sách các thành phố phổ biến tại Việt Nam
   static const List<CityLocation> popularCities = [
     CityLocation(
@@ -109,40 +118,181 @@ class WeatherService {
 
   static final CityLocation defaultCity = popularCities[0];
 
+  /// Lưu vị trí người dùng đã chọn vào Local Storage
+  static Future<void> saveSelectedLocation(CityLocation city) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_prefCityKey, city.name);
+      await prefs.setDouble(_prefLatKey, city.lat);
+      await prefs.setDouble(_prefLonKey, city.lon);
+      await prefs.setString(_prefRegionKey, city.region);
+    } catch (_) {}
+  }
+
+  /// Lấy vị trí đã lưu trước đó nếu có
+  static Future<CityLocation?> getCachedLocation() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final name = prefs.getString(_prefCityKey);
+      final lat = prefs.getDouble(_prefLatKey);
+      final lon = prefs.getDouble(_prefLonKey);
+      final region = prefs.getString(_prefRegionKey);
+      if (name != null && lat != null && lon != null) {
+        return CityLocation(
+          name: name,
+          lat: lat,
+          lon: lon,
+          region: region ?? 'Vị trí đã lưu',
+          icon: '📍',
+        );
+      }
+    } catch (_) {}
+    return null;
+  }
+
   static String _formatCityName(String rawCity) {
-    final lower = rawCity.toLowerCase();
-    if (lower.contains('ho chi minh') || lower.contains('saigon')) {
+    final lower = rawCity.toLowerCase().trim();
+    if (lower.contains('ho chi minh') ||
+        lower.contains('hồ chí minh') ||
+        lower.contains('saigon') ||
+        lower.contains('sài gòn')) {
       return 'TP. Hồ Chí Minh';
     }
-    if (lower.contains('hanoi') || lower.contains('ha noi')) {
+    if (lower.contains('hanoi') ||
+        lower.contains('ha noi') ||
+        lower.contains('hà nội')) {
       return 'Hà Nội';
     }
-    if (lower.contains('da nang')) {
+    if (lower.contains('da nang') || lower.contains('đà nẵng')) {
       return 'Đà Nẵng';
     }
-    if (lower.contains('da lat')) {
+    if (lower.contains('da lat') || lower.contains('đà lạt')) {
       return 'Đà Lạt';
     }
-    if (lower.contains('can tho')) {
+    if (lower.contains('can tho') || lower.contains('cần thơ')) {
       return 'Cần Thơ';
     }
     if (lower.contains('nha trang')) {
       return 'Nha Trang';
     }
-    if (lower.contains('hai phong')) {
+    if (lower.contains('hai phong') || lower.contains('hải phòng')) {
       return 'Hải Phòng';
     }
-    if (lower.contains('vung tau')) {
+    if (lower.contains('vung tau') || lower.contains('vũng tàu')) {
       return 'Vũng Tàu';
     }
-    if (lower.contains('hue')) {
+    if (lower.contains('hue') || lower.contains('huế')) {
       return 'Huế';
+    }
+    if (lower.contains('long xuyen') || lower.contains('long xuyên')) {
+      return 'Long Xuyên';
     }
     return rawCity;
   }
 
-  /// Tự động định vị vị trí hiện tại qua IP mạng (HTTPS)
-  static Future<CityLocation> detectCurrentLocation() async {
+  /// Tính khoảng cách Haversine (km) giữa 2 toạ độ GPS
+  static double _calculateDistanceKm(
+      double lat1, double lon1, double lat2, double lon2) {
+    const p = 0.017453292519943295; // Math.PI / 180
+    final a = 0.5 -
+        cos((lat2 - lat1) * p) / 2 +
+        cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a)); // 2 * R; R = 6371 km
+  }
+
+  /// Khớp với thành phố lớn gần nhất nếu khoảng cách < 50km
+  static String _matchNearestPopularCity(double lat, double lon) {
+    CityLocation? closest;
+    double minDistance = double.infinity;
+
+    for (final city in popularCities) {
+      final d = _calculateDistanceKm(lat, lon, city.lat, city.lon);
+      if (d < minDistance) {
+        minDistance = d;
+        closest = city;
+      }
+    }
+
+    if (closest != null && minDistance <= 55.0) {
+      return closest.name;
+    }
+    return 'Vị trí hiện tại';
+  }
+
+  /// Lấy vị trí qua GPS phần cứng thiết bị (chính xác như Google Maps)
+  static Future<CityLocation?> _detectGpsLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        debugPrint('[WeatherService] Location services are disabled on device.');
+        return null;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          debugPrint('[WeatherService] User denied location permission.');
+          return null;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        debugPrint(
+            '[WeatherService] Location permissions permanently denied.');
+        return null;
+      }
+
+      // Đọc toạ độ GPS vệ tinh thời gian thực
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 7),
+      );
+
+      final double lat = position.latitude;
+      final double lon = position.longitude;
+      debugPrint('[WeatherService] GPS Success: $lat, $lon');
+
+      // Reverse geocode to get city name
+      String cityName = '';
+      try {
+        final reverseUrl = Uri.parse(
+          'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=$lat&longitude=$lon&localityLanguage=vi',
+        );
+        final res = await http.get(reverseUrl).timeout(const Duration(seconds: 4));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(utf8.decode(res.bodyBytes));
+          cityName = (data['city'] ??
+                  data['principalSubdivision'] ??
+                  data['locality'] ??
+                  '')
+              .toString();
+        }
+      } catch (e) {
+        debugPrint('[WeatherService] Reverse geocode error: $e');
+      }
+
+      if (cityName.isEmpty) {
+        cityName = _matchNearestPopularCity(lat, lon);
+      } else {
+        cityName = _formatCityName(cityName);
+      }
+
+      return CityLocation(
+        name: cityName,
+        lat: lat,
+        lon: lon,
+        region: 'Vị trí GPS vệ tinh chính xác 🛰️',
+        icon: '📍',
+      );
+    } catch (e) {
+      debugPrint('[WeatherService] _detectGpsLocation exception: $e');
+      return null;
+    }
+  }
+
+  /// Lấy vị trí qua IP mạng (fallback khi không có GPS)
+  static Future<CityLocation?> _detectIpLocation() async {
     // 1. Thử service ipwho.is (HTTPS, miễn phí)
     try {
       final response = await http
@@ -160,7 +310,7 @@ class WeatherService {
             name: _formatCityName(rawCity),
             lat: lat,
             lon: lon,
-            region: 'Vị trí hiện tại (Realtime IP)',
+            region: 'Vị trí mạng IP',
             icon: '📍',
           );
         }
@@ -183,12 +333,34 @@ class WeatherService {
             name: _formatCityName(rawCity),
             lat: lat,
             lon: lon,
-            region: 'Vị trí hiện tại (Realtime IP)',
+            region: 'Vị trí mạng IP',
             icon: '📍',
           );
         }
       }
     } catch (_) {}
+
+    return null;
+  }
+
+  /// Tự động định vị: Ưu tiên GPS vệ tinh thật -> Fallback IP mạng -> Fallback Cache đã lưu
+  static Future<CityLocation> detectCurrentLocation({bool forceGps = true}) async {
+    if (forceGps) {
+      final gpsLocation = await _detectGpsLocation();
+      if (gpsLocation != null) {
+        await saveSelectedLocation(gpsLocation);
+        return gpsLocation;
+      }
+    }
+
+    final ipLocation = await _detectIpLocation();
+    if (ipLocation != null) {
+      await saveSelectedLocation(ipLocation);
+      return ipLocation;
+    }
+
+    final cached = await getCachedLocation();
+    if (cached != null) return cached;
 
     return defaultCity;
   }
