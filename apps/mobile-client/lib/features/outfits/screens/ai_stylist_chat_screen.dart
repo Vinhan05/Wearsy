@@ -812,20 +812,21 @@ class _AiStylistChatScreenState extends State<AiStylistChatScreen> {
             padding: const EdgeInsets.only(bottom: 10),
             child: SizedBox(
               width: double.infinity,
-              height: 44,
+              height: 48,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: Colors.white,
                   elevation: 2,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                 ),
                 icon: const Icon(Icons.auto_awesome,
                     color: Color(0xFFFDCB6E), size: 18),
                 label: Text(
-                  '✨ Chốt & Phối đồ ngay',
+                  'Chốt & Phối đồ ngay',
                   style: AppFonts.outfit(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

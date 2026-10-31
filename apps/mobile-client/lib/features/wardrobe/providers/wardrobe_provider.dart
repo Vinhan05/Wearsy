@@ -45,6 +45,7 @@ class WardrobeProvider with ChangeNotifier {
 
   /// Toàn bộ món đồ trên toàn bộ tất cả tủ đồ (cho tính năng AI phối tổng thể)
   List<WardrobeItemModel> get allItemsAcrossAllWardrobes => _allItems;
+  List<WardrobeItemModel> get allWardrobeItems => _allItems;
 
   bool get isLoading => _isLoading;
   WardrobeCategory? get selectedCategory => _selectedCategory;

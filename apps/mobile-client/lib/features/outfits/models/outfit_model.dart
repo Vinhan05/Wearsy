@@ -101,6 +101,9 @@ class OutfitModel {
   final SmartFitAdvice? smartFitAdvice;
   bool isFavorite;
 
+  String get title => name;
+  String get imageUrl => coverImageUrl;
+
   OutfitModel({
     required this.id,
     required this.name,

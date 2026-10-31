@@ -18,6 +18,22 @@ class UserStylePersonaModel {
   final String? gender;
   final String? bodyFrame;
 
+  double? get bmi {
+    if (heightCm != null && weightKg != null && heightCm! > 0) {
+      final h = heightCm! / 100.0;
+      return double.parse((weightKg! / (h * h)).toStringAsFixed(1));
+    }
+    return null;
+  }
+
+  String? get estimatedSize {
+    if (heightCm == null || weightKg == null) return null;
+    if (weightKg! < 50) return 'S';
+    if (weightKg! < 65) return 'M';
+    if (weightKg! < 78) return 'L';
+    return 'XL';
+  }
+
   // Behavioral Memory
   final List<String> frequentOccasions;
   final List<Map<String, dynamic>> favoriteCombinations;
