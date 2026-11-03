@@ -11,6 +11,7 @@ import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/localization/language_provider.dart';
 import '../../../core/utils/tag_localization.dart';
+import '../../../core/services/weather_provider.dart';
 import '../../../shared/widgets/wearsy_bottom_nav_bar.dart';
 
 class OutfitDetailScreen extends StatefulWidget {
@@ -533,28 +534,39 @@ class _OutfitDetailScreenState extends State<OutfitDetailScreen> {
                           size: 20, color: Color(0xFF111827)),
                     ),
                   ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Text('⛅', style: TextStyle(fontSize: 13)),
-                        const SizedBox(width: 4),
-                        Text(
-                          '29°C • ${TagLocalization.getLocalizedCityName("Đà Nẵng", isEn)}',
-                          style: AppFonts.inter(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF374151),
+                  Consumer<WeatherProvider>(
+                    builder: (context, weatherProv, _) {
+                      final temp = weatherProv.temperatureString;
+                      final city = TagLocalization.getLocalizedCityName(
+                          weatherProv.cityName, isEn);
+                      return GestureDetector(
+                        onTap: () =>
+                            WeatherProvider.showCityPickerBottomSheet(context),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: const Color(0xFFE5E7EB)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Text('⛅', style: TextStyle(fontSize: 13)),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$temp • $city',
+                                style: AppFonts.inter(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF374151),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ],
               ),

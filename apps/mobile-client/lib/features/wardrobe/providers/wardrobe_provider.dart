@@ -51,10 +51,24 @@ class WardrobeProvider with ChangeNotifier {
   WardrobeCategory? get selectedCategory => _selectedCategory;
   String? get selectedColor => _selectedColor;
   String get sortBy => _sortBy;
+  String _searchQuery = '';
+  String get searchQuery => _searchQuery;
+
   bool get hasActiveFilter =>
       _selectedCategory != null ||
       _selectedColor != null ||
-      _sortBy != 'default';
+      _sortBy != 'default' ||
+      _searchQuery.isNotEmpty;
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void clearSearchQuery() {
+    _searchQuery = '';
+    notifyListeners();
+  }
 
   /// Danh sách món đồ trong tủ đồ hiện tại sau khi áp dụng bộ lọc phân loại (Áo, Quần, Màu sắc, Sắp xếp)
   List<WardrobeItemModel> get filteredItems {
@@ -69,12 +83,33 @@ class WardrobeProvider with ChangeNotifier {
               item.color.toLowerCase().contains(_selectedColor!.toLowerCase()))
           .toList();
     }
+    if (_searchQuery.trim().isNotEmpty) {
+      final q = _normalizeText(_searchQuery.trim());
+      items = items.where((item) {
+        final nameMatch = _normalizeText(item.name).contains(q);
+        final brandMatch = _normalizeText(item.brand).contains(q);
+        final colorMatch = _normalizeText(item.color).contains(q);
+        final tagsMatch = item.tags.any((t) => _normalizeText(t).contains(q));
+        return nameMatch || brandMatch || colorMatch || tagsMatch;
+      }).toList();
+    }
+
     if (_sortBy == 'ai_score') {
       items.sort((a, b) => b.aiMatchScore.compareTo(a.aiMatchScore));
     } else if (_sortBy == 'name') {
       items.sort((a, b) => a.name.compareTo(b.name));
     }
     return items;
+  }
+
+  static String _normalizeText(String str) {
+    const withDia = 'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ';
+    const withoutDia = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
+    var lower = str.toLowerCase();
+    for (int i = 0; i < withDia.length; i++) {
+      lower = lower.replaceAll(withDia[i], withoutDia[i]);
+    }
+    return lower;
   }
 
   /// Đếm số lượng món đồ theo danh mục trong tủ đồ hiện tại
@@ -261,6 +296,7 @@ class WardrobeProvider with ChangeNotifier {
     _selectedCategory = null;
     _selectedColor = null;
     _sortBy = 'default';
+    _searchQuery = '';
     notifyListeners();
   }
 

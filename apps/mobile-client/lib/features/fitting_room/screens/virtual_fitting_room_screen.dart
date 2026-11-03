@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/localization/language_provider.dart';
 import '../../wardrobe/models/wardrobe_item_model.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../../wardrobe/services/wardrobe_service.dart';
@@ -12,6 +13,9 @@ import '../widgets/mannequin_2d_widget.dart';
 class VirtualFittingRoomScreen extends StatefulWidget {
   final WardrobeItemModel? initialProduct;
   final List<WardrobeItemModel>? initialItems;
+
+  /// Đặt cờ ẩn phòng thử đồ, đưa về trạng thái đang phát triển
+  static const bool isUnderDevelopment = true;
 
   const VirtualFittingRoomScreen({
     super.key,
@@ -42,12 +46,14 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialItems != null && widget.initialItems!.isNotEmpty) {
+    if (!VirtualFittingRoomScreen.isUnderDevelopment) {
+      if (widget.initialItems != null && widget.initialItems!.isNotEmpty) {
       for (final item in widget.initialItems!) {
         _equipItem(item);
       }
     } else if (widget.initialProduct != null) {
       _equipItem(widget.initialProduct!);
+    }
     }
   }
 
@@ -230,6 +236,158 @@ class _VirtualFittingRoomScreenState extends State<VirtualFittingRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (VirtualFittingRoomScreen.isUnderDevelopment) {
+      return _buildUnderDevelopmentScreen(context);
+    }
+    return _buildActiveFittingRoom(context);
+  }
+
+  Widget _buildUnderDevelopmentScreen(BuildContext context) {
+    LanguageProvider? langProv;
+    try {
+      langProv = Provider.of<LanguageProvider>(context, listen: false);
+    } catch (_) {}
+    final isEn = langProv?.isEnglish ?? false;
+
+    return Scaffold(
+      backgroundColor: AppTheme.lightBackground,
+      appBar: AppBar(
+        backgroundColor: AppTheme.lightBackground,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_rounded, color: AppTheme.darkTextPrimary),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          isEn ? 'Virtual Fitting Room 👗' : 'Phòng Thử Đồ Ảo 👗',
+          style: AppFonts.outfit(
+            fontWeight: FontWeight.bold,
+            color: AppTheme.darkTextPrimary,
+            fontSize: 20,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Glowing Icon Badge
+                Container(
+                  width: 104,
+                  height: 104,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.08),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppTheme.primaryColor.withOpacity(0.18),
+                      width: 2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.checkroom_rounded,
+                      size: 52,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Status Badge
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF3CD),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: const Color(0xFFFFEEBA),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('🚧', style: TextStyle(fontSize: 13)),
+                      const SizedBox(width: 6),
+                      Text(
+                        isEn ? 'Under Development' : 'Đang phát triển',
+                        style: AppFonts.outfit(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF856404),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Title
+                Text(
+                  isEn
+                      ? 'Virtual Fitting Room\nis Coming Soon!'
+                      : 'Phòng Thử Đồ Ảo\nĐang Được Nâng Cấp!',
+                  textAlign: TextAlign.center,
+                  style: AppFonts.outfit(
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.darkTextPrimary,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Subtitle
+                Text(
+                  isEn
+                      ? 'We are developing an intelligent 2D/3D try-on fitting experience to help you visualize your outfits perfectly with your wardrobe.\n\nStay tuned for upcoming updates! ✨'
+                      : 'Đội ngũ WEARSY đang hoàn thiện tính năng phòng thử đồ thông minh giúp bạn ướm và phối trang phục trực quan, chuẩn phom dáng nhất.\n\nTính năng sẽ sớm ra mắt trong bản cập nhật tiếp theo nhé! ✨',
+                  textAlign: TextAlign.center,
+                  style: AppFonts.inter(
+                    fontSize: 14,
+                    color: AppTheme.darkTextSecondary,
+                    height: 1.55,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Back Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                    label: Text(
+                      isEn ? 'Go Back' : 'Quay lại',
+                      style: AppFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveFittingRoom(BuildContext context) {
     final wardrobeProvider = Provider.of<WardrobeProvider>(context);
     final allItems = wardrobeProvider.allItemsAcrossAllWardrobes;
     final filteredItems = allItems.where((i) {

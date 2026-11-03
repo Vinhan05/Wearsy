@@ -58,10 +58,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Phòng Thử Đồ Ảo 👗'), findsOneWidget);
-      expect(find.text('Áo (Tops)'), findsOneWidget);
-      expect(find.text('Quần/Váy'), findsOneWidget);
-      expect(find.text('Xáo Trộn'), findsOneWidget);
-      expect(find.text('Lưu Bộ Này Thành Outfit'), findsOneWidget);
+      expect(find.text('Đang phát triển'), findsOneWidget);
+      expect(find.text('Quay lại'), findsOneWidget);
     });
   });
 }

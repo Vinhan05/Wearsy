@@ -9,6 +9,7 @@ import 'features/auth/screens/welcome_screen.dart';
 import 'features/home/screens/main_navigation_screen.dart';
 import 'features/outfits/providers/outfit_provider.dart';
 import 'features/wardrobe/providers/wardrobe_provider.dart';
+import 'core/services/weather_provider.dart';
 
 import 'core/localization/localization.dart';
 import 'core/theme/theme_provider.dart';
@@ -32,6 +33,7 @@ class WearsyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WardrobeProvider()),
         ChangeNotifierProvider(create: (_) => OutfitProvider()),
+        ChangeNotifierProvider(create: (_) => WeatherProvider()),
       ],
       child: Consumer2<ThemeProvider, LanguageProvider>(
         builder: (context, themeProvider, languageProvider, child) {

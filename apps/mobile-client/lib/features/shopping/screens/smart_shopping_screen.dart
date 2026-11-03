@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wearsy_mobile/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../core/services/smart_shopping_ai_service.dart';
 import '../../../core/theme/app_theme.dart';
@@ -202,9 +201,6 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormatter =
-        NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
-
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
@@ -236,7 +232,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             if (_isAnalyzing)
               _buildLoadingState()
             else if (_analysisResult != null)
-              _buildAnalysisResultView(currencyFormatter)
+              _buildAnalysisResultView()
             else
               _buildEmptyPromptState(),
 
@@ -541,7 +537,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
     );
   }
 
-  Widget _buildAnalysisResultView(NumberFormat currencyFormatter) {
+  Widget _buildAnalysisResultView() {
     final isEn = Provider.of<LanguageProvider>(context).isEnglish;
     final result = _analysisResult!;
     final prod = result.product;
@@ -638,16 +634,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                             fontSize: 14,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          currencyFormatter.format(prod.price),
-                          style: AppFonts.outfit(
-                            color: const Color(0xFF10AC84),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           '${isEn ? "Color" : "Màu"}: ${TagLocalization.getColorName(prod.color, isEn)} • ${TagLocalization.getCategoryName(prod.category, isEn)}',
                           style: AppFonts.inter(
@@ -717,14 +704,22 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
             icon: const Icon(Icons.accessibility_new_rounded),
             label: Text(
               isEn
-                  ? 'TRY ON MANNEQUIN WITH WARDROBE 👗'
-                  : 'ƯỚM THỬ LÊN MA-NƠ-CANH VỚI TỦ ĐỒ 👗',
+                  ? 'TRY ON (Coming Soon) 👗'
+                  : 'ƯỚM THỬ ĐỒ (Đang phát triển) 👗',
               style: AppFonts.outfit(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onPressed: () async {
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const VirtualFittingRoomScreen(),
+                ),
+              );
+            },
+            /* onPressedOld: () async {
               String fitImageUrl = prod.imageUrl;
 
               final isAlreadyBgRemoved =
@@ -809,7 +804,7 @@ class _SmartShoppingScreenState extends State<SmartShoppingScreen> {
                   ),
                 ),
               );
-            },
+            }, */
           ),
         ),
         const SizedBox(height: 12),

@@ -1138,8 +1138,24 @@ class WardrobeScreen extends StatelessWidget {
   }
 }
 
-class _WardrobeBody extends StatelessWidget {
+class _WardrobeBody extends StatefulWidget {
   const _WardrobeBody();
+
+  @override
+  State<_WardrobeBody> createState() => _WardrobeBodyState();
+}
+
+class _WardrobeBodyState extends State<_WardrobeBody> {
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1167,76 +1183,168 @@ class _WardrobeBody extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isEn ? 'Wardrobe' : 'Tủ đồ',
-                  style: AppFonts.outfit(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
+      child: AnimatedCrossFade(
+        duration: const Duration(milliseconds: 250),
+        crossFadeState: _isSearching
+            ? CrossFadeState.showSecond
+            : CrossFadeState.showFirst,
+        firstChild: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isEn ? 'Wardrobe' : 'Tủ đồ',
+                    style: AppFonts.outfit(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF111827),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isEn ? 'Your wardrobe' : 'Tủ đồ của bạn',
+                    style: AppFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF374151),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isEn
+                        ? (totalItems == 0
+                            ? '0 items • 0 outfits paired • Empty wardrobe'
+                            : '$totalItems items • Updated today')
+                        : (totalItems == 0
+                            ? '0 món đồ  •  0 set đã phối  •  Tủ đồ còn trống'
+                            : '$totalItems món đồ  •  Cập nhật hôm nay'),
+                    style: AppFonts.inter(
+                      fontSize: 11.5,
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Dark Search Circle Button
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                setState(() {
+                  _isSearching = true;
+                });
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _searchFocusNode.requestFocus();
+                });
+              },
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF18181B),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.search_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+        secondChild: Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 46,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border:
+                      Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  style: AppFonts.inter(
+                    fontSize: 14,
                     color: const Color(0xFF111827),
+                    fontWeight: FontWeight.w500,
                   ),
+                  decoration: InputDecoration(
+                    hintText: isEn
+                        ? 'Search clothing, color, brand...'
+                        : 'Tìm trang phục, màu sắc, hãng...',
+                    hintStyle: AppFonts.inter(
+                      fontSize: 13,
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: Color(0xFF18181B),
+                      size: 20,
+                    ),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.close_rounded,
+                                size: 18, color: Color(0xFF6B7280)),
+                            onPressed: () {
+                              _searchController.clear();
+                              provider.clearSearchQuery();
+                              setState(() {});
+                            },
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 11),
+                  ),
+                  onChanged: (value) {
+                    provider.setSearchQuery(value);
+                    setState(() {});
+                  },
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  isEn ? 'Your wardrobe' : 'Tủ đồ của bạn',
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                setState(() {
+                  _isSearching = false;
+                });
+                _searchController.clear();
+                provider.clearSearchQuery();
+                FocusScope.of(context).unfocus();
+              },
+              child: Container(
+                height: 44,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                alignment: Alignment.center,
+                child: Text(
+                  isEn ? 'Cancel' : 'Huỷ',
                   style: AppFonts.inter(
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF374151),
+                    color: const Color(0xFF18181B),
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  isEn
-                      ? (totalItems == 0
-                          ? '0 items • 0 outfits paired • Empty wardrobe'
-                          : '$totalItems items • Updated today')
-                      : (totalItems == 0
-                          ? '0 món đồ  •  0 set đã phối  •  Tủ đồ còn trống'
-                          : '$totalItems món đồ  •  Cập nhật hôm nay'),
-                  style: AppFonts.inter(
-                    fontSize: 11.5,
-                    color: const Color(0xFF9CA3AF),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Dark Search Circle Button
-          GestureDetector(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(isEn
-                      ? '🔍 Type to search your wardrobe items'
-                      : '🔍 Nhập từ khóa để tìm kiếm trang phục'),
-                  behavior: SnackBarBehavior.floating,
-                  duration: const Duration(seconds: 1),
-                ),
-              );
-            },
-            child: Container(
-              width: 42,
-              height: 42,
-              decoration: const BoxDecoration(
-                color: Color(0xFF18181B),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.search_rounded,
-                color: Colors.white,
-                size: 20,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1688,6 +1796,73 @@ class _WardrobeBody extends StatelessWidget {
     }
 
     final items = provider.filteredItems;
+
+    if (items.isEmpty && provider.searchQuery.trim().isNotEmpty) {
+      final isEn = Provider.of<LanguageProvider>(context).isEnglish;
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 68,
+                height: 68,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF3F4F6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.search_off_rounded,
+                    size: 34, color: Color(0xFF9CA3AF)),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                isEn
+                    ? 'No items found for "${provider.searchQuery}"'
+                    : 'Không tìm thấy kết quả cho "${provider.searchQuery}"',
+                textAlign: TextAlign.center,
+                style: AppFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF111827),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                isEn
+                    ? 'Try searching with another keyword or color.'
+                    : 'Thử tìm với tên gọi, thương hiệu hoặc màu sắc khác.',
+                textAlign: TextAlign.center,
+                style: AppFonts.inter(
+                  fontSize: 13,
+                  color: const Color(0xFF6B7280),
+                ),
+              ),
+              const SizedBox(height: 18),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF18181B),
+                  side: const BorderSide(color: Color(0xFFD1D5DB)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                icon: const Icon(Icons.clear_rounded, size: 16),
+                label: Text(
+                  isEn ? 'Clear search' : 'Xóa tìm kiếm',
+                  style: AppFonts.inter(fontWeight: FontWeight.w600),
+                ),
+                onPressed: () {
+                  _searchController.clear();
+                  provider.clearSearchQuery();
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
